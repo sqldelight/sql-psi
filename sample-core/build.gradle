@@ -1,0 +1,8 @@
+apply plugin: 'kotlin'
+
+dependencies {
+  compile dep.kotlinStdLib
+  compile dep.kotlinReflect
+
+  compileOnly project(':core')
+}

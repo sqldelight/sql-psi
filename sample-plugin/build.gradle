@@ -1,0 +1,24 @@
+plugins {
+  id 'org.jetbrains.intellij' version '0.2.16'
+}
+
+intellij {
+  version dep.intellij
+  pluginName = 'sqlite-sample'
+}
+
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+sourceSets {
+  main.java.srcDir "src/generated/kotlin"
+}
+
+dependencies {
+  compile dep.kotlinStdLib
+  compile dep.kotlinReflect
+
+  compile project(":sample-core")
+}

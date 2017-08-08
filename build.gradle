@@ -1,0 +1,33 @@
+ext {
+    kotlinVersion = '1.1.4'
+    ideaVersion = '2017.1'
+
+    dep = [
+        kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+        kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
+        intellij: "IC-$ideaVersion",
+    ]
+}
+
+subprojects {
+    buildscript {
+        repositories {
+            mavenCentral()
+            jcenter()
+        }
+
+        dependencies {
+            classpath dep.kotlinGradlePlugin
+            classpath 'de.undercouch:gradle-download-task:3.1.2'
+        }
+    }
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
+    }
+
+    group = GROUP
+    version = VERSION_NAME
+}

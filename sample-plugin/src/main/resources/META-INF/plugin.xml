@@ -1,0 +1,17 @@
+<idea-plugin>
+  <id>com.alecstrong.sqlite.psi.sample</id>
+  <name>SQLite-PSI Sample</name>
+  <category>Custom Languages</category>
+  <idea-version
+      since-build="145"
+  />
+  <depends>com.intellij.modules.lang</depends>
+
+  <description><![CDATA[
+      Sample for SQLite-PSI project.
+    ]]></description>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="com.alecstrong.sqlite.psi.sample.plugin.SampleFileTypeFactory"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,68 @@
+buildscript {
+  repositories {
+    maven { url 'https://jitpack.io' }
+  }
+
+  dependencies {
+    classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1.1"
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'org.jetbrains.grammarkit'
+grammarKit {
+  grammarKitRelease = '1.5.2'
+}
+
+apply from: 'updateDependencies.gradle'
+
+import org.jetbrains.grammarkit.tasks.GenerateLexer
+import org.jetbrains.grammarkit.tasks.GenerateParser
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+sourceSets {
+  main.java.srcDir "gen"
+}
+
+dependencies {
+  compile fileTree(dir: 'lib/ideaIC/lib', include: [
+      'asm-all.jar',
+      'automaton.jar',
+      'extensions.jar',
+      'guava-19.0.jar',
+      'idea.jar',
+      'openapi.jar',
+      'picocontainer.jar',
+      'trove4j.jar',
+      'util.jar',
+  ])
+  compile dep.kotlinStdLib
+  compile dep.kotlinReflect
+}
+
+task generateSqliteLexer(type: GenerateLexer) {
+  source 'src/main/grammars/SqliteLexer.flex'
+  targetDir 'gen/com/alecstrong/sqlite/psi/core/lexer/'
+  targetClass 'SqliteLexer'
+  purgeOldFiles = true
+}
+
+task generateSqliteParser(type: GenerateParser) {
+  source 'src/main/grammars/sqlite.bnf'
+  targetRoot = 'gen/'
+  pathToParser '/com/alecstrong/sqlite/psi/core/parser/SqliteParser.java'
+  pathToPsiRoot '/com/alecstrong/sqlite/psi/core/psi'
+  purgeOldFiles = true
+}
+
+task cleanUpGen(type: Delete) {
+  delete 'gen'
+}
+
+generateSqliteLexer.outputs.upToDateWhen { false }
+generateSqliteParser.outputs.upToDateWhen { false }
+
+compileKotlin.dependsOn cleanUpGen, generateSqliteLexer, generateSqliteParser
