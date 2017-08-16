@@ -15,8 +15,6 @@ grammarKit {
   grammarKitRelease = '1.5.2'
 }
 
-apply from: 'updateDependencies.gradle'
-
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -28,17 +26,8 @@ sourceSets {
 }
 
 dependencies {
-  compile fileTree(dir: 'lib/ideaIC/lib', include: [
-      'asm-all.jar',
-      'automaton.jar',
-      'extensions.jar',
-      'guava-19.0.jar',
-      'idea.jar',
-      'openapi.jar',
-      'picocontainer.jar',
-      'trove4j.jar',
-      'util.jar',
-  ])
+  compileOnly dep.intellijCore
+
   compile dep.kotlinStdLib
   compile dep.kotlinReflect
 }

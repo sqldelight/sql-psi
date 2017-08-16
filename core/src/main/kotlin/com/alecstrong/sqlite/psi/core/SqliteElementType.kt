@@ -11,6 +11,6 @@ class SqliteElementType(name: String): IElementType(name, null) {
      * Not my favourite hack of all time but the language can't be static since its provided at
      * "runtime".
      */
-    internal var _language: Language = Language.ANY
+    var _language: Language = Language.ANY
   }
 }

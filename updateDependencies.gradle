@@ -7,14 +7,14 @@ task updateDependencies {
   def intellijCoreZip = new File(downloadDir, "intellij-core-${ideaVersion}.zip")
 
   download {
-    src "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/" +
-        "$ideaVersion/ideaIC-${ideaVersion}.zip"
+    src "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/intellij-core/" +
+        "$ideaVersion/intellij-core-${ideaVersion}.zip"
     dest intellijCoreZip
     onlyIfNewer true
   }
 
   copy {
     from zipTree(intellijCoreZip)
-    into new File("lib/ideaIC")
+    into new File("lib/intellij-core")
   }
 }

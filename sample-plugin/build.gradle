@@ -5,6 +5,7 @@ plugins {
 intellij {
   version dep.intellij
   pluginName = 'sqlite-sample'
+  plugins = ['psiviewer:3.28.93']
 }
 
 apply plugin: 'kotlin'

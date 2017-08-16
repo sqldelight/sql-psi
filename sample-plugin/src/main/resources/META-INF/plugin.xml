@@ -12,6 +12,7 @@
     ]]></description>
 
   <extensions defaultExtensionNs="com.intellij">
+    <lang.parserDefinition language="Sample" implementationClass="com.alecstrong.sqlite.psi.sample.core.SampleParserDefinition" />
     <fileTypeFactory implementation="com.alecstrong.sqlite.psi.sample.plugin.SampleFileTypeFactory"/>
   </extensions>
 </idea-plugin>

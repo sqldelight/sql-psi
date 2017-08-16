@@ -1,4 +1,5 @@
-ext {
+buildscript {
+  ext {
     kotlinVersion = '1.1.4'
     ideaVersion = '2017.1'
 
@@ -7,27 +8,29 @@ ext {
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
         kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
         intellij: "IC-$ideaVersion",
+        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: ['*.jar'])
     ]
+  }
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+
+  dependencies {
+    classpath dep.kotlinGradlePlugin
+    classpath 'de.undercouch:gradle-download-task:3.1.2'
+  }
 }
 
+apply from: 'updateDependencies.gradle'
+
 subprojects {
-    buildscript {
-        repositories {
-            mavenCentral()
-            jcenter()
-        }
+  repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
+  }
 
-        dependencies {
-            classpath dep.kotlinGradlePlugin
-            classpath 'de.undercouch:gradle-download-task:3.1.2'
-        }
-    }
-    repositories {
-        mavenCentral()
-        jcenter()
-        maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
-    }
-
-    group = GROUP
-    version = VERSION_NAME
+  group = GROUP
+  version = VERSION_NAME
 }

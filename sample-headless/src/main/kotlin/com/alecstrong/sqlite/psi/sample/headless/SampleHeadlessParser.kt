@@ -38,7 +38,7 @@ class SampleHeadlessParser {
 fun main(args: Array<String>) {
   SampleHeadlessParser().parseSqlite()
   /* Outputs:
-      Sample File
+    Sample File
       SqliteSqlStmtImpl(SQL_STMT)
         SqliteCreateTableStmtImpl(CREATE_TABLE_STMT)
           SqliteTableNameImpl(TABLE_NAME)
