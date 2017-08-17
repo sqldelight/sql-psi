@@ -1,10 +1,10 @@
 {
+  parserClass = "com.alecstrong.sqlite.psi.core.parser.SqliteParser"
+  elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
   psiClassPrefix = "Sqlite"
   psiImplClassSuffix = "Impl"
-  psiPackage = "com.alecstrong.sqlite.psi"
-  psiImplPackage = "com.alecstrong.sqlite.psi.impl"
-
-  elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
+  psiPackage = "com.alecstrong.sqlite.psi.core.psi"
+  psiImplPackage = "com.alecstrong.sqlite.psi.core.psi.impl"
 
   tokens=[
     SEMI=';'
@@ -56,23 +56,23 @@ drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name
 drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name
 drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name
 drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name
-expr ::= ( literal_expr
+expr ::= ( raise_expr
+         | case_expr
+         | exists_expr
+         | in_expr
+         | between_expr
+         | is_expr
+         | null_expr
+         | like_expr
+         | collate_expr
+         | cast_expr
+         | paren_expr
+         | function_expr
+         | binary_expr
+         | unary_expr
          | bind_expr
          | column_expr
-         | unary_expr
-         | binary_expr
-         | function_expr
-         | paren_expr
-         | cast_expr
-         | collate_expr
-         | like_expr
-         | null_expr
-         | is_expr
-         | between_expr
-         | in_expr
-         | exists_expr
-         | case_expr
-         | raise_expr )
+         | literal_expr )
 
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter

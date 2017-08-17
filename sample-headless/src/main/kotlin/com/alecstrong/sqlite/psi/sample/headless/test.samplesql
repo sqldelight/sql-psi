@@ -1,5 +1,5 @@
 CREATE TABLE test (
-  sample_column TEXT NOT NULL
+  sample_column TEXT AS "java.util.List" NOT NULL
 );
 
 SELECT *

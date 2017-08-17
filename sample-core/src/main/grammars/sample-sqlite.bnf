@@ -1,0 +1,32 @@
+{
+  parserClass="com.alecstrong.sqlite.psi.sample.core.SampleParser"
+  elementTypeHolderClass="com.alecstrong.sqlite.psi.sample.core.SampleTypes"
+  psiPackage = "com.alecstrong.sqlite.psi.sample.core.psi"
+  psiImplPackage = "com.alecstrong.sqlite.psi.sample.core.psi.impl"
+
+  // "Real" rules are implemented by SqliteParser, so it acts as the parser util class.
+  parserUtilClass="com.alecstrong.sqlite.psi.core.parser.SqliteParser"
+  elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
+
+  parserImports=[
+    // Always needed
+    "static com.intellij.lang.parser.GeneratedParserUtilBase.*"
+    // If you want to use a token from the core grammar it must be statically imported.
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.STRING"
+  ]
+}
+// The grammar still needs to be well formed and so should contain a root element that is not
+// part of the generated psi.
+root ::= column_def
+
+// An overriden rule.
+column_def ::= <<column_name_real>> sqlite_type [ 'AS' java_type ] ( <<column_constraint_real>> ) * {
+  // In order for the core to function properly, when you override a rule it should still implement
+  // the core interface for that rule.
+  implements="com.alecstrong.sqlite.psi.core.psi.SqliteColumnDef"
+  extends="com.alecstrong.sqlite.psi.core.psi.impl.SqliteColumnDefImpl"
+}
+
+// Rules that your grammar uses.
+sqlite_type ::= ( 'TEXT' | 'BLOB' | 'INTEGER' | 'REAL' )
+java_type ::= string
