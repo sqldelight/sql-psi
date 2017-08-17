@@ -4,3 +4,4 @@ out/
 .idea/
 lib/
 build/
+.DS_Store
