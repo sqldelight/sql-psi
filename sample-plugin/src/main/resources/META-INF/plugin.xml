@@ -13,6 +13,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <lang.parserDefinition language="Sample" implementationClass="com.alecstrong.sqlite.psi.sample.core.SampleParserDefinition" />
+    <annotator language="Sample" implementationClass="com.alecstrong.sqlite.psi.core.SqliteAnnotator"/>
     <fileTypeFactory implementation="com.alecstrong.sqlite.psi.sample.plugin.SampleFileTypeFactory"/>
   </extensions>
 </idea-plugin>

@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi
 
+import com.alecstrong.sqlite.psi.core.AnnotationException
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
@@ -11,6 +12,14 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
     element: T
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun resolve(): PsiElement? {
+    return try {
+      unsafeResolve()
+    } catch (e: AnnotationException) {
+      null
+    }
+  }
+
+  internal fun unsafeResolve(): PsiElement? {
     if (element.parent is SqliteColumnDef) return element
 
     val elements: List<PsiNamedElement> = if (tableName() != null) {
@@ -25,8 +34,7 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
     }
 
     if (elements.size > 1) {
-      // TODO (AlecStrong) : Annotate with an error that multiple columns match.
-      return null
+      throw AnnotationException("Multiple columns found with name ${element.name}")
     }
     return elements.firstOrNull()
   }

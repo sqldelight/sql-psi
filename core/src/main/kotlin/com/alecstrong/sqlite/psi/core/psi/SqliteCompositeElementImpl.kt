@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi
 
+import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
@@ -12,4 +13,6 @@ internal open class SqliteCompositeElementImpl(
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     return (parent as SqliteCompositeElement).queryAvailable(this)
   }
+
+  override fun annotate(annotationHolder: SqliteAnnotationHolder) = Unit
 }
