@@ -47,9 +47,9 @@ open class BnfExtenderTask: SourceTask() {
           "elementTypeHolderClass=\"$outputPackage.psi.${input.file.elementTypeHolderName()}\"\n" +
           header.lines().drop(2).joinToString("\n")
 
-      val keyFinder = Regex("([^a-zA-Z_]|^)(${rulesToExtend.keys.joinToString("|")})([^a-zA-Z_]|$)")
+      val keyFinder = Regex("([^a-zA-Z_]|^)(${unextendableSubclasses(header, rules.keys).joinToString("|")})([^a-zA-Z_]|$)")
       val unextendableRuleDefinitions = rules.filterKeys { it in unextendableRules }
-          .map { "${it.key} ::= ${it.value.extensionReplacements(keyFinder)}" }
+          .map { "${it.key} ::= ${it.value.subclassReplacements(keyFinder)}" }
           .joinToString("\n")
 
       File("${outputDirectory().path}/grammars", input.file.name)
@@ -91,6 +91,20 @@ open class BnfExtenderTask: SourceTask() {
       "${match.groupValues[1]}<<${match.groupValues[2].toFunctionName()} ${match.groupValues[2]}_real>>${match.groupValues[3]}"
     }
     // We have to do it twice because the matcher doesn't catch three adjacent rules.
+    if (endsWith("}")) {
+      return substring(0, indexOf("{") - 1).matcher().matcher()
+    }
+    return matcher().matcher()
+  }
+
+  private fun String.subclassReplacements(keysRegex: Regex): String {
+    fun String.matcher() = replace(keysRegex) { match ->
+      "${match.groupValues[1]}${match.groupValues[2]}_real${match.groupValues[3]}"
+    }
+    // We have to do it twice because the matcher doesn't catch three adjacent rules.
+    if (endsWith("}")) {
+      return substring(0, indexOf("{") - 1).matcher().matcher()
+    }
     return matcher().matcher()
   }
 
@@ -104,9 +118,14 @@ open class BnfExtenderTask: SourceTask() {
 
   private fun unextendableRules(headerText: String, rules: Collection<String>): Sequence<String> {
     val keyFinder = Regex("extends\\(\"([^)\"]+)\"\\)=([a-zA-Z_]+)\n")
+    return keyFinder.findAll(headerText).map { it.groupValues[2] }.asSequence()
+  }
+
+  private fun unextendableSubclasses(headerText: String, rules: Collection<String>): Sequence<String> {
+    val keyFinder = Regex("extends\\(\"([^)\"]+)\"\\)=([a-zA-Z_]+)\n")
     return keyFinder.findAll(headerText).flatMap {
       val pattern = Regex(it.groupValues[1])
-      return@flatMap (rules.filter { it.matches(pattern) } + it.groupValues[2]).asSequence()
+      return@flatMap (rules.filter { it.matches(pattern) }).asSequence()
     }.distinct()
   }
 
