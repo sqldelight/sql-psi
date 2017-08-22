@@ -21,7 +21,7 @@
     space='regexp:\s+'
     comment='regexp:--.*'
     digit='regexp:\d+(\.\d*)?'
-    id='regexp:\p{Alpha}\w*'
+    id='regexp:([a-zA-Z0-9_])*'
     string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
   ]
   extends(".*expr")=expr
@@ -42,7 +42,7 @@ release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name
 create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ]
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
 create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ WITHOUT ROWID ] | AS compound_select_stmt )
-column_def ::= column_name [ type_name ] ( column_constraint )
+column_def ::= column_name [ type_name ] ( column_constraint ) *
 type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | CHECK '(' expr ')' | DEFAULT ( signed_number | literal_value | '(' expr ')' ) | COLLATE collation_name | foreign_key_clause )
 signed_number ::= [ '+' | '-' ] numeric_literal
