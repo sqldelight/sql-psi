@@ -109,7 +109,9 @@ like_expr ::= expr [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) expr [ ESCAPE expr ]
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
 is_expr ::= expr IS [ NOT ] expr
 between_expr ::= expr [ NOT ] BETWEEN expr AND expr
-in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name )
+in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name ) {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InExprMixin"
+}
 exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
 case_expr ::= CASE [ expr ] WHEN expr THEN expr [ ELSE expr ] END
 raise_expr ::= raise_function
@@ -134,10 +136,11 @@ compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' comm
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
-select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES '(' expr ( ',' expr ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * ) {
+select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES '(' values_expression ( ',' values_expression ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.SelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
+values_expression ::= expr
 join_clause ::= table_or_subquery [ join_operator table_or_subquery join_constraint ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.JoinClauseMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
