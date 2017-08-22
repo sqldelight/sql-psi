@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableReference
 import com.intellij.lang.ASTNode
@@ -20,7 +21,10 @@ internal abstract class TableNameMixin(
   }
 
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    val matches = queryAvailable(this).filter { it.table?.name == name }
+    // Handled by ColumnNameMixin
+    if (parent is SqliteColumnExpr) return
+
+    val matches = tablesAvailable(this).filter { it.table?.name == name }
     if (reference.resolve() == this) {
       if(matches.size > 1) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")

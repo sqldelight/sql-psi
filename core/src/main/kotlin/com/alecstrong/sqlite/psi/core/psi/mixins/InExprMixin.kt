@@ -11,7 +11,7 @@ internal abstract class InExprMixin(
     SqliteInExpr {
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     val query = compoundSelectStmt?.queryExposed()
-        ?: tableName?.let { table -> queryAvailable(this).filter { it.table?.name == table.name } }
+        ?: tableName?.let { table -> tablesAvailable(this).filter { it.table?.name == table.name } }
         ?: emptyList()
     if (query.flatMap { it.columns }.size > 1) {
       annotationHolder.createErrorAnnotation(this,

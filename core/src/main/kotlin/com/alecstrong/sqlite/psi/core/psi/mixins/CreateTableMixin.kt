@@ -7,14 +7,20 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteForeignKeyClause
+import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CreateTableMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteCreateTableStmt {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+    return listOf(QueryResult(tableName, columnDefList.map { it.columnName }))
+  }
+
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     checkForDuplicateColumns(annotationHolder)
     checkForSubqueries(annotationHolder)

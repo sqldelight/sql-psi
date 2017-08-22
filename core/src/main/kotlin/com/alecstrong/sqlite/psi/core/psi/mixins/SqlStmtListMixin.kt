@@ -16,7 +16,7 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
     val result = ArrayList<QueryResult>()
     iterateSqliteFiles { psiFile ->
       PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
@@ -25,7 +25,7 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
             result.add(QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns }))
           }
           if (createTable.columnDefList.isNotEmpty()) {
-            result.add(QueryResult(createTable.tableName, createTable.columnDefList.map { it.columnName }))
+            result.addAll(createTable.queryAvailable(this))
           }
         }
         sqlStmt.createViewStmt?.let { createView ->
@@ -35,6 +35,10 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
       return@iterateSqliteFiles true
     }
     return result
+  }
+
+  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+    return emptyList()
   }
 
   internal fun indexes(): List<SqliteCreateIndexStmt> {

@@ -6,22 +6,43 @@ import com.intellij.psi.PsiElement
 
 internal interface SqliteCompositeElement : PsiElement {
   /**
-   * Returns a list of the result set selectable by a given child. For example, in the select
-   * statement
+   * Returns the result set accessible by a given child.
    *
-   *   WITH common_table AS (
+   * The result set are any rows that have already been selected and the operation is running on.
+   * For example:
+   *
+   *   CREATE TRIGGER some_trigger
+   *   BEFORE INSERT OF some_table
+   *   BEGIN;
    *     SELECT *
-   *     FROM table1
-   *   )
-   *   SELECT test_table.some_column
-   *   FROM table1 AS test_table
-   *   WHERE some_column = ?;
+   *     FROM some_table
+   *     WHERE new._id = some_table._id;
+   *   END;
    *
-   * the tables available to the result column are ["test_table"]. The tables available to the
-   * from clause are ["common_table", all database tables/views], and the tables available to the
-   * expression are ["test_table"].
+   * In this situation, everything between BEGIN and END has access to the "new" row, which is
+   * its own result set with columns. However, "new" is not a table that can be selected from:
+   *
+   *   CREATE TRIGGER some_trigger
+   *   BEFORE INSERT OF some_table
+   *   BEGIN;
+   *     SELECT *
+   *     FROM new -- invalid
+   *     WHERE new._id = some_table._id;
+   *   END;
    */
   fun queryAvailable(child: PsiElement): List<QueryResult>
+
+  /**
+   * Returns a list of the selectable tables for the given child.
+   *
+   * The available tables are contextual because of common table expressions:
+   *
+   * WITH some_table AS (...)
+   * SELECT *
+   * FROM some_table
+   *
+   */
+  fun tablesAvailable(child: PsiElement): List<QueryResult>
 
   /**
    * Called by the annotator to annotate this element with any errors or warnings.

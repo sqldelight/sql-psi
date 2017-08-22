@@ -11,9 +11,8 @@ internal abstract class TableOrSubqueryMixin(
     SqliteTableOrSubquery {
   override fun queryExposed(): List<QueryResult> {
     tableName?.let { tableNameElement ->
-      val result = queryAvailable(this).filter { it.table?.name == tableNameElement.name }
+      val result = tablesAvailable(tableNameElement).filter { it.table?.name == tableNameElement.name }
       if (result.isEmpty()) {
-        // TODO (AlecStrong) : Annotate the element with an error saying the table doesn't exist.
         return emptyList()
       }
       tableAlias?.let { alias ->

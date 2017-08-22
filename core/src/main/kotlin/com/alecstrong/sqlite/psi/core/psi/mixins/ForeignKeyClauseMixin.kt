@@ -1,22 +1,19 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
-import com.alecstrong.sqlite.psi.core.psi.SqliteJoinClause
-import com.alecstrong.sqlite.psi.core.psi.SqliteJoinConstraint
+import com.alecstrong.sqlite.psi.core.psi.SqliteForeignKeyClause
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-abstract internal class JoinClauseMixin(
+internal abstract class ForeignKeyClauseMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
-    SqliteJoinClause {
+    SqliteForeignKeyClause {
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
-    if (child is SqliteJoinConstraint) return queryExposed()
+    if (child in columnNameList) {
+      return tablesAvailable(child).filter { it.table?.name == foreignTable.name }
+    }
     return super.queryAvailable(child)
-  }
-
-  override fun queryExposed(): List<QueryResult> {
-    return tableOrSubqueryList.flatMap { it.queryExposed() }
   }
 }
