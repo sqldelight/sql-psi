@@ -1,0 +1,7 @@
+IdentifierTable.s line 2:2 - Duplicate column name
+IdentifierTable.s line 3:2 - Duplicate column name
+IdentifierTable.s line 4:2 - Duplicate column name
+IdentifierTable.s line 5:2 - Duplicate column name
+IdentifierTable.s line 6:2 - Duplicate column name
+Table.s line 2:2 - Duplicate column name
+Table.s line 3:2 - Duplicate column name

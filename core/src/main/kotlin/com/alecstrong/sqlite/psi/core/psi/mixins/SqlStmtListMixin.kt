@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElementImpl(node) {
   private val psiManager: PsiManager
@@ -18,8 +19,8 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
     val result = ArrayList<QueryResult>()
     ProjectRootManager.getInstance(project).fileIndex.iterateContent { file ->
       if (file.fileType != fileType) return@iterateContent true
-      psiManager.findFile(file)?.run {
-        findChildrenByClass(SqliteSqlStmt::class.java).forEach { sqlStmt ->
+      psiManager.findFile(file)?.let { psiFile ->
+        PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
           sqlStmt.createTableStmt?.let { createTable ->
             createTable.compoundSelectStmt?.let {
               result.add(QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns }))

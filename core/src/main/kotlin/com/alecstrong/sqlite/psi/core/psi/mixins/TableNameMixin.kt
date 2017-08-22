@@ -20,7 +20,7 @@ internal abstract class TableNameMixin(
   }
 
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    if (reference.resolve() == this && queryAvailable(this).filter { it.table?.name == name }.any()) {
+    if (reference.resolve() == this && queryAvailable(this).filter { it.table?.name == name }.size > 1) {
       annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
     }
     super.annotate(annotationHolder)

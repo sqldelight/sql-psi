@@ -60,13 +60,7 @@ task generateSqliteParser(type: GenerateParser) {
   purgeOldFiles = true
 }
 
-task cleanUpGen(type: Delete) {
-  delete 'gen'
-}
-
-generateSqliteLexer.outputs.upToDateWhen { false }
+// TODO (AlecStrong): generateSqliteParser isn't properly running when sqlite.bnf is edited.
 
 generateSqliteParser.dependsOn generateSqliteExtendableGrammar
-generateSqliteParser.outputs.upToDateWhen { false }
-
-compileKotlin.dependsOn cleanUpGen, generateSqliteLexer, generateSqliteParser
+compileKotlin.dependsOn generateSqliteLexer, generateSqliteParser
