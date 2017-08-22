@@ -1,6 +1,6 @@
 package com.alecstrong.sqlite.psi.core
 
-import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.junit.Test
@@ -14,7 +14,7 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
   @Test fun execute() {
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
-    parser.build(fixtureRoot.path, object : SqliteAnnotationHolder {
+    val environment = parser.build(fixtureRoot.path, object : SqliteAnnotationHolder {
       override fun createErrorAnnotation(element: PsiElement, s: String?) {
         val documentManager = PsiDocumentManager.getInstance(element.project)
         val name = element.containingFile.name
@@ -25,13 +25,29 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
       }
     })
 
+    val sourceFiles = StringBuilder()
+    environment.forSourceFiles {
+      sourceFiles.append("${it.name}:\n")
+      it.printTree {
+        sourceFiles.append("  ")
+        sourceFiles.append(it)
+      }
+    }
+
     val expectedFailure = File(fixtureRoot, "failure.txt")
     if (expectedFailure.exists()) {
-      assertThat(errors).containsExactlyElementsIn(
+      assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(
           expectedFailure.readText().split("\n").filterNot { it.isEmpty() }
       )
     } else {
-      assertThat(errors).isEmpty()
+      assertWithMessage(sourceFiles.toString()).that(errors).isEmpty()
+    }
+  }
+
+  fun PsiElement.printTree(printer: (String) -> Unit) {
+    printer("$this\n")
+    children.forEach { child ->
+      child.printTree { printer("  $it") }
     }
   }
 

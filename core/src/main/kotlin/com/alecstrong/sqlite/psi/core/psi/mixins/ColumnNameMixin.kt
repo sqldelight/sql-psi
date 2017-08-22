@@ -7,7 +7,7 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiNamedElement
 
-internal open class ColumnNameMixin(
+internal abstract class ColumnNameMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     PsiNamedElement {

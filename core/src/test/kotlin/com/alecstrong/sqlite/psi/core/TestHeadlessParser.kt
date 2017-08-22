@@ -10,9 +10,10 @@ import com.intellij.psi.tree.IFileElementType
 internal class TestHeadlessParser {
   private val parserDefinition = TestParserDefinition()
 
-  fun build(root: String, annotator: SqliteAnnotationHolder) {
+  fun build(root: String, annotator: SqliteAnnotationHolder): SqliteCoreEnvironment {
     val environment = SqliteCoreEnvironment(parserDefinition, TestFileType, root)
     environment.annotate(annotator)
+    return environment
   }
 }
 
