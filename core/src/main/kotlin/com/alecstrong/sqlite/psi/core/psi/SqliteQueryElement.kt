@@ -20,5 +20,9 @@ internal interface SqliteQueryElement : SqliteCompositeElement {
    */
   fun queryExposed(): List<QueryResult>
 
-  data class QueryResult(val table: PsiNamedElement?, val columns: List<PsiElement>)
+  data class QueryResult(val table: PsiNamedElement?, val columns: List<PsiElement>) {
+    override fun toString(): String {
+      return "${table?.name} : [${columns.joinToString { it.text }}]"
+    }
+  }
 }

@@ -51,7 +51,9 @@ type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | CHECK '(' expr ')' | DEFAULT ( signed_number | literal_value | '(' expr ')' ) | COLLATE collation_name | foreign_key_clause )
 signed_number ::= [ '+' | '-' ] numeric_literal
 table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')' | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
-foreign_key_clause ::= REFERENCES foreign_table [ '(' column_name ( ',' column_name ) * ')' ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
+foreign_key_clause ::= REFERENCES foreign_table [ '(' column_name ( ',' column_name ) * ')' ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ForeignKeyClauseMixin"
+}
 conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
 create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTriggerMixin"
@@ -112,7 +114,9 @@ between_expr ::= expr [ NOT ] BETWEEN expr AND expr
 in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InExprMixin"
 }
-exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
+exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')' {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ExistsExprMixin"
+}
 case_expr ::= CASE [ expr ] WHEN expr THEN expr [ ELSE expr ] END
 raise_expr ::= raise_function
 raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'

@@ -12,7 +12,7 @@ internal abstract class ResultColumnMixin(
   override fun queryExposed(): List<QueryResult> {
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return queryAvailable(this).filter { it.table?.name == tableNameElement.name }
+      return tablesAvailable(this).filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
       // expr [ '.' column_alias ]

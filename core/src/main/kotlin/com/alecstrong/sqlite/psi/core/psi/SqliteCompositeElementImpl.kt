@@ -14,5 +14,14 @@ internal open class SqliteCompositeElementImpl(
     return (parent as SqliteCompositeElement).queryAvailable(this)
   }
 
+  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
+    return (parent as SqliteCompositeElement).tablesAvailable(this)
+  }
+
   override fun annotate(annotationHolder: SqliteAnnotationHolder) = Unit
+
+  override fun toString(): String {
+    if (parent !is SqliteCompositeElement) return super.toString()
+    return "${super.toString()}: ${(parent as SqliteCompositeElement).queryAvailable(this)}"
+  }
 }

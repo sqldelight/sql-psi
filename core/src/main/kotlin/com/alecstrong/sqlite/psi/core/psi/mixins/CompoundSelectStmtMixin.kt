@@ -15,13 +15,15 @@ abstract internal class CompoundSelectStmtMixin(
 ) : SqliteCompositeElementImpl(node),
     SqliteCompoundSelectStmt {
   override fun queryExposed() = selectStmtList.first().queryExposed()
+
+  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
+    return super.tablesAvailable(child) + commonTableExpressionList.flatMap { it.queryExposed() }
+  }
+
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
-    val tablesAvailable = super.queryAvailable(child)
-    if (child is SqliteSelectStmt) {
-      return tablesAvailable + commonTableExpressionList.flatMap { it.queryExposed() }
-    } else if (child is SqliteOrderingTerm || child is SqliteExpr) {
+    if (child is SqliteOrderingTerm || child is SqliteExpr) {
       return selectStmtList.first().queryExposed()
-    } else if (child is SqliteCommonTableExpression) {
+    } else if (child is SqliteCommonTableExpression || child is SqliteSelectStmt) {
       return super.queryAvailable(child)
     }
     throw IllegalStateException("Unexpected child element asking for query: $child")
