@@ -1,0 +1,1 @@
+Test.s line 15:6 - Only a single result allowed for a SELECT that is part of an expression
