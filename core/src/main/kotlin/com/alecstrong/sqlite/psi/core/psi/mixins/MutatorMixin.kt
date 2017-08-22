@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteQualifiedTableName
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
@@ -19,12 +20,17 @@ internal abstract class MutatorMixin(
   open fun getTableName() = getQualifiedTableName().tableName
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
+    val commonTable = getWithClause()?.queryExposed()
     val globalTables = PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!
         .queryAvailable(this)
     val tableExposed = globalTables.filter { it.table?.name == getTableName().name }
 
     if (child is SqliteExpr) {
-      return super.queryAvailable(child) + tableExposed
+      val withTables = getWithClause()?.queryExposed() ?: emptyList()
+      if (parent is SqliteCreateTriggerStmt) {
+        return super.queryAvailable(child) + tableExposed + withTables
+      }
+      return tableExposed + withTables
     } else {
       return globalTables
     }

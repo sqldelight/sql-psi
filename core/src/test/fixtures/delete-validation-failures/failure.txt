@@ -1,0 +1,3 @@
+Test.s line 6:6 - No column found with name fake_column
+Test.s line 19:6 - Only a single result allowed for a SELECT that is part of an expression
+Test.s line 22:13 - No table found with name temp_table
