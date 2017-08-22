@@ -11,7 +11,8 @@ internal abstract class CreateIndexMixin(
 ) : SqliteCompositeElementImpl(node),
     SqliteCreateIndexStmt {
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    if (PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.indexes().any { it != this }) {
+    if (PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.indexes()
+        .any { it != this && it.indexName.text == indexName.text }) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
     super.annotate(annotationHolder)
