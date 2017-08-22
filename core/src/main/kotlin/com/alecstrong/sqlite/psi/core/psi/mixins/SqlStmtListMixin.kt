@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
 import com.intellij.lang.ASTNode
@@ -15,27 +16,45 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
     get() = PsiManager.getInstance(project)
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
-    val fileType = (parent as PsiFile).fileType
     val result = ArrayList<QueryResult>()
+    iterateSqliteFiles { psiFile ->
+      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
+        sqlStmt.createTableStmt?.let { createTable ->
+          createTable.compoundSelectStmt?.let {
+            result.add(QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns }))
+          }
+          if (createTable.columnDefList.isNotEmpty()) {
+            result.add(QueryResult(createTable.tableName, createTable.columnDefList.map { it.columnName }))
+          }
+        }
+        sqlStmt.createViewStmt?.let { createView ->
+          result.add(QueryResult(createView.viewName, createView.compoundSelectStmt.queryExposed().flatMap { it.columns }))
+        }
+      }
+      return@iterateSqliteFiles true
+    }
+    return result
+  }
+
+  internal fun indexes(): List<SqliteCreateIndexStmt> {
+    val result = ArrayList<SqliteCreateIndexStmt>()
+    iterateSqliteFiles { psiFile ->
+      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
+        sqlStmt.createIndexStmt?.let(result::add)
+      }
+      return@iterateSqliteFiles true
+    }
+    return result
+  }
+
+  private fun iterateSqliteFiles(iterator: (PsiFile) -> Boolean) {
+    val fileType = (parent as PsiFile).fileType
     ProjectRootManager.getInstance(project).fileIndex.iterateContent { file ->
       if (file.fileType != fileType) return@iterateContent true
       psiManager.findFile(file)?.let { psiFile ->
-        PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
-          sqlStmt.createTableStmt?.let { createTable ->
-            createTable.compoundSelectStmt?.let {
-              result.add(QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns }))
-            }
-            if (createTable.columnDefList.isNotEmpty()) {
-              result.add(QueryResult(createTable.tableName, createTable.columnDefList.map { it.columnName }))
-            }
-          }
-          sqlStmt.createViewStmt?.let { createView ->
-            result.add(QueryResult(createView.viewName, createView.compoundSelectStmt.queryExposed().flatMap { it.columns }))
-          }
-        }
+        return@iterateContent iterator(psiFile)
       }
-      return@iterateContent true
+      true
     }
-    return result
   }
 }

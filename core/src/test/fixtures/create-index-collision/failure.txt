@@ -1,0 +1,2 @@
+Test.s line 8:13 - Duplicate index name some_index
+Test.s line 5:13 - Duplicate index name some_index

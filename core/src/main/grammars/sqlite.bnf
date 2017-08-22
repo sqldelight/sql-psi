@@ -39,7 +39,9 @@ commit_stmt ::= ( COMMIT | END ) [ TRANSACTION ]
 rollback_stmt ::= ROLLBACK [ TRANSACTION ] [ TO [ SAVEPOINT ] savepoint_name ]
 savepoint_stmt ::= SAVEPOINT savepoint_name
 release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name
-create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ]
+create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateIndexMixin"
+}
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
 create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ WITHOUT ROWID ] | AS compound_select_stmt ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTableMixin"
