@@ -1,0 +1,13 @@
+Child10.s line 1:31 - Table parent2 has a composite primary key
+Child11.s line 1:71 - Foreign key constraint must match the primary key of the foreign table exactly. Constraint has 3 columns and foreign table primary key has 2 columns
+Child4.s line 1:41 - Table parent does not have a unique index on column e
+Child5.s line 1:41 - Table parent does not have a unique index on column f
+Child6.s line 1:60 - Table parent does not have a unique index on columns [b, c]
+Child7.s line 1:30 - Table parent does not have a unique index on column c
+Child8.s line 3:12 - Column can only reference a single foreign key
+Test2.s line 3:6 - Subqueries are not permitted as part of CREATE TABLE statements
+Test3.s line 2:2 - Duplicate primary key clauses
+Test4.s line 2:18 - Table test4 can only have one primary key
+Test4.s line 3:18 - Table test4 can only have one primary key
+Test5.s line 3:15 - No column found with name fake_column
+Test6.s line 3:15 - No column found with name fake_column
