@@ -32,6 +32,10 @@ dependencies {
 
   compile dep.kotlinStdLib
   compile dep.kotlinReflect
+
+  testCompile dep.intellijCore
+  testCompile dep.junit
+  testCompile dep.truth
 }
 
 task generateSqliteLexer(type: GenerateLexer) {

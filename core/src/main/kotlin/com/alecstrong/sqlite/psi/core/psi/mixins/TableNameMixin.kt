@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableReference
 import com.intellij.lang.ASTNode
@@ -16,5 +17,12 @@ internal abstract class TableNameMixin(
   override fun setName(name: String) = apply { hardcodedName = name }
   override fun getReference(): PsiReference {
     return SqliteTableReference(this)
+  }
+
+  override fun annotate(annotationHolder: SqliteAnnotationHolder) {
+    if (reference.resolve() == this && queryAvailable(this).filter { it.table?.name == name }.any()) {
+      annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
+    }
+    super.annotate(annotationHolder)
   }
 }

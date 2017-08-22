@@ -1,0 +1,2 @@
+Table2.s line 1:13 - Table already defined with name test
+Table.s line 1:13 - Table already defined with name test

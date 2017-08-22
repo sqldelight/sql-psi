@@ -8,7 +8,9 @@ buildscript {
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
         kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
         intellij: "IC-$ideaVersion",
-        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: ['*.jar'])
+        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: ['*.jar']),
+        junit: 'junit:junit:4.12',
+        truth: 'com.google.truth:truth:0.30',
     ]
   }
   repositories {
