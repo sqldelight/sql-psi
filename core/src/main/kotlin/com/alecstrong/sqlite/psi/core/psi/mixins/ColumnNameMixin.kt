@@ -21,7 +21,7 @@ internal open class ColumnNameMixin(
     try {
       val source = reference.unsafeResolve()
       if (source == null) {
-        annotationHolder.createErrorAnnotation(this, "No column named $name found")
+        annotationHolder.createErrorAnnotation(this, "No column found with name $name")
       }
     } catch (e: AnnotationException) {
       annotationHolder.createErrorAnnotation(this, e.message)
