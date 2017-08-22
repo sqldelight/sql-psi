@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi
 
+import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.intellij.psi.PsiElement
 
@@ -21,4 +22,9 @@ internal interface SqliteCompositeElement : PsiElement {
    * expression are ["test_table"].
    */
   fun queryAvailable(child: PsiElement): List<QueryResult>
+
+  /**
+   * Called by the annotator to annotate this element with any errors or warnings.
+   */
+  fun annotate(annotationHolder: SqliteAnnotationHolder)
 }

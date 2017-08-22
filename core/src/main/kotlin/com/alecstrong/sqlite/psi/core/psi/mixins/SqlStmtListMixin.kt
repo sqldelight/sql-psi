@@ -4,11 +4,10 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
-import com.intellij.psi.search.FileTypeIndex
-import com.intellij.psi.search.GlobalSearchScope
 
 internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElementImpl(node) {
   private val psiManager: PsiManager
@@ -17,7 +16,8 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     val fileType = (parent as PsiFile).fileType
     val result = ArrayList<QueryResult>()
-    FileTypeIndex.processFiles(fileType, { file ->
+    ProjectRootManager.getInstance(project).fileIndex.iterateContent { file ->
+      if (file.fileType != fileType) return@iterateContent true
       psiManager.findFile(file)?.run {
         findChildrenByClass(SqliteSqlStmt::class.java).forEach { sqlStmt ->
           sqlStmt.createTableStmt?.let { createTable ->
@@ -33,8 +33,8 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
           }
         }
       }
-      true
-    }, GlobalSearchScope.allScope(project))
+      return@iterateContent true
+    }
     return result
   }
 }

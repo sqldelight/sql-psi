@@ -4,4 +4,4 @@ CREATE TABLE test (
 
 SELECT *
 FROM test
-WHERE sample_column = ?;
+WHERE sample_column = fake_column;
