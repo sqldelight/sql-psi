@@ -4,7 +4,7 @@ buildscript {
   }
 
   dependencies {
-    classpath files("../bnf-extender-task/build/libs/bnf-extender-task-0.1.0-SNAPSHOT.jar")
+    classpath files("../bnf-extender-task/bnf-extender-task-0.1.0-SNAPSHOT.jar")
     classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1.1"
   }
 }
