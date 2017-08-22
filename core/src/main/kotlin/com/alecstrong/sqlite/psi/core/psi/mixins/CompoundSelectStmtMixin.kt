@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.psi.SqliteCommonTableExpression
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteExpr
@@ -20,6 +21,8 @@ abstract internal class CompoundSelectStmtMixin(
       return tablesAvailable + commonTableExpressionList.flatMap { it.queryExposed() }
     } else if (child is SqliteOrderingTerm || child is SqliteExpr) {
       return selectStmtList.first().queryExposed()
+    } else if (child is SqliteCommonTableExpression) {
+      return super.queryAvailable(child)
     }
     throw IllegalStateException("Unexpected child element asking for query: $child")
   }

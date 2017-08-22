@@ -53,19 +53,26 @@ signed_number ::= [ '+' | '-' ] numeric_literal
 table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')' | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
 foreign_key_clause ::= REFERENCES foreign_table [ '(' column_name ( ',' column_name ) * ')' ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ]
 conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
-create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' END {
+create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTriggerMixin"
 }
 create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name AS compound_select_stmt
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' module_argument ( ',' module_argument ) * ')' ]
-with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) *
+with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.WithClauseMixin"
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+}
 cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
 common_table_expression ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ] AS '(' compound_select_stmt ')' {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CommonTableExpressionMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
-delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ]
-delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ]
+delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+}
+delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+}
 detach_stmt ::= DETACH [ DATABASE ] database_name
 drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name
 drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name
@@ -91,7 +98,7 @@ expr ::= ( raise_expr
 
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
-column_expr ::= [ [ database_name '.' ] table_name '.' ] column_name
+column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-') expr
 binary_expr ::= expr ( '+' | '_' | '*' | '/' | '=' | '<>' | '==' | '<' | '>' | '<=' | '>=' ) expr
 function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ',' expr ) * | '*' ] ')'
@@ -115,7 +122,9 @@ literal_value ::= ( numeric_literal
                   | CURRENT_DATE
                   | CURRENT_TIMESTAMP )
 numeric_literal ::= ( digit [ '.' ( digit ) * ] | '.' digit ) [ E [ '+' | '-' ] digit ]
-insert_stmt ::= [ with_clause ] ( INSERT | REPLACE | INSERT OR REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES '(' expr ( ',' expr ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * | compound_select_stmt | DEFAULT VALUES )
+insert_stmt ::= [ with_clause ] ( INSERT | REPLACE | INSERT OR REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES '(' expr ( ',' expr ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * | compound_select_stmt | DEFAULT VALUES ) {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+}
 pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ]
 pragma_value ::= ( signed_number
                  | identifier
@@ -153,8 +162,12 @@ compound_operator ::= ( UNION
                       | UNION ALL
                       | INTERSECT
                       | EXCEPT )
-update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' expr ( ',' column_name '=' expr ) * [ WHERE expr ]
-update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' expr ( ',' column_name '=' expr ) * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ]
+update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' expr ( ',' column_name '=' expr ) * [ WHERE expr ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+}
+update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' expr ( ',' column_name '=' expr ) * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+}
 qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
 vacuum_stmt ::= VACUUM
 table_name ::= id {

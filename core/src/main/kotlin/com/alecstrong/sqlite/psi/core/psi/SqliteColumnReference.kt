@@ -23,7 +23,7 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
     if (element.parent is SqliteColumnDef) return element
 
     val elements: List<PsiNamedElement> = if (tableName() != null) {
-      availableQuery().filter { it.table?.name == tableName() }
+      availableQuery().filter { it.table?.name == tableName()?.name }
           .flatMap { it.columns }
           .filterIsInstance<PsiNamedElement>()
           .filter { it.name == element.name }
@@ -42,7 +42,7 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
   override fun getVariants(): Array<Any> {
     tableName()?.let { tableName ->
       // Only include columns for the already specified table.
-      return availableQuery().filter { it.table?.name == tableName }
+      return availableQuery().filter { it.table?.name == tableName?.name }
           .flatMap { it.columns }
           .toLookupArray()
     }
@@ -63,25 +63,28 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
    * Return the table that the column element this reference wraps belongs to, or null if no
    * table was specified.
    */
-  private fun tableName(): String? {
+  private fun tableName(): PsiNamedElement? {
     val parent = element.parent
     if (parent is SqliteColumnExpr) {
-      return parent.tableName?.name
+      return parent.tableName
     }
     if (parent is SqliteForeignKeyClause) {
-      return parent.foreignTable.name
+      return parent.foreignTable
     }
     if (parent is SqliteIndexedColumn) {
       val indexedColumnParent = parent.parent
       if (indexedColumnParent is SqliteCreateIndexStmt) {
-        return indexedColumnParent.tableName.name
+        return indexedColumnParent.tableName
       }
       if (indexedColumnParent is SqliteTableConstraint) {
-        return (indexedColumnParent.parent as SqliteCreateTableStmt).tableName.name
+        return (indexedColumnParent.parent as SqliteCreateTableStmt).tableName
       }
     }
     if (parent is SqliteTableConstraint) {
-      return (parent.parent as SqliteCreateTableStmt).tableName.name
+      return (parent.parent as SqliteCreateTableStmt).tableName
+    }
+    if (parent is SqliteCreateTriggerStmt) {
+      return parent.tableName
     }
     return null
   }

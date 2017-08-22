@@ -1,0 +1,5 @@
+Test.s line 9:12 - No table found with name old
+Test.s line 9:16 - No column found with name _id
+Test.s line 26:12 - No table found with name new
+Test.s line 26:16 - No column found with name _id
+Test.s line 36:19 - No table found with name old

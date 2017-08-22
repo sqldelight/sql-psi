@@ -53,7 +53,7 @@ class SqliteCoreEnvironment(
     forSourceFiles { it.annotateRecursively(annotationHolder) }
   }
 
-  private fun forSourceFiles(action: (PsiFile) -> Unit) {
+  internal fun forSourceFiles(action: (PsiFile) -> Unit) {
     val psiManager = PsiManager.getInstance(projectEnvironment.project)
     ProjectRootManager.getInstance(projectEnvironment.project).fileIndex.iterateContent { file ->
       if (file.fileType != fileType) return@iterateContent true
