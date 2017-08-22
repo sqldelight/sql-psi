@@ -1,0 +1,14 @@
+CREATE TABLE parent (
+  a INTEGER PRIMARY KEY,
+  b INTEGER UNIQUE,
+  c INTEGER,
+  d INTEGER,
+  e INTEGER,
+  f INTEGER
+);
+
+CREATE UNIQUE INDEX i1 ON parent(c, d);
+
+CREATE INDEX i2 ON parent(e);
+
+CREATE UNIQUE INDEX i3 ON parent(f COLLATE nocase);

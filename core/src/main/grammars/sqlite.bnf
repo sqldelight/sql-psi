@@ -179,7 +179,10 @@ table_alias ::= id {
     "com.alecstrong.sqlite.psi.core.psi.SqliteAliasElement"
   ]
 }
-foreign_table ::= id
+foreign_table ::= id {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableNameMixin"
+  implements = "com.intellij.psi.PsiNamedElement"
+}
 identifier ::= id
 pragma_name ::= id
 function_name ::= id

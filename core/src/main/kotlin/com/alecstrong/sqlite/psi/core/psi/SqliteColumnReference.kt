@@ -40,13 +40,13 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
   }
 
   override fun getVariants(): Array<Any> {
+    tableName()?.let { tableName ->
+      // Only include columns for the already specified table.
+      return availableQuery().filter { it.table?.name == tableName }
+          .flatMap { it.columns }
+          .toLookupArray()
+    }
     if (element.parent is SqliteColumnExpr) {
-      tableName()?.let { tableName ->
-        // Only include columns for the already specified table.
-        return availableQuery().filter { it.table?.name == tableName }
-            .flatMap { it.columns }
-            .toLookupArray()
-      }
       // Also include table names.
       return availableQuery().flatMap { it.columns + it.table }.toLookupArray()
     }
@@ -67,6 +67,21 @@ internal class SqliteColumnReference<T: PsiNamedElement>(
     val parent = element.parent
     if (parent is SqliteColumnExpr) {
       return parent.tableName?.name
+    }
+    if (parent is SqliteForeignKeyClause) {
+      return parent.foreignTable.name
+    }
+    if (parent is SqliteIndexedColumn) {
+      val indexedColumnParent = parent.parent
+      if (indexedColumnParent is SqliteCreateIndexStmt) {
+        return indexedColumnParent.tableName.name
+      }
+      if (indexedColumnParent is SqliteTableConstraint) {
+        return (indexedColumnParent.parent as SqliteCreateTableStmt).tableName.name
+      }
+    }
+    if (parent is SqliteTableConstraint) {
+      return (parent.parent as SqliteCreateTableStmt).tableName.name
     }
     return null
   }
