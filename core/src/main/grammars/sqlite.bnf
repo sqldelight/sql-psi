@@ -80,6 +80,19 @@ drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name
 drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name
 drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name
 drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name
+/*
+    SQLite understands the following binary operators, in order from highest to
+    lowest precedence:
+
+    ||
+    *    /    %
+    +    -
+    <<   >>   &    |
+    <    <=   >    >=
+    =    ==   !=   <>   IS   IS NOT   IN   LIKE   GLOB   MATCH   REGEXP
+    AND
+    OR
+*/
 expr ::= ( raise_expr
          | case_expr
          | exists_expr
@@ -102,7 +115,7 @@ literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-') expr
-binary_expr ::= expr ( '+' | '_' | '*' | '/' | '=' | '<>' | '==' | '<' | '>' | '<=' | '>=' ) expr
+binary_expr ::= expr ( '||' | '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | '&' | '|' | '<' | '<=' | '>' | '>=' | '=' | '==' | '!=' | '<>' | 'AND' | 'OR' ) expr
 function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ',' expr ) * | '*' ] ')'
 paren_expr ::= '(' expr ')'
 cast_expr ::= CAST '(' expr AS type_name ')'
@@ -167,8 +180,8 @@ join_operator ::= ( ','
                   | [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN )
 join_constraint ::= [ ON expr | USING '(' column_name ( ',' column_name ) * ')' ]
 ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ]
-compound_operator ::= ( UNION
-                      | UNION ALL
+compound_operator ::= ( UNION ALL
+                      | UNION
                       | INTERSECT
                       | EXCEPT )
 update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] {

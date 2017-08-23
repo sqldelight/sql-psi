@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSelectStmt
@@ -24,10 +25,24 @@ internal abstract class SelectStmtMixin(
     return resultColumnList.flatMap { it.queryExposed() }
   }
 
-  private fun fromQuery(): List<QueryResult> {
+  internal fun fromQuery(): List<QueryResult> {
     joinClause?.let {
       return it.queryExposed()
     }
     return emptyList()
+  }
+
+  override fun annotate(annotationHolder: SqliteAnnotationHolder) {
+    super.annotate(annotationHolder)
+
+    if (valuesExpressionList.isNotEmpty()) {
+      val size = valuesExpressionList[0].exprList.size
+      valuesExpressionList.drop(1).forEach {
+        if (it.exprList.size != size) {
+          annotationHolder.createErrorAnnotation(it,
+              "Unexpected number of columns in values found: ${it.exprList.size} expected: $size")
+        }
+      }
+    }
   }
 }
