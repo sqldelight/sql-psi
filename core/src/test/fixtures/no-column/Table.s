@@ -1,0 +1,6 @@
+CREATE TABLE test (
+  _id INTEGER NOT NULL PRIMARY KEY
+);
+
+SELECT cheese
+FROM test;
