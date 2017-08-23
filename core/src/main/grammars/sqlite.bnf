@@ -95,8 +95,8 @@ expr ::= ( raise_expr
          | binary_expr
          | unary_expr
          | bind_expr
-         | column_expr
-         | literal_expr )
+         | literal_expr
+         | column_expr )
 
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter

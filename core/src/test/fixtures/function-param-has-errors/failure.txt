@@ -1,0 +1,2 @@
+Test.s line 5:48 - No column found with name fake_column
+Test.s line 8:43 - No column found with name fake_column
