@@ -1,0 +1,10 @@
+CREATE VIEW view1 AS
+SELECT *
+FROM view2;
+
+CREATE VIEW view2 AS
+SELECT *
+FROM view1;
+
+SELECT *
+FROM view1;

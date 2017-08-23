@@ -3,6 +3,7 @@ package com.alecstrong.sqlite.psi.core.psi.mixins
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
 import com.intellij.lang.ASTNode
@@ -57,6 +58,17 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
     iterateSqliteFiles { psiFile ->
       PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
         sqlStmt.createTriggerStmt?.let(result::add)
+      }
+      return@iterateSqliteFiles true
+    }
+    return result
+  }
+
+  internal fun views(): List<SqliteCreateViewStmt> {
+    val result = ArrayList<SqliteCreateViewStmt>()
+    iterateSqliteFiles { psiFile ->
+      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
+        sqlStmt.createViewStmt?.let(result::add)
       }
       return@iterateSqliteFiles true
     }

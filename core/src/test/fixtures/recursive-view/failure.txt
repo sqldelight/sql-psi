@@ -1,0 +1,2 @@
+Table.s line 2:0 - Recursive subquery found: view1 -> view2 -> view1
+Table.s line 6:0 - Recursive subquery found: view2 -> view1 -> view2
