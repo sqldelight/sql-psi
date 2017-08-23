@@ -1,0 +1,25 @@
+CREATE TABLE test (
+  _id INTEGER NOT NULL PRIMARY KEY,
+  date1 TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  date2 TEXT NOT NULL DEFAULT CURRENT_TIME,
+  date3 TEXT NOT NULL DEFAULT CURRENT_DATE
+);
+
+-- Throws no errors.
+CREATE TRIGGER on_update_trigger
+AFTER UPDATE
+ON test
+BEGIN
+  UPDATE test SET date1 = CURRENT_TIMESTAMP WHERE new._id = old._id;
+END;
+
+UPDATE test
+SET date1 = CURRENT_TIMESTAMP,
+    date2 = CURRENT_TIME,
+    date3 = CURRENT_TIMESTAMP;
+
+UPDATE test
+SET date1 = CURRENT_TIMESTAMP,
+    date2 = CURRENT_TIME,
+    date3 = CURRENT_TIMESTAMP
+WHERE date1 > CURRENT_TIME -- Fails because it is an expression.
