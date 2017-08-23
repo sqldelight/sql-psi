@@ -1,0 +1,6 @@
+Test.s line 7:7 - Unexpected number of values being inserted. found: 3 expected: 2
+Test.s line 9:38 - No column found with name column_3
+Test.s line 13:0 - Unexpected number of values being inserted. found: 3 expected: 2
+Test.s line 19:0 - Unexpected number of values being inserted. found: 3 expected: 2
+Test.s line 22:0 - Unexpected number of values being inserted. found: 0 expected: 2
+Test.s line 22:14 - No table found with name temp_table
