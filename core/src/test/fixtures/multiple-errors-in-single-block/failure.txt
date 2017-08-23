@@ -1,0 +1,5 @@
+Test.s line 7:5 - No table found with name test2
+Test.s line 11:8 - No column found with name column3
+Test.s line 13:9 - No column found with name cheetos
+Test.s line 5:16 - No column found with name column2
+Test.s line 5:7 - No column found with name column1

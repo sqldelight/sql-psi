@@ -145,7 +145,7 @@ select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) 
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
 values_expression ::= '(' expr ( ',' expr ) * ')'
-join_clause ::= table_or_subquery [ join_operator table_or_subquery join_constraint ] {
+join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.JoinClauseMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
