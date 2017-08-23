@@ -1,0 +1,2 @@
+SELECT *
+FRM chair;

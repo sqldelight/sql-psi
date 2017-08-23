@@ -21,8 +21,10 @@ import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
 
 class SqliteCoreEnvironment(
     parserDefinition: SqliteParserDefinition,
@@ -50,7 +52,13 @@ class SqliteCoreEnvironment(
   }
 
   fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    forSourceFiles { it.annotateRecursively(annotationHolder) }
+    forSourceFiles {
+      PsiTreeUtil.findChildOfType(it, PsiErrorElement::class.java)?.let { error ->
+        annotationHolder.createErrorAnnotation(error, error.errorDescription)
+        return@forSourceFiles
+      }
+      it.annotateRecursively(annotationHolder)
+    }
   }
 
   internal fun forSourceFiles(action: (PsiFile) -> Unit) {
