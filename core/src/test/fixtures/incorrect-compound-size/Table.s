@@ -1,0 +1,3 @@
+VALUES (1, 2, 3)
+UNION
+VALUES (1, 2);
