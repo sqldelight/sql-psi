@@ -128,8 +128,8 @@ literal_value ::= ( numeric_literal
                   | CURRENT_DATE
                   | CURRENT_TIMESTAMP )
 numeric_literal ::= ( digit [ '.' ( digit ) * ] | '.' digit ) [ E [ '+' | '-' ] digit ]
-insert_stmt ::= [ with_clause ] ( INSERT | REPLACE | INSERT OR REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES '(' expr ( ',' expr ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * | compound_select_stmt | DEFAULT VALUES ) {
-  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+insert_stmt ::= [ with_clause ] ( INSERT | REPLACE | INSERT OR REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InsertStmtMixin"
 }
 pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ]
 pragma_value ::= ( signed_number
@@ -140,11 +140,11 @@ compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' comm
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
-select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES '(' values_expression ( ',' values_expression ) * ')' ( ',' '(' expr ( ',' expr ) * ')' ) * ) {
+select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.SelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
-values_expression ::= expr
+values_expression ::= '(' expr ( ',' expr ) * ')'
 join_clause ::= table_or_subquery [ join_operator table_or_subquery join_constraint ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.JoinClauseMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"

@@ -20,7 +20,7 @@ internal abstract class SelectStmtMixin(
 
   override fun queryExposed(): List<QueryResult> {
     if (valuesExpressionList.isNotEmpty()) {
-      return listOf(QueryResult(null, valuesExpressionList.map { it.expr }))
+      return listOf(QueryResult(null, valuesExpressionList.first().exprList))
     }
     return resultColumnList.flatMap { it.queryExposed() }
   }

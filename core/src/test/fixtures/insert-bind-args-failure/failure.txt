@@ -1,0 +1,11 @@
+Test.s line 15:7 - Unexpected number of values being inserted. found: 14 expected: 9
+Test.s line 17:0 - Cannot populate default value for column column3, it must be specified in insert statement.
+Test.s line 17:0 - Cannot populate default value for column column4, it must be specified in insert statement.
+Test.s line 17:0 - Cannot populate default value for column column5, it must be specified in insert statement.
+Test.s line 17:0 - Cannot populate default value for column column8, it must be specified in insert statement.
+Test.s line 17:0 - Cannot populate default value for column column9, it must be specified in insert statement.
+Test.s line 20:0 - Cannot populate default value for column column4, it must be specified in insert statement.
+Test.s line 20:0 - Cannot populate default value for column column5, it must be specified in insert statement.
+Test.s line 20:0 - Cannot populate default value for column column8, it must be specified in insert statement.
+Test.s line 20:0 - Cannot populate default value for column column9, it must be specified in insert statement.
+Test.s line 23:7 - Unexpected number of values being inserted. found: 2 expected: 3
