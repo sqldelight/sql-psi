@@ -140,7 +140,7 @@ compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' comm
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
-select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * ) {
+select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.SelectStmtMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }

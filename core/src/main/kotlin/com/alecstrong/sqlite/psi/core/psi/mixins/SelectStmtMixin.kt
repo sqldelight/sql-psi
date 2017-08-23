@@ -13,7 +13,6 @@ internal abstract class SelectStmtMixin(
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child in resultColumnList) return fromQuery()
     if (child in exprList) return fromQuery() + super.queryAvailable(this)
-    if (child in tableOrSubqueryList) return super.queryAvailable(child)
     if (child == joinClause) return super.queryAvailable(child)
     return super.queryAvailable(child)
   }
@@ -28,9 +27,6 @@ internal abstract class SelectStmtMixin(
   private fun fromQuery(): List<QueryResult> {
     joinClause?.let {
       return it.queryExposed()
-    }
-    if (tableOrSubqueryList.isNotEmpty()) {
-      return tableOrSubqueryList.flatMap { it.queryExposed() }
     }
     return emptyList()
   }
