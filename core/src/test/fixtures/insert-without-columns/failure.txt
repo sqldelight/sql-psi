@@ -1,0 +1,3 @@
+Test.s line 18:0 - Cannot populate default value for column column2, it must be specified in insert statement.
+Test.s line 21:0 - Cannot populate default value for column _id, it must be specified in insert statement.
+Test.s line 24:0 - Cannot populate default values for columns (_id, column2), they must be specified in insert statement.

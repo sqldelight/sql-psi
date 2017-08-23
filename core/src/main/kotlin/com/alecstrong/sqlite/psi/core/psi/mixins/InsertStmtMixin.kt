@@ -14,7 +14,12 @@ internal abstract class InsertStmtMixin(
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     val table = tablesAvailable(this).firstOrNull { it.table?.name == tableName.name } ?: return
     val columns = table.columns.map { (it as SqliteColumnName).name!! }
-    val setColumns = if (columnNameList.isEmpty()) columns else columnNameList.mapNotNull { it.name }
+    val setColumns =
+        if (columnNameList.isEmpty() && node.findChildByType(SqliteTypes.DEFAULT) == null) {
+          columns
+        } else {
+          columnNameList.mapNotNull { it.name }
+        }
 
     valuesExpressionList.forEach {
       if (it.exprList.size != setColumns.size) {
@@ -31,15 +36,17 @@ internal abstract class InsertStmtMixin(
       }
     }
 
-    table.columns
+    val needsDefaultValue = table.columns
         .filterIsInstance<SqliteColumnName>()
         .filterNot { it.name!! in setColumns }
-        .forEach {
-          if (!(it.parent as SqliteColumnDef).hasDefaultValue()) {
-            annotationHolder.createErrorAnnotation(this, "Cannot populate default value for" +
-                " column ${it.name}, it must be specified in insert statement.")
-          }
-        }
+        .filterNot { (it.parent as SqliteColumnDef).hasDefaultValue() }
+    if (needsDefaultValue.size == 1) {
+      annotationHolder.createErrorAnnotation(this, "Cannot populate default value for column " +
+          "${needsDefaultValue.first().name}, it must be specified in insert statement.")
+    } else if (needsDefaultValue.size > 1) {
+      annotationHolder.createErrorAnnotation(this, "Cannot populate default values for columns " +
+          "(${needsDefaultValue.joinToString { it.name!! }}), they must be specified in insert statement.")
+    }
 
     super.annotate(annotationHolder)
   }
@@ -49,6 +56,8 @@ internal abstract class InsertStmtMixin(
       return columnConstraintList.any {
         it.node.findChildByType(SqliteTypes.DEFAULT) != null
             || it.node.findChildByType(SqliteTypes.AUTOINCREMENT) != null
+      } || columnConstraintList.none {
+        it.node.findChildByType(SqliteTypes.NOT) != null
       }
     }
   }
