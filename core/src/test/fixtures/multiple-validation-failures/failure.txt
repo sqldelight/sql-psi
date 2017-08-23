@@ -1,0 +1,4 @@
+Test.s line 5:7 - No column found with name cheese
+Test.s line 9:5 - No table found with name test
+Test2.s line 2:12 - No table found with name test
+Test.s line 8:7 - No column found with name _id
