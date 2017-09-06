@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
 
 internal interface SqliteCompositeElement : PsiElement {
@@ -42,10 +42,12 @@ internal interface SqliteCompositeElement : PsiElement {
    * FROM some_table
    *
    */
-  fun tablesAvailable(child: PsiElement): List<QueryResult>
+  fun tablesAvailable(child: PsiElement): List<LazyQuery>
 
   /**
    * Called by the annotator to annotate this element with any errors or warnings.
    */
   fun annotate(annotationHolder: SqliteAnnotationHolder)
+
+  data class LazyQuery(val tableName: NamedElement, val query: () -> QueryResult)
 }

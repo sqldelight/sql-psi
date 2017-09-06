@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableOrSubquery
 import com.intellij.lang.ASTNode
 
@@ -11,7 +11,7 @@ internal abstract class TableOrSubqueryMixin(
     SqliteTableOrSubquery {
   override fun queryExposed(): List<QueryResult> {
     tableName?.let { tableNameElement ->
-      val result = tablesAvailable(tableNameElement).filter { it.table?.name == tableNameElement.name }
+      val result = tableAvailable(tableNameElement, tableNameElement.name)
       if (result.isEmpty()) {
         return emptyList()
       }

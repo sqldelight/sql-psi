@@ -1,8 +1,8 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSelectStmt
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement

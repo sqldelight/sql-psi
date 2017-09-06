@@ -24,7 +24,7 @@ internal abstract class TableNameMixin(
     // Handled by ColumnNameMixin
     if (parent is SqliteColumnExpr) return
 
-    val matches = tablesAvailable(this).filter { it.table?.name == name }
+    val matches = tableAvailable(this, name)
     if (reference.resolve() == this) {
       if(matches.size > 1) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")

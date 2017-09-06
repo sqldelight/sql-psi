@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.AnnotationException
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.mixins.SingleRow
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange

@@ -3,7 +3,7 @@ package com.alecstrong.sqlite.psi.core.psi
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
-internal interface SqliteQueryElement : SqliteCompositeElement {
+interface QueryElement: PsiElement {
   /**
    * Return all of the results that this query exposes. The select_stmt rule
    *

@@ -1,10 +1,11 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.roots.ProjectRootManager
@@ -17,20 +18,21 @@ internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElement
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
-    val result = ArrayList<QueryResult>()
+  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+    val result = ArrayList<LazyQuery>()
     iterateSqliteFiles { psiFile ->
       PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
         sqlStmt.createTableStmt?.let { createTable ->
-          createTable.compoundSelectStmt?.let {
-            result.add(QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns }))
-          }
-          if (createTable.columnDefList.isNotEmpty()) {
-            result.addAll(createTable.queryAvailable(this))
-          }
+          result.add(LazyQuery(createTable.tableName) {
+            createTable.compoundSelectStmt?.let {
+              QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns })
+            } ?: createTable.queryAvailable(this).single()
+          })
         }
         sqlStmt.createViewStmt?.let { createView ->
-          result.add(QueryResult(createView.viewName, createView.compoundSelectStmt.queryExposed().flatMap { it.columns }))
+          result.add(LazyQuery(createView.viewName) {
+            QueryResult(createView.viewName, createView.compoundSelectStmt.queryExposed().flatMap { it.columns })
+          })
         }
       }
       return@iterateSqliteFiles true

@@ -76,9 +76,9 @@ open class BnfExtenderTask: SourceTask() {
   }
 
   private fun generateRules(firstRule: String, rules: Map<String, String>): String {
-    val builder = StringBuilder("root ::= ${firstRule}_real\n")
-
     val keyFinder = Regex("([^a-zA-Z_]|^)(${rules.keys.joinToString("|")})([^a-zA-Z_]|$)")
+
+    val builder = StringBuilder("root ::= ${firstRule.extensionReplacements(keyFinder)}\n")
     for ((rule, definition) in rules) {
       builder.append("fake $rule ::= $definition\n")
           .append("${rule}_real ::= ${definition.extensionReplacements(keyFinder)} { elementType = $rule }\n")

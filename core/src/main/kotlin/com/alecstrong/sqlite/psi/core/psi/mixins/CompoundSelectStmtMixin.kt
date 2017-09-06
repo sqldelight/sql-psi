@@ -1,12 +1,13 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteOrderingTerm
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -22,8 +23,10 @@ abstract internal class CompoundSelectStmtMixin(
     return selectStmtList.first().queryExposed()
   }
 
-  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
-    return super.tablesAvailable(child) + commonTableExpressionList.flatMap { it.queryExposed() }
+  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+    return super.tablesAvailable(child) + commonTableExpressionList.map {
+      LazyQuery(it.tableName) { it.queryExposed().single() }
+    }
   }
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
@@ -60,7 +63,7 @@ abstract internal class CompoundSelectStmtMixin(
   private fun detectRecursion(): String? {
     val view = parent as? SqliteCreateViewStmt ?: return null
 
-    val viewTree = linkedSetOf(view.viewName.name!!)
+    val viewTree = linkedSetOf(view.viewName.name)
 
     fun SqliteCreateViewStmt.recursion(): String? {
       PsiTreeUtil.findChildrenOfType(compoundSelectStmt, TableNameMixin::class.java).forEach {

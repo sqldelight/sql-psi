@@ -62,12 +62,14 @@ create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ databa
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' module_argument ( ',' module_argument ) * ')' ]
 with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.WithClauseMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
 }
 cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
 common_table_expression ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ] AS '(' compound_select_stmt ')' {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CommonTableExpressionMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
@@ -153,28 +155,43 @@ pragma_value ::= ( signed_number
 reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ]
 compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' common_table_expression ) * ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 select_stmt ::= ( SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.SelectStmtMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 values_expression ::= '(' expr ( ',' expr ) * ')'
 join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.JoinClauseMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 table_or_subquery ::= ( [ database_name '.' ] table_name [ [ AS ] table_alias ] [ INDEXED BY index_name | NOT INDEXED ]
                       | '(' ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ')'
                       | '(' compound_select_stmt ')' [ [ AS ] table_alias ] ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableOrSubqueryMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 result_column ::= ( '*'
                   | table_name '.' '*'
                   | expr [ [ AS ] column_alias ] ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ResultColumnMixin"
-  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 join_operator ::= ( ','
                   | [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN )
@@ -195,31 +212,42 @@ qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_nam
 vacuum_stmt ::= VACUUM
 table_name ::= id {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableNameMixin"
-  implements = "com.intellij.psi.PsiNamedElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 database_name ::= id
 index_name ::= id
 column_name ::= id | string {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ColumnNameMixin"
-  implements = "com.intellij.psi.PsiNamedElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 column_alias ::= id {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ColumnAliasMixin"
   implements = [
-    "com.alecstrong.sqlite.psi.core.psi.SqliteAliasElement";
-    "com.intellij.psi.PsiNamedElement"
+    "com.alecstrong.sqlite.psi.core.psi.AliasElement";
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
   ]
 }
 table_alias ::= id {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableAliasMixin"
   implements = [
-    "com.intellij.psi.PsiNamedElement";
-    "com.alecstrong.sqlite.psi.core.psi.SqliteAliasElement"
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.AliasElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
   ]
 }
 foreign_table ::= id {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableNameMixin"
-  implements = "com.intellij.psi.PsiNamedElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 identifier ::= id
 pragma_name ::= id
@@ -234,7 +262,10 @@ collation_name ::= id
 error_message ::= string
 view_name ::= id {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.TableNameMixin"
-  implements = "com.intellij.psi.PsiNamedElement"
+  implements = [
+    "com.alecstrong.sqlite.psi.core.psi.NamedElement";
+    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  ]
 }
 module_name ::= id
 bind_parameter ::= ( '?' [digit] | ':' identifier )

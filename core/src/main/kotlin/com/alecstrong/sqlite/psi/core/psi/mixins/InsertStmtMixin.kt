@@ -12,8 +12,8 @@ internal abstract class InsertStmtMixin(
 ) : MutatorMixin(node),
     SqliteInsertStmt {
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    val table = tablesAvailable(this).firstOrNull { it.table?.name == tableName.name } ?: return
-    val columns = table.columns.map { (it as SqliteColumnName).name!! }
+    val table = tableAvailable(this, tableName.name).firstOrNull() ?: return
+    val columns = table.columns.map { (it as SqliteColumnName).name }
     val setColumns =
         if (columnNameList.isEmpty() && node.findChildByType(SqliteTypes.DEFAULT) == null) {
           columns
@@ -38,14 +38,14 @@ internal abstract class InsertStmtMixin(
 
     val needsDefaultValue = table.columns
         .filterIsInstance<SqliteColumnName>()
-        .filterNot { it.name!! in setColumns }
+        .filterNot { it.name in setColumns }
         .filterNot { (it.parent as SqliteColumnDef).hasDefaultValue() }
     if (needsDefaultValue.size == 1) {
       annotationHolder.createErrorAnnotation(this, "Cannot populate default value for column " +
           "${needsDefaultValue.first().name}, it must be specified in insert statement.")
     } else if (needsDefaultValue.size > 1) {
       annotationHolder.createErrorAnnotation(this, "Cannot populate default values for columns " +
-          "(${needsDefaultValue.joinToString { it.name!! }}), they must be specified in insert statement.")
+          "(${needsDefaultValue.joinToString { it.name }}), they must be specified in insert statement.")
     }
 
     super.annotate(annotationHolder)

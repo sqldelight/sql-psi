@@ -20,8 +20,7 @@ class SqliteTableReference<T: PsiNamedElement>(
   override fun getVariants(): Array<LookupElement> {
     if (element.parent.isDefinition()) return emptyArray()
     return (element.parent as SqliteCompositeElement).tablesAvailable(element)
-        .mapNotNull { it.table }
-        .map { LookupElementBuilder.create(it) }
+        .map { LookupElementBuilder.create(it.tableName) }
         .toTypedArray()
   }
 

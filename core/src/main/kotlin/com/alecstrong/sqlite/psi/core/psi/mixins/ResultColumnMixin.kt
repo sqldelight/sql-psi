@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteResultColumn
 import com.intellij.lang.ASTNode
 
@@ -12,7 +12,7 @@ internal abstract class ResultColumnMixin(
   override fun queryExposed(): List<QueryResult> {
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return tablesAvailable(this).filter { it.table?.name == tableNameElement.name }
+      return tableAvailable(this, tableNameElement.name)
     }
     expr?.let {
       // expr [ '.' column_alias ]

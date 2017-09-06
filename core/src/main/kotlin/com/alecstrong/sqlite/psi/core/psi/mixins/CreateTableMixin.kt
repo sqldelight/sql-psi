@@ -1,13 +1,13 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteForeignKeyClause
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -34,12 +34,12 @@ internal abstract class CreateTableMixin(
   private fun primaryKey(): List<String> {
     val compositeKey = tableConstraintList.firstOrNull { it.hasPrimaryKey() }
     if (compositeKey != null) {
-      return compositeKey.indexedColumnList.map { it.columnName.name!! }
+      return compositeKey.indexedColumnList.map { it.columnName.name }
     }
 
     return columnDefList.filter { it.columnConstraintList.any { it.hasPrimaryKey() } }
         .take(1)
-        .map { it.columnName.name!! }
+        .map { it.columnName.name }
   }
 
   private fun isCollectivelyUnique(columns: List<SqliteColumnName>): Boolean {
@@ -49,15 +49,15 @@ internal abstract class CreateTableMixin(
           it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() }
         }.mapNotNull { it.columnName.name }))
         .forEach { uniqueKeys ->
-          if (columns.map { it.name!! }.all { it in uniqueKeys }) return true
+          if (columns.map { it.name }.all { it in uniqueKeys }) return true
         }
 
     // Check if there is an externally created unique index that matches the given columns.
     PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.indexes()
         .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
         .forEach {
-          val indexedColumns = it.indexedColumnList.map { it.columnName.name!! }
-          if (columns.map { it.name!! }.containsAll(indexedColumns)
+          val indexedColumns = it.indexedColumnList.map { it.columnName.name }
+          if (columns.map { it.name }.containsAll(indexedColumns)
               && columns.size == indexedColumns.size) {
             return true
           }
@@ -68,7 +68,7 @@ internal abstract class CreateTableMixin(
 
   private fun checkForDuplicateColumns(annotationHolder: SqliteAnnotationHolder) {
     columnDefList.map { it.columnName }
-        .groupBy { it.name!!.trim('\'', '"', '`', '[', ']') }
+        .groupBy { it.name.trim('\'', '"', '`', '[', ']') }
         .map { it.value }
         .filter { it.size > 1 }
         .flatMap { it }
@@ -103,7 +103,7 @@ internal abstract class CreateTableMixin(
           } else {
             annotationHolder.createErrorAnnotation(this,
                 "Table ${foreignTable.tableName.name} does not have a unique index on columns" +
-                    " ${columnNameList.map { it.name }.joinToString(prefix = "[", postfix = "]")}")
+                    " ${columnNameList.joinToString(prefix = "[", postfix = "]") { it.name }}")
           }
         }
       }

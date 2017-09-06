@@ -1,7 +1,8 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.psi.SqliteQueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -14,7 +15,7 @@ internal open class SqliteCompositeElementImpl(
     return (parent as SqliteCompositeElement).queryAvailable(this)
   }
 
-  override fun tablesAvailable(child: PsiElement): List<QueryResult> {
+  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
     return (parent as SqliteCompositeElement).tablesAvailable(this)
   }
 
@@ -23,5 +24,9 @@ internal open class SqliteCompositeElementImpl(
   override fun toString(): String {
     if (parent !is SqliteCompositeElement) return super.toString()
     return "${super.toString()}: ${(parent as SqliteCompositeElement).queryAvailable(this)}"
+  }
+
+  protected fun tableAvailable(child: PsiElement, name: String): List<QueryResult> {
+    return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query() }
   }
 }
