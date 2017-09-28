@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.SqliteFileBase
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
 
@@ -49,5 +50,7 @@ internal interface SqliteCompositeElement : PsiElement {
    */
   fun annotate(annotationHolder: SqliteAnnotationHolder)
 
-  data class LazyQuery(val tableName: NamedElement, val query: () -> QueryResult)
+  override fun getContainingFile(): SqliteFileBase
 }
+
+data class LazyQuery(val tableName: NamedElement, val query: () -> QueryResult)

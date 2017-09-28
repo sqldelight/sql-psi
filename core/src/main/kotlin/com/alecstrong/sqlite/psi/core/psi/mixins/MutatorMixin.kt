@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
+import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteQualifiedTableName
 import com.alecstrong.sqlite.psi.core.psi.SqliteWithClause
@@ -20,8 +20,10 @@ internal abstract class MutatorMixin(
   override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
     return super.tablesAvailable(child) + getWithClause()?.run {
       cteTableNameList.zip(compoundSelectStmtList)
-        .map { (name, selectStmt) -> LazyQuery(name.tableName) {
-            val query = QueryResult(name.tableName, selectStmt.queryExposed().flatMap { it.columns })
+        .map { (name, selectStmt) ->
+          LazyQuery(name.tableName) {
+            val query = QueryResult(name.tableName,
+                selectStmt.queryExposed().flatMap { it.columns })
             return@LazyQuery if (name.columnAliasList.isNotEmpty()) {
               QueryResult(name.tableName, name.columnAliasList)
             } else {

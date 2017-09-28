@@ -8,7 +8,6 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
-import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CreateTriggerMixin(
     node: ASTNode
@@ -32,8 +31,7 @@ internal abstract class CreateTriggerMixin(
   }
 
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
-    if (PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.triggers()
-          .any { it != this && it.triggerName.text == triggerName.text }) {
+    if (containingFile.triggers().any { it != this && it.triggerName.text == triggerName.text }) {
       annotationHolder.createErrorAnnotation(triggerName,
           "Duplicate trigger name ${triggerName.text}")
     }

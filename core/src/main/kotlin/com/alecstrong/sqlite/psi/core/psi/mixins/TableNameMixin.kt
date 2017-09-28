@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableReference
@@ -24,9 +25,9 @@ internal abstract class TableNameMixin(
     // Handled by ColumnNameMixin
     if (parent is SqliteColumnExpr) return
 
-    val matches = tableAvailable(this, name)
+    val matches: List<QueryResult> by lazy { tableAvailable(this, name) }
     if (reference.resolve() == this) {
-      if(matches.size > 1) {
+      if(matches.any { it.table != this }) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (matches.isEmpty()) {
