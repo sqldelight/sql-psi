@@ -1,8 +1,0 @@
-apply plugin: 'kotlin'
-
-dependencies {
-  compileOnly gradleApi()
-
-  compile dep.kotlinStdLib
-  compile dep.kotlinReflect
-}

@@ -4,7 +4,6 @@ buildscript {
   }
 
   dependencies {
-    classpath files("../bnf-extender-task/bnf-extender-task-0.1.0-SNAPSHOT.jar")
     classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1.1"
   }
 }
@@ -16,9 +15,10 @@ grammarKit {
   grammarKitRelease = '1.5.2'
 }
 
+
+import com.alecstrong.sqlite.psi.tasks.BnfExtenderTask
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
-import com.alecstrong.sqlite.psi.tasks.BnfExtenderTask
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
@@ -45,7 +45,7 @@ task generateSqliteLexer(type: GenerateLexer) {
   purgeOldFiles = true
 }
 
-task generateSqliteExtendableGrammar(dependsOn: ':bnf-extender-task:jar', type: BnfExtenderTask) {
+task generateSqliteExtendableGrammar(type: BnfExtenderTask) {
   source "src"
   include "main/grammars/sqlite.bnf"
   outputDirectory = file("gen")
