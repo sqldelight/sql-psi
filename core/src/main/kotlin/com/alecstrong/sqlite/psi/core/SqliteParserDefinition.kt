@@ -8,6 +8,7 @@ import com.intellij.lang.ParserDefinition.SpaceRequirements.MAY
 import com.intellij.lang.PsiParser
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
+import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
@@ -27,6 +28,8 @@ abstract class SqliteParserDefinition: ParserDefinition {
   override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
   override fun spaceExistanceTypeBetweenTokens(p0: ASTNode, p1: ASTNode) = MAY
   override fun createElement(node: ASTNode): PsiElement = SqliteParserUtil.customSqliteParser.createElement(node)
+
+  abstract override fun createFile(p0: FileViewProvider): SqliteFileBase
 
   fun setParserOverride(customSqliteParser: CustomSqliteParser) {
     SqliteParserUtil.customSqliteParser = customSqliteParser

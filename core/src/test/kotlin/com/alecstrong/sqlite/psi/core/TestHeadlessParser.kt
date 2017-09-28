@@ -1,6 +1,5 @@
 package com.alecstrong.sqlite.psi.core
 
-import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
@@ -34,6 +33,6 @@ private class TestParserDefinition: SqliteParserDefinition() {
   }
 }
 
-private class TestFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, TestLanguage) {
+private class TestFile(viewProvider: FileViewProvider) : SqliteFileBase(viewProvider, TestLanguage) {
   override fun getFileType() = TestFileType
 }

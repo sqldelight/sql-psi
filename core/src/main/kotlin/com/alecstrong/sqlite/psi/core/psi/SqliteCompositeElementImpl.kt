@@ -1,8 +1,8 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.SqliteFileBase
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -29,4 +29,6 @@ internal open class SqliteCompositeElementImpl(
   protected fun tableAvailable(child: PsiElement, name: String): List<QueryResult> {
     return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query() }
   }
+
+  override fun getContainingFile() = super.getContainingFile() as SqliteFileBase
 }

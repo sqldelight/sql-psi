@@ -1,13 +1,14 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteOrderingTerm
+import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -24,8 +25,14 @@ abstract internal class CompoundSelectStmtMixin(
   }
 
   override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
-    return super.tablesAvailable(child) + commonTableExpressionList.map {
-      LazyQuery(it.tableName) { it.queryExposed().single() }
+    return if (node.findChildByType(SqliteTypes.RECURSIVE) != null) {
+      super.tablesAvailable(child) + commonTableExpressionList.map {
+        LazyQuery(it.tableName) { it.queryExposed().single() }
+      }
+    } else {
+      super.tablesAvailable(child) + commonTableExpressionList.filter { it != child }.map {
+        LazyQuery(it.tableName) { it.queryExposed().single() }
+      }
     }
   }
 
@@ -71,7 +78,7 @@ abstract internal class CompoundSelectStmtMixin(
         if (!viewTree.add(name)) {
           return viewTree.joinToString(" -> ") + " -> $name"
         }
-        PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.views()
+        containingFile.views()
             .filter { it.viewName.name == name }
             .forEach {
               it.recursion()?.let { return it }

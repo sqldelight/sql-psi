@@ -53,7 +53,7 @@ internal abstract class CreateTableMixin(
         }
 
     // Check if there is an externally created unique index that matches the given columns.
-    PsiTreeUtil.getParentOfType(this, SqlStmtListMixin::class.java)!!.indexes()
+    containingFile.indexes()
         .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
         .forEach {
           val indexedColumns = it.indexedColumnList.map { it.columnName.name }
