@@ -1,10 +1,12 @@
 package com.alecstrong.sqlite.psi.tasks
 
+import org.gradle.api.Action
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs
+import org.gradle.api.tasks.incremental.InputFileDetails
 import java.io.File
 
 open class BnfExtenderTask: SourceTask() {
@@ -14,13 +16,13 @@ open class BnfExtenderTask: SourceTask() {
 
   @TaskAction
   fun execute(inputs: IncrementalTaskInputs) {
-    inputs.outOfDate { input ->
+    inputs.outOfDate {
       val rules = LinkedHashMap<String, String>()
       var currentRule = ""
       var currentRuleDefinition = ""
       var firstRule = ""
       var header = ""
-      input.file.forEachLine { line ->
+      file.forEachLine { line ->
         val ruleSeparatorIndex = line.indexOf("::=")
         if (ruleSeparatorIndex >= 0) {
           val ruleName = line.substring(0 until ruleSeparatorIndex).trim()
@@ -43,8 +45,8 @@ open class BnfExtenderTask: SourceTask() {
       val unextendableRules = unextendableRules(header, rules.keys)
       val rulesToExtend = rules.filterNot { it.key in unextendableRules }
 
-      header = "{\n  parserUtilClass=\"$outputPackage.${input.file.parserUtilName()}\"\n" +
-          "elementTypeHolderClass=\"$outputPackage.psi.${input.file.elementTypeHolderName()}\"\n" +
+      header = "{\n  parserUtilClass=\"$outputPackage.${file.parserUtilName()}\"\n" +
+          "elementTypeHolderClass=\"$outputPackage.psi.${file.elementTypeHolderName()}\"\n" +
           header.lines().drop(2).joinToString("\n")
 
       val keyFinder = Regex("([^a-zA-Z_]|^)(${unextendableSubclasses(header, rules.keys).joinToString("|")})([^a-zA-Z_]|$)")
@@ -52,17 +54,17 @@ open class BnfExtenderTask: SourceTask() {
           .map { "${it.key} ::= ${it.value.subclassReplacements(keyFinder)}" }
           .joinToString("\n")
 
-      File("${outputDirectory().path}/grammars", input.file.name)
+      File("${outputDirectory().path}/grammars", file.name)
           .createIfAbsent()
           .writeText("$header\n${generateRules(firstRule, rulesToExtend)}\n$unextendableRuleDefinitions")
 
-      File("${outputDirectory().path}/parser", "${input.file.parserUtilName()}.kt")
+      File("${outputDirectory().path}/parser", "${file.parserUtilName()}.kt")
           .createIfAbsent()
-          .writeText(generateParserUtil(rulesToExtend, input.file))
+          .writeText(generateParserUtil(rulesToExtend, file))
 
-      File("${outputDirectory().path}/parser", "${input.file.customParserName()}.kt")
+      File("${outputDirectory().path}/parser", "${file.customParserName()}.kt")
           .createIfAbsent()
-          .writeText(generateCustomParser(rulesToExtend, input.file))
+          .writeText(generateCustomParser(rulesToExtend, file))
     }
   }
 
