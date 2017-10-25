@@ -15,7 +15,7 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
     val environment = parser.build(fixtureRoot.path, object : SqliteAnnotationHolder {
-      override fun createErrorAnnotation(element: PsiElement, s: String?) {
+      override fun createErrorAnnotation(element: PsiElement, s: String) {
         val documentManager = PsiDocumentManager.getInstance(element.project)
         val name = element.containingFile.name
         val document = documentManager.getDocument(element.containingFile)!!

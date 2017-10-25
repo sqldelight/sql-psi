@@ -13,14 +13,14 @@ open class SqliteAnnotator : Annotator {
   }
 }
 
-class AnnotationException(msg: String, val element: PsiElement? = null) : IllegalStateException(msg)
+class AnnotationException(val msg: String, val element: PsiElement? = null) : IllegalStateException(msg)
 
 interface SqliteAnnotationHolder {
-  fun createErrorAnnotation(element: PsiElement, s: String?)
+  fun createErrorAnnotation(element: PsiElement, s: String)
 }
 
 private class AnnotationHolderImplWrapper(val holder: AnnotationHolder) : SqliteAnnotationHolder {
-  override fun createErrorAnnotation(element: PsiElement, s: String?) {
+  override fun createErrorAnnotation(element: PsiElement, s: String) {
     holder.createErrorAnnotation(element, s)
   }
 }

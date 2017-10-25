@@ -24,7 +24,7 @@ internal abstract class ColumnNameMixin(
         annotationHolder.createErrorAnnotation(this, "No column found with name $name")
       }
     } catch (e: AnnotationException) {
-      annotationHolder.createErrorAnnotation(e.element ?: this, e.message)
+      annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
     }
   }
 }
