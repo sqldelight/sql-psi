@@ -5,12 +5,13 @@ import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.tree.IFileElementType
+import java.io.File
 
 internal class TestHeadlessParser {
   private val parserDefinition = TestParserDefinition()
 
   fun build(root: String, annotator: SqliteAnnotationHolder): SqliteCoreEnvironment {
-    val environment = SqliteCoreEnvironment(parserDefinition, TestFileType, root)
+    val environment = SqliteCoreEnvironment(parserDefinition, TestFileType, listOf(File(root)))
     environment.annotate(annotator)
     return environment
   }

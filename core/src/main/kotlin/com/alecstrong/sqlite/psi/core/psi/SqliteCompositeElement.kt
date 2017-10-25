@@ -1,11 +1,10 @@
 package com.alecstrong.sqlite.psi.core.psi
 
-import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.SqliteFileBase
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
 
-internal interface SqliteCompositeElement : PsiElement {
+internal interface SqliteCompositeElement : SqliteAnnotatedElement {
   /**
    * Returns the result set accessible by a given child.
    *
@@ -44,11 +43,6 @@ internal interface SqliteCompositeElement : PsiElement {
    *
    */
   fun tablesAvailable(child: PsiElement): List<LazyQuery>
-
-  /**
-   * Called by the annotator to annotate this element with any errors or warnings.
-   */
-  fun annotate(annotationHolder: SqliteAnnotationHolder)
 
   override fun getContainingFile(): SqliteFileBase
 }

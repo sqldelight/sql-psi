@@ -1,6 +1,6 @@
 package com.alecstrong.sqlite.psi.core
 
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
+import com.alecstrong.sqlite.psi.core.psi.SqliteAnnotatedElement
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
@@ -25,15 +25,16 @@ import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
+import java.io.File
 
-class SqliteCoreEnvironment(
+open class SqliteCoreEnvironment(
     parserDefinition: SqliteParserDefinition,
     private val fileType: LanguageFileType,
-    module: String,
+    sourceFolders: List<File>,
     disposable: Disposable = Disposer.newDisposable()
 ) {
-  private val applicationEnvironment = CoreApplicationEnvironment(disposable)
-  private val projectEnvironment = CoreProjectEnvironment(disposable, applicationEnvironment)
+  protected val applicationEnvironment = CoreApplicationEnvironment(disposable)
+  protected val projectEnvironment = CoreProjectEnvironment(disposable, applicationEnvironment)
 
   init {
     CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), MetaLanguage.EP_NAME, MetaLanguage::class.java)
@@ -44,7 +45,7 @@ class SqliteCoreEnvironment(
       val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
       FileTypeRegistry.ourInstanceGetter = fileRegistry
 
-      registerApplicationService(ProjectFileIndex::class.java, CoreFileIndex(module, projectEnvironment.project,
+      registerApplicationService(ProjectFileIndex::class.java, CoreFileIndex(sourceFolders, projectEnvironment.project,
           directoryIndex, FileTypeRegistry.getInstance()))
       registerFileType(fileType, fileType.defaultExtension)
       registerParserDefinition(parserDefinition)
@@ -71,20 +72,24 @@ class SqliteCoreEnvironment(
   }
 
   private fun PsiElement.annotateRecursively(annotationHolder: SqliteAnnotationHolder) {
-    if (this is SqliteCompositeElement) annotate(annotationHolder)
+    if (this is SqliteAnnotatedElement) annotate(annotationHolder)
     children.forEach { it.annotateRecursively(annotationHolder) }
   }
 }
 
 private class CoreFileIndex(
-    val module: String,
+    val sourceFolders: List<File>,
     project: Project,
     directoryIndex: DirectoryIndex,
     fileTypeRegistry: FileTypeRegistry
 ) : ProjectFileIndexImpl(project, directoryIndex, fileTypeRegistry) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
     val localFileSystem = VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
-    return iterateContentUnderDirectory(localFileSystem.findFileByPath(module)!!, iterator)
+    return sourceFolders.all {
+      val file = localFileSystem.findFileByPath(it.absolutePath)
+      if (file == null) throw NullPointerException("File ${it.absolutePath} not found")
+      iterateContentUnderDirectory(file, iterator)
+    }
   }
 
   override fun iterateContentUnderDirectory(file: VirtualFile, iterator: ContentIterator): Boolean {
