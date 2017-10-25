@@ -3,8 +3,8 @@ language: java
 jdk:
   - oraclejdk8
 
-before_script:
-  - ./gradlew updateDependencies
+script:
+  - ./gradlew updateDependencies assemble
 
 after_success:
   - .buildscript/deploy_snapshot.sh
