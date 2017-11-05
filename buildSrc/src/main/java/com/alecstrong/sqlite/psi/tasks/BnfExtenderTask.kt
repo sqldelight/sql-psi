@@ -1,15 +1,20 @@
 package com.alecstrong.sqlite.psi.tasks
 
-import org.gradle.api.Action
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier.INTERNAL
+import com.squareup.kotlinpoet.KModifier.OPEN
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs
-import org.gradle.api.tasks.incremental.InputFileDetails
 import java.io.File
 
-open class BnfExtenderTask: SourceTask() {
+open class BnfExtenderTask : SourceTask() {
   @get:OutputDirectory lateinit var outputDirectory: File
 
   @get:Input lateinit var outputPackage: String
@@ -137,48 +142,61 @@ open class BnfExtenderTask: SourceTask() {
 
   private fun File.elementTypeHolderName() = "${nameWithoutExtension.capitalize()}Types"
 
-  // TODO(AlecStrong): Use kotlinpoet for these
   private fun generateParserUtil(rules: Map<String, String>, inputFile: File): String {
-    val builder = StringBuilder("package $outputPackage\n\n")
-
-    builder.append("import com.intellij.lang.PsiBuilder\n")
-        .append("import com.intellij.lang.parser.GeneratedParserUtilBase\n\n")
-
     val parserVar = inputFile.customParserName().decapitalize()
-
-    builder.append("internal object ${inputFile.parserUtilName()}: GeneratedParserUtilBase() {\n")
-        .append("  internal var $parserVar: ${inputFile.customParserName()} = ${inputFile.customParserName()}()\n\n")
-
-    for (rule in rules.keys) {
-      builder.append("  @JvmStatic fun ${rule.toFunctionName()}(builder: PsiBuilder, level: Int, $rule: Parser): Boolean {\n")
-          .append("    return $parserVar.${rule.toCustomFunction()}(builder, level, $rule)\n")
-          .append("  }\n\n")
-    }
-
-    return builder.append("}").toString()
+    val customParserType = ClassName("", inputFile.customParserName())
+    return FileSpec.builder(outputPackage, inputFile.parserUtilName())
+        .addType(TypeSpec.objectBuilder(inputFile.parserUtilName())
+            .addModifiers(INTERNAL)
+            .superclass(ClassName("com.intellij.lang.parser", "GeneratedParserUtilBase"))
+            .addProperty(PropertySpec.varBuilder(parserVar, customParserType)
+                .addModifiers(INTERNAL)
+                .initializer("%T()", customParserType)
+                .build())
+            .apply {
+              rules.keys.forEach {
+                addFunction(FunSpec.builder(it.toFunctionName())
+                    .addAnnotation(JvmStatic::class)
+                    .addParameter("builder", ClassName("com.intellij.lang", "PsiBuilder"))
+                    .addParameter("level", Int::class)
+                    .addParameter(it, ClassName("", "Parser"))
+                    .returns(Boolean::class)
+                    .addStatement("return $parserVar.${it.toCustomFunction()}(builder, level, $it)")
+                    .build())
+              }
+            }
+            .build())
+        .build()
+        .toString()
   }
 
   private fun generateCustomParser(rules: Map<String, String>, inputFile: File): String {
-    val builder = StringBuilder("package $outputPackage\n\n")
-
-    builder.append("import ${outputPackage}.psi.${inputFile.elementTypeHolderName()}\n")
-        .append("import com.intellij.lang.ASTNode\n")
-        .append("import com.intellij.lang.PsiBuilder\n")
-        .append("import com.intellij.lang.parser.GeneratedParserUtilBase.Parser\n")
-        .append("import com.intellij.psi.PsiElement\n\n")
-
-    builder.append("open class ${inputFile.customParserName()} {\n")
-        .append("  open fun createElement(node: ASTNode): PsiElement {\n")
-        .append("    return ${inputFile.elementTypeHolderName()}.Factory.createElement(node)\n")
-        .append("  }\n\n")
-
-    for (rule in rules.keys) {
-        builder.append("  open fun ${rule.toCustomFunction()}(builder: PsiBuilder, level: Int, $rule: Parser): Boolean {\n")
-            .append("    return $rule.parse(builder, level)\n")
-            .append("  }\n\n")
-    }
-
-    return builder.append("}").toString()
+    val factoryType = ClassName("$outputPackage.psi", inputFile.elementTypeHolderName(), "Factory")
+    val parserType = ClassName("com.intellij.lang.parser", "GeneratedParserUtilBase", "Parser")
+    return FileSpec.builder(outputPackage, inputFile.customParserName())
+        .addType(TypeSpec.classBuilder(inputFile.customParserName())
+            .addModifiers(OPEN)
+            .addFunction(FunSpec.builder("createElement")
+                .addModifiers(OPEN)
+                .addParameter("node", ClassName("com.intellij.lang", "ASTNode"))
+                .returns(ClassName("com.intellij.psi", "PsiElement"))
+                .addStatement("return %T.createElement(node)", factoryType)
+                .build())
+            .apply {
+              rules.keys.forEach {
+                addFunction(FunSpec.builder(it.toCustomFunction())
+                    .addModifiers(OPEN)
+                    .addParameter("builder", ClassName("com.intellij.lang", "PsiBuilder"))
+                    .addParameter("level", Int::class)
+                    .addParameter(it, parserType)
+                    .returns(Boolean::class)
+                    .addStatement("return $it.parse(builder, level)")
+                    .build())
+              }
+            }
+            .build())
+        .build()
+        .toString()
   }
 
   companion object {
