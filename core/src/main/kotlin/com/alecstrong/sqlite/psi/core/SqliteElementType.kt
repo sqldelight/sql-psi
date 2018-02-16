@@ -3,7 +3,7 @@ package com.alecstrong.sqlite.psi.core
 import com.intellij.lang.Language
 import com.intellij.psi.tree.IElementType
 
-internal class SqliteElementType(name: String): IElementType(name, null) {
+class SqliteElementType(name: String): IElementType(name, null) {
   override fun getLanguage(): Language = _language
 
   companion object {

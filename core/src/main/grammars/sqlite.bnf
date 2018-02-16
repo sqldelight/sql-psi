@@ -17,6 +17,23 @@
     RP=')'
     DOT='.'
     COMMA=','
+    PLUS='+'
+    MINUS='-'
+    SHIFT_RIGHT='>>'
+    SHIFT_LEFT='<<'
+    LT='<'
+    GT='>'
+    LTE='<='
+    GTE='>='
+    EQ2='=='
+    NEQ='!='
+    NEQ2='<>'
+    MULTIPLY='*'
+    DIVIDE='/'
+    MOD='%'
+    BITWISE_AND='&'
+    BITWISE_OR='|'
+    CONCAT='||'
 
     space='regexp:\s+'
     comment='regexp:--.*'
@@ -117,7 +134,7 @@ literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-') expr
-binary_expr ::= expr ( '||' | '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | '&' | '|' | '<' | '<=' | '>' | '>=' | '=' | '==' | '!=' | '<>' | 'AND' | 'OR' ) expr
+binary_expr ::= expr ( '||' | '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | '&' | '|' | '<' | '<=' | '>' | '>=' | '=' | '==' | '!=' | '<>' | AND | OR ) expr
 function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ',' expr ) * | '*' ] ')'
 paren_expr ::= '(' expr ')'
 cast_expr ::= CAST '(' expr AS type_name ')'
@@ -126,7 +143,7 @@ like_expr ::= expr [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) expr [ ESCAPE expr ]
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
 is_expr ::= expr IS [ NOT ] expr
 between_expr ::= expr [ NOT ] BETWEEN expr AND expr
-in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name ) {
+in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name | bind_expr ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InExprMixin"
 }
 exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')' {

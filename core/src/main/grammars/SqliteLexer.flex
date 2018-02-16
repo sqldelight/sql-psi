@@ -41,6 +41,23 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   ")"                    { return RP; }
   "."                    { return DOT; }
   ","                    { return COMMA; }
+  "+"                    { return PLUS; }
+  "-"                    { return MINUS; }
+  ">>"                   { return SHIFT_RIGHT; }
+  "<<"                   { return SHIFT_LEFT; }
+  "<"                    { return LT; }
+  ">"                    { return GT; }
+  "<="                   { return LTE; }
+  ">="                   { return GTE; }
+  "=="                   { return EQ2; }
+  "!="                   { return NEQ; }
+  "<>"                   { return NEQ2; }
+  "*"                    { return MULTIPLY; }
+  "/"                    { return DIVIDE; }
+  "%"                    { return MOD; }
+  "&"                    { return BITWISE_AND; }
+  "|"                    { return BITWISE_OR; }
+  "||"                   { return CONCAT; }
   "EXPLAIN"              { return EXPLAIN; }
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }
@@ -126,6 +143,8 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "OFFSET"               { return OFFSET; }
   "DETACH"               { return DETACH; }
   "DROP"                 { return DROP; }
+  "AND"                  { return AND; }
+  "OR"                   { return OR; }
   "DISTINCT"             { return DISTINCT; }
   "CAST"                 { return CAST; }
   "LIKE"                 { return LIKE; }
@@ -136,7 +155,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "NOTNULL"              { return NOTNULL; }
   "IS"                   { return IS; }
   "BETWEEN"              { return BETWEEN; }
-  "AND"                  { return AND; }
   "IN"                   { return IN; }
   "CASE"                 { return CASE; }
   "THEN"                 { return THEN; }
@@ -146,7 +164,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "CURRENT_DATE"         { return CURRENT_DATE; }
   "CURRENT_TIMESTAMP"    { return CURRENT_TIMESTAMP; }
   "E"                    { return E; }
-  "OR"                   { return OR; }
   "INTO"                 { return INTO; }
   "VALUES"               { return VALUES; }
   "PRAGMA"               { return PRAGMA; }
