@@ -1,10 +1,9 @@
 plugins {
-  id 'org.jetbrains.intellij' version '0.2.16'
+  id 'org.jetbrains.intellij' version '0.2.18'
 }
 
 intellij {
   version dep.intellij
-  pluginName = 'sqlite-sample'
   plugins = ['psiviewer:3.28.93']
 }
 
