@@ -7,9 +7,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReferenceBase
 
-class SqliteTableReference<T: PsiNamedElement>(
+internal class SqliteTableReference<T: SqliteNamedElementImpl>(
     element: T
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
+  override fun handleElementRename(newElementName: String) = element.setName(newElementName)
+
   override fun resolve(): PsiElement? {
     if (element.parent.isDefinition()) return element
     return variants.mapNotNull { it.psiElement }

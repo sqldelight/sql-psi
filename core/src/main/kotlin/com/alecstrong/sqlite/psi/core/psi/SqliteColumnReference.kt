@@ -9,9 +9,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReferenceBase
 
-internal class SqliteColumnReference<T: PsiNamedElement>(
+internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
     element: T
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
+  override fun handleElementRename(newElementName: String) = element.setName(newElementName)
+
   override fun resolve(): PsiElement? {
     return try {
       unsafeResolve()

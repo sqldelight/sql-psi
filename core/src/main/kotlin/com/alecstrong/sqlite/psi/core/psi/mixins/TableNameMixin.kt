@@ -1,22 +1,20 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.parser.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
+import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableReference
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiNamedElement
+import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiReference
 
 internal abstract class TableNameMixin(
     node: ASTNode
-) : SqliteCompositeElementImpl(node),
-    PsiNamedElement {
-  private var hardcodedName: String? = null
+) : SqliteNamedElementImpl(node) {
+  override val parseRule: (PsiBuilder, Int) -> Boolean = SqliteParser::table_name_real
 
-  override fun getName(): String = hardcodedName ?: text
-  override fun setName(name: String) = apply { hardcodedName = name }
   override fun getReference(): PsiReference {
     return SqliteTableReference(this)
   }

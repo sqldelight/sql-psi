@@ -1,22 +1,22 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.parser.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnAlias
 import com.alecstrong.sqlite.psi.core.psi.SqliteCommonTableExpression
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCteTableName
+import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteWithClause
 import com.intellij.lang.ASTNode
+import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiElement
 
 internal abstract class ColumnAliasMixin(
     node: ASTNode
-) : SqliteCompositeElementImpl(node),
+) : SqliteNamedElementImpl(node),
     SqliteColumnAlias {
-  private var hardcodedName: String? = null
+  override val parseRule: (PsiBuilder, Int) -> Boolean = SqliteParser::column_alias_real
 
-  override fun getName(): String = hardcodedName ?: text
-  override fun setName(name: String) = apply { hardcodedName = name }
   override fun source(): PsiElement {
     parent.let {
       return when (it) {
