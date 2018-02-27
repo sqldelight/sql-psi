@@ -1,19 +1,19 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
+import com.alecstrong.sqlite.psi.core.parser.SqliteParser
+import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableAlias
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableOrSubquery
 import com.intellij.lang.ASTNode
+import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiElement
 
 internal abstract class TableAliasMixin(
     node: ASTNode
-) : SqliteCompositeElementImpl(node),
+) : SqliteNamedElementImpl(node),
     SqliteTableAlias {
-  private var hardcodedName: String? = null
+  override val parseRule: (PsiBuilder, Int) -> Boolean = SqliteParser::table_alias_real
 
-  override fun getName(): String = hardcodedName ?: text
-  override fun setName(name: String) = apply { hardcodedName = name }
   override fun source(): PsiElement {
     return (parent as SqliteTableOrSubquery).let { it.tableName ?: it.compoundSelectStmt!! }
   }
