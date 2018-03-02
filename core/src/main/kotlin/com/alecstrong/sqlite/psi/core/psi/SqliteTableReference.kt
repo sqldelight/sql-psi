@@ -16,11 +16,16 @@ internal class SqliteTableReference<T: SqliteNamedElementImpl>(
     if (element.parent.isDefinition()) return element
     return variants.mapNotNull { it.psiElement }
         .filterIsInstance<PsiNamedElement>()
-        .singleOrNull { it.name == element.name }
+        .firstOrNull { it.name == element.name }
   }
 
   override fun getVariants(): Array<LookupElement> {
     if (element.parent.isDefinition()) return emptyArray()
+    if (selectFromCurrentQuery()) {
+      return (element.parent as SqliteCompositeElement).queryAvailable(element)
+          .mapNotNull { it.table?.let(LookupElementBuilder::create) }
+          .toTypedArray()
+    }
     return (element.parent as SqliteCompositeElement).tablesAvailable(element)
         .map { LookupElementBuilder.create(it.tableName) }
         .toTypedArray()
@@ -33,5 +38,9 @@ internal class SqliteTableReference<T: SqliteNamedElementImpl>(
     is SqliteCreateVirtualTableStmt -> true
     is SqliteCreateViewStmt -> true
     else -> false
+  }
+
+  private fun selectFromCurrentQuery(): Boolean {
+    return element.parent is SqliteColumnExpr || element.parent is SqliteResultColumn
   }
 }

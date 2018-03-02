@@ -24,11 +24,12 @@ internal abstract class TableNameMixin(
     if (parent is SqliteColumnExpr) return
 
     val matches: List<QueryResult> by lazy { tableAvailable(this, name) }
-    if (reference.resolve() == this) {
+    val references = reference.resolve()
+    if (references == this) {
       if(matches.any { it.table != this }) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
-    } else if (matches.isEmpty()) {
+    } else if (references == null) {
       annotationHolder.createErrorAnnotation(this, "No table found with name $name")
     }
     super.annotate(annotationHolder)
