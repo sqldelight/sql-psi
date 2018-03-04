@@ -1,0 +1,5 @@
+CREATE TABLE team (
+  name TEXT PRIMARY KEY NOT NULL,
+  captain INTEGER UNIQUE NOT NULL REFERENCES player.number,
+  coach TEXT NOT NULL
+);

@@ -12,7 +12,8 @@ internal abstract class ForeignKeyClauseMixin(
     SqliteForeignKeyClause {
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child in columnNameList) {
-      return listOf(tablesAvailable(child).first { it.tableName.name == foreignTable.name }.query())
+      val table = tablesAvailable(child).firstOrNull { it.tableName.name == foreignTable.name } ?: return emptyList()
+      return listOf(table.query())
     }
     return super.queryAvailable(child)
   }
