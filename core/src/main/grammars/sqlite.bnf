@@ -124,7 +124,14 @@ expr ::= ( raise_expr
          | cast_expr
          | paren_expr
          | function_expr
-         | binary_expr
+         | binary_or_expr
+         | binary_and_expr
+         | binary_equality_expr
+         | binary_boolean_expr
+         | binary_bitwise_expr
+         | binary_add_expr
+         | binary_mult_expr
+         | binary_pipe_expr
          | unary_expr
          | bind_expr
          | literal_expr
@@ -134,7 +141,30 @@ literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
 unary_expr ::= ('+' | '-') expr
-binary_expr ::= expr ( '||' | '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | '&' | '|' | '<' | '<=' | '>' | '>=' | '=' | '==' | '!=' | '<>' | AND | OR ) expr
+binary_pipe_expr ::= expr '||' expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_mult_expr ::= expr ( '*' | '/' | '%' ) expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_add_expr ::= expr ( '+' | '-' ) expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_boolean_expr ::= expr (  '<' | '<=' | '>' | '>=' ) expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_equality_expr ::= expr ( '=' | '==' | '!=' | '<>' ) expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_and_expr ::= expr AND expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
+binary_or_expr ::= expr OR expr {
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
+}
 function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ',' expr ) * | '*' ] ')'
 paren_expr ::= '(' expr ')'
 cast_expr ::= CAST '(' expr AS type_name ')'
