@@ -27,6 +27,7 @@ open class BnfExtenderTask : SourceTask() {
       var currentRuleDefinition = ""
       var firstRule = ""
       var header = ""
+      var generatedUtilSuperclass = ClassName("com.intellij.lang.parser", "GeneratedParserUtilBase")
       file.forEachLine { line ->
         val ruleSeparatorIndex = line.indexOf("::=")
         if (ruleSeparatorIndex >= 0) {
@@ -43,6 +44,11 @@ open class BnfExtenderTask : SourceTask() {
         } else {
           currentRuleDefinition += "\n$line"
         }
+      }
+
+      val regex = Regex("[\\s\\S]+parserUtilClass=\"([a-zA-Z.]*)\"[\\s\\S]+")
+      regex.matchEntire(header)?.groupValues?.getOrNull(1)?.let {
+        generatedUtilSuperclass = ClassName.bestGuess(it)
       }
 
       rules.put(currentRule, currentRuleDefinition)
@@ -65,7 +71,7 @@ open class BnfExtenderTask : SourceTask() {
 
       File("${outputDirectory().path}/parser", "${file.parserUtilName()}.kt")
           .createIfAbsent()
-          .writeText(generateParserUtil(rulesToExtend, file))
+          .writeText(generateParserUtil(rulesToExtend, file, generatedUtilSuperclass))
 
       File("${outputDirectory().path}/parser", "${file.customParserName()}.kt")
           .createIfAbsent()
@@ -142,13 +148,17 @@ open class BnfExtenderTask : SourceTask() {
 
   private fun File.elementTypeHolderName() = "${nameWithoutExtension.capitalize()}Types"
 
-  private fun generateParserUtil(rules: Map<String, String>, inputFile: File): String {
+  private fun generateParserUtil(
+    rules: Map<String, String>,
+    inputFile: File,
+    superclass: ClassName
+  ): String {
     val parserVar = inputFile.customParserName().decapitalize()
     val customParserType = ClassName("", inputFile.customParserName())
     return FileSpec.builder(outputPackage, inputFile.parserUtilName())
         .addType(TypeSpec.objectBuilder(inputFile.parserUtilName())
             .addModifiers(INTERNAL)
-            .superclass(ClassName("com.intellij.lang.parser", "GeneratedParserUtilBase"))
+            .superclass(superclass)
             .addProperty(PropertySpec.varBuilder(parserVar, customParserType)
                 .addModifiers(INTERNAL)
                 .initializer("%T()", customParserType)

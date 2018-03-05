@@ -1,11 +1,11 @@
 package com.alecstrong.sqlite.psi.core
 
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
-import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
+import com.alecstrong.sqlite.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
 import com.intellij.openapi.roots.ProjectRootManager
@@ -25,21 +25,9 @@ abstract class SqliteFileBase(
   open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
     val result = ArrayList<LazyQuery>()
     iterateSqliteFiles { psiFile ->
-      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
+      PsiTreeUtil.findChildrenOfType(psiFile, TableElement::class.java).forEach { sqlStmt ->
         if (sqlStmt == sqlStmtElement) return@forEach
-        sqlStmt.createTableStmt?.let { createTable ->
-          result.add(LazyQuery(createTable.tableName) {
-            createTable.compoundSelectStmt?.let {
-              QueryResult(createTable.tableName, it.queryExposed().flatMap { it.columns })
-            } ?: createTable.queryAvailable(this).single()
-          })
-        }
-        sqlStmt.createViewStmt?.let { createView ->
-          result.add(LazyQuery(createView.viewName) {
-            QueryResult(createView.viewName,
-                createView.compoundSelectStmt.queryExposed().flatMap { it.columns })
-          })
-        }
+        result.add(sqlStmt.tableExposed())
       }
       return@iterateSqliteFiles true
     }

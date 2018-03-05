@@ -133,7 +133,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "VIEW"                 { return VIEW; }
   "VIRTUAL"              { return VIRTUAL; }
   "USING"                { return USING; }
-  "module_argument"      { return MODULE_ARGUMENT; }
   "WITH"                 { return WITH; }
   "RECURSIVE"            { return RECURSIVE; }
   "FROM"                 { return FROM; }
