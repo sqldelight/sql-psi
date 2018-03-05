@@ -2,6 +2,7 @@ package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.AnnotationException
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin
 import com.alecstrong.sqlite.psi.core.psi.mixins.SingleRow
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
@@ -23,27 +24,28 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
   }
 
   internal fun unsafeResolve(): PsiElement? {
-    if (element.parent is SqliteColumnDef) return element
+    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return element
 
     val tableName = tableName()
-    val elements: List<PsiNamedElement>
+    val tables: List<QueryResult>
     if (tableName != null) {
-      val tables = availableQuery().filter { it.table?.name == tableName.name }
+      tables = availableQuery().filter { it.table?.name == tableName.name }
 
       if (tables.isEmpty()) {
         throw AnnotationException("No table found with name ${tableName.name}", tableName)
       }
 
-      elements = tables.flatMap { it.columns }
-          .filterIsInstance<PsiNamedElement>()
-          .filter { it.name == element.name }
     } else {
-      elements = availableQuery()
-          .filterNot { it.table is SingleRow }
-          .flatMap { it.columns }
-          .filterIsInstance<PsiNamedElement>()
-          .filter { it.name == element.name }
+      tables = availableQuery().filterNot { it.table is SingleRow }
     }
+
+    val columns = tables.flatMap { it.columns }
+        .filterIsInstance<PsiNamedElement>()
+        .filter { it.name == element.name }
+    val synthesizedColumns = tables.flatMap { it.synthesizedColumns }
+        .filter { element.name in it.acceptableValues }
+        .map { it.table }
+    val elements = columns + synthesizedColumns
 
     if (elements.size > 1) {
       throw AnnotationException("Multiple columns found with name ${element.name}")

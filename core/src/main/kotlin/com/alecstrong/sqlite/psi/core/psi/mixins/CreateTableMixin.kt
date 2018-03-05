@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
@@ -9,6 +10,7 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteForeignKeyClause
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
+import com.alecstrong.sqlite.psi.core.psi.TableElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -16,7 +18,14 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class CreateTableMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
-    SqliteCreateTableStmt {
+    SqliteCreateTableStmt,
+    TableElement {
+  override fun tableExposed() = LazyQuery(tableName) {
+    compoundSelectStmt?.let {
+      QueryResult(tableName, it.queryExposed().flatMap { it.columns })
+    } ?: queryAvailable(this).single()
+  }
+
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     return listOf(QueryResult(tableName, columnDefList.map { it.columnName }))
   }

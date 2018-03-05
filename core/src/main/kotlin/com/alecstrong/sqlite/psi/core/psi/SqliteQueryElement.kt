@@ -20,9 +20,22 @@ interface QueryElement: PsiElement {
    */
   fun queryExposed(): List<QueryResult>
 
-  data class QueryResult(val table: PsiNamedElement?, val columns: List<PsiElement>) {
+  data class QueryResult(
+    val table: PsiNamedElement?,
+    val columns: List<PsiElement>,
+    val synthesizedColumns: List<SynthesizedColumn> = emptyList()
+  ) {
     override fun toString(): String {
       return "${table?.name} : [${columns.joinToString { it.text }}]"
     }
   }
+
+  /**
+   * These aren't considered part of the exposed query (ie performing a SELECT * does not return
+   * the column in the result set) but they can be explicitly referenced.
+   */
+  data class SynthesizedColumn(
+    val table: PsiElement,
+    val acceptableValues: List<String>
+  )
 }

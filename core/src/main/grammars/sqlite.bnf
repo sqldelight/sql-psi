@@ -1,4 +1,5 @@
 {
+  parserUtilClass="com.alecstrong.sqlite.psi.core.ModuleParserUtil"
   parserClass = "com.alecstrong.sqlite.psi.core.parser.SqliteParser"
   elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
 
@@ -75,8 +76,12 @@ conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE )
 create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTriggerMixin"
 }
-create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name AS compound_select_stmt
-create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' module_argument ( ',' module_argument ) * ')' ]
+create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name AS compound_select_stmt {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateViewMixin"
+}
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<module_argument column_name>> ( ',' <<module_argument column_name>> ) * ')' ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin"
+}
 with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.WithClauseMixin"
 }
