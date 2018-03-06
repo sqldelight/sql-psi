@@ -51,14 +51,12 @@ internal abstract class InsertStmtMixin(
     super.annotate(annotationHolder)
   }
 
-  companion object {
-    private fun SqliteColumnDef.hasDefaultValue(): Boolean {
-      return columnConstraintList.any {
-        it.node.findChildByType(SqliteTypes.DEFAULT) != null
-            || it.node.findChildByType(SqliteTypes.AUTOINCREMENT) != null
-      } || columnConstraintList.none {
-        it.node.findChildByType(SqliteTypes.NOT) != null
-      }
+  protected fun SqliteColumnDef.hasDefaultValue(): Boolean {
+    return columnConstraintList.any {
+      it.node.findChildByType(SqliteTypes.DEFAULT) != null
+          || it.node.findChildByType(SqliteTypes.AUTOINCREMENT) != null
+    } || columnConstraintList.none {
+      it.node.findChildByType(SqliteTypes.NOT) != null
     }
   }
 }
