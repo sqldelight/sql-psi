@@ -3,6 +3,7 @@ package com.alecstrong.sqlite.psi.core.psi.mixins
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.SynthesizedColumn
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
@@ -27,7 +28,20 @@ internal abstract class CreateTableMixin(
   }
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
-    return listOf(QueryResult(tableName, columnDefList.map { it.columnName }))
+    val synthesizedColumns = if (node.findChildByType(SqliteTypes.WITHOUT) == null) {
+      val columnNames = columnDefList.mapNotNull { it.columnName.name }
+      listOf(SynthesizedColumn(
+          table = this,
+          acceptableValues = listOf("rowid", "oid", "_oid_").filter { it !in columnNames }
+      ))
+    } else {
+      emptyList()
+    }
+    return listOf(QueryResult(
+        table = tableName,
+        columns = columnDefList.map { it.columnName },
+        synthesizedColumns = synthesizedColumns
+    ))
   }
 
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
