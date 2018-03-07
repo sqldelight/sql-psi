@@ -120,27 +120,27 @@ drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name
 expr ::= ( raise_expr
          | case_expr
          | exists_expr
-         | in_expr
+         | paren_expr
          | between_expr
          | is_expr
          | null_expr
-         | cast_expr
-         | paren_expr
-         | function_expr
          | binary_or_expr
          | binary_and_expr
          | binary_like_expr
+         | collate_expr
+         | cast_expr
+         | function_expr
+         | in_expr
          | binary_equality_expr
          | binary_boolean_expr
          | binary_bitwise_expr
          | binary_add_expr
          | binary_mult_expr
          | binary_pipe_expr
-         | collate_expr
          | unary_expr
-         | bind_expr
          | literal_expr
-         | column_expr )
+         | column_expr
+         | bind_expr )
 
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
@@ -152,7 +152,7 @@ binary_pipe_expr ::= expr '||' expr {
 binary_mult_expr ::= expr ( '*' | '/' | '%' ) expr {
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
 }
-binary_add_expr ::= expr ( '+' | '-' | LIKE ) expr {
+binary_add_expr ::= expr ( '+' | '-' ) expr {
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
 }
 binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr {
