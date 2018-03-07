@@ -124,19 +124,19 @@ expr ::= ( raise_expr
          | between_expr
          | is_expr
          | null_expr
-         | like_expr
-         | collate_expr
          | cast_expr
          | paren_expr
          | function_expr
          | binary_or_expr
          | binary_and_expr
+         | binary_like_expr
          | binary_equality_expr
          | binary_boolean_expr
          | binary_bitwise_expr
          | binary_add_expr
          | binary_mult_expr
          | binary_pipe_expr
+         | collate_expr
          | unary_expr
          | bind_expr
          | literal_expr
@@ -152,7 +152,7 @@ binary_pipe_expr ::= expr '||' expr {
 binary_mult_expr ::= expr ( '*' | '/' | '%' ) expr {
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
 }
-binary_add_expr ::= expr ( '+' | '-' ) expr {
+binary_add_expr ::= expr ( '+' | '-' | LIKE ) expr {
   implements = "com.alecstrong.sqlite.psi.core.psi.SqliteBinaryExpr"
 }
 binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr {
@@ -174,7 +174,7 @@ function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ',' expr ) * | '*' ] '
 paren_expr ::= '(' expr ')'
 cast_expr ::= CAST '(' expr AS type_name ')'
 collate_expr ::= expr COLLATE collation_name
-like_expr ::= expr [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) expr [ ESCAPE expr ]
+binary_like_expr ::= expr [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) expr [ ESCAPE expr ]
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
 is_expr ::= expr IS [ NOT ] expr
 between_expr ::= expr [ NOT ] BETWEEN expr AND expr
