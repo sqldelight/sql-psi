@@ -23,7 +23,8 @@ interface QueryElement: PsiElement {
   data class QueryResult(
     val table: PsiNamedElement?,
     val columns: List<PsiElement>,
-    val synthesizedColumns: List<SynthesizedColumn> = emptyList()
+    val synthesizedColumns: List<SynthesizedColumn> = emptyList(),
+    val joinOperator: SqliteJoinOperator? = null
   ) {
     override fun toString(): String {
       return "${table?.name} : [${columns.joinToString { it.text }}]"
