@@ -255,6 +255,7 @@ compound_operator ::= ( UNION ALL
                       | EXCEPT )
 update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
+  pin=2
 }
 update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"

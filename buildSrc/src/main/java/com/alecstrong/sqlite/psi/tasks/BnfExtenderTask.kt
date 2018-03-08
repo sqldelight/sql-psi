@@ -90,11 +90,17 @@ open class BnfExtenderTask : SourceTask() {
 
   private fun generateRules(firstRule: String, rules: Map<String, String>): String {
     val keyFinder = Regex("([^a-zA-Z_]|^)(${rules.keys.joinToString("|")})([^a-zA-Z_]|$)")
+    val pinFinder = Regex("[\\s\\S]+pin *= *([0-9]*)[\\s\\S]+")
 
     val builder = StringBuilder("root ::= ${firstRule.extensionReplacements(keyFinder)}\n")
     for ((rule, definition) in rules) {
       builder.append("fake $rule ::= $definition\n")
-          .append("${rule}_real ::= ${definition.extensionReplacements(keyFinder)} { elementType = $rule }\n")
+          .append("${rule}_real ::= ${definition.extensionReplacements(keyFinder)} {\n" +
+              "  elementType = $rule\n")
+      pinFinder.matchEntire(definition)?.groupValues?.getOrNull(1)?.let {
+        builder.append("  pin=$it\n")
+      }
+      builder.append("}\n")
     }
     return builder.toString()
   }
