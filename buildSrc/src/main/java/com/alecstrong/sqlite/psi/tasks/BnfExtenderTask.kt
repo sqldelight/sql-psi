@@ -131,7 +131,7 @@ open class BnfExtenderTask : SourceTask() {
 
   private fun unextendableRules(headerText: String, rules: Collection<String>): Sequence<String> {
     val keyFinder = Regex("extends\\(\"([^)\"]+)\"\\)=([a-zA-Z_]+)\n")
-    return keyFinder.findAll(headerText).map { it.groupValues[2] }.asSequence()
+    return keyFinder.findAll(headerText).map { it.groupValues[2] }.asSequence() + rules.filter { it.startsWith("private ") }
   }
 
   private fun unextendableSubclasses(headerText: String, rules: Collection<String>): Sequence<String> {
