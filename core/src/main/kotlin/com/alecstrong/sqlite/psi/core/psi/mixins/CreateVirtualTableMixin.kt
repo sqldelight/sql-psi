@@ -15,7 +15,7 @@ internal abstract class CreateVirtualTableMixin(
     SqliteCreateVirtualTableStmt,
     TableElement {
   override fun tableExposed(): LazyQuery {
-    val synthesizedColumns = if (moduleName.text.startsWith("fts")) {
+    val synthesizedColumns = if (moduleName?.text?.startsWith("fts") == true) {
       listOf(
           SynthesizedColumn(
               table = this,
