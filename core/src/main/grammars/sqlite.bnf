@@ -38,6 +38,7 @@
 
     space='regexp:\s+'
     comment='regexp:--.*'
+    javadoc='regexp:/\*\*(.|\n)*\*/'
     digit='regexp:\d+(\.\d*)?'
     id='regexp:([a-zA-Z0-9_\`\[\]])*'
     string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
@@ -189,6 +190,7 @@ raise_expr ::= raise_function
 raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'
 literal_value ::= ( numeric_literal
                   | string_literal
+                  | javadoc_literal
                   | blob_literal
                   | NULL
                   | CURRENT_TIME
@@ -306,6 +308,7 @@ identifier ::= id
 pragma_name ::= id
 function_name ::= id
 string_literal ::= string
+javadoc_literal ::= javadoc
 table_or_index_name ::= id
 new_table_name ::= id
 savepoint_name ::= id

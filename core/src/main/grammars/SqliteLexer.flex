@@ -27,6 +27,7 @@ WHITE_SPACE=\s+
 
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
+JAVADOC="/"\*\*([^]|\n)*\*"/"
 DIGIT=[0-9]+(\.[0-9]*)?
 ID=([a-zA-Z0-9_\`\[\]])*
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
@@ -185,6 +186,7 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }
+  {JAVADOC}              { return JAVADOC; }
   {DIGIT}                { return DIGIT; }
   {ID}                   { return ID; }
   {STRING}               { return STRING; }
