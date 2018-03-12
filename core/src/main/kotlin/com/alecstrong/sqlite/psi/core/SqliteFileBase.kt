@@ -4,7 +4,6 @@ import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
-import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmt
 import com.alecstrong.sqlite.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
@@ -37,9 +36,7 @@ abstract class SqliteFileBase(
   open fun indexes(): List<SqliteCreateIndexStmt> {
     val result = ArrayList<SqliteCreateIndexStmt>()
     iterateSqliteFiles { psiFile ->
-      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
-        sqlStmt.createIndexStmt?.let(result::add)
-      }
+      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqliteCreateIndexStmt::class.java))
       return@iterateSqliteFiles true
     }
     return result
@@ -48,9 +45,7 @@ abstract class SqliteFileBase(
   open fun triggers(): List<SqliteCreateTriggerStmt> {
     val result = ArrayList<SqliteCreateTriggerStmt>()
     iterateSqliteFiles { psiFile ->
-      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
-        sqlStmt.createTriggerStmt?.let(result::add)
-      }
+      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqliteCreateTriggerStmt::class.java))
       return@iterateSqliteFiles true
     }
     return result
@@ -59,9 +54,7 @@ abstract class SqliteFileBase(
   open fun views(): List<SqliteCreateViewStmt> {
     val result = ArrayList<SqliteCreateViewStmt>()
     iterateSqliteFiles { psiFile ->
-      PsiTreeUtil.findChildrenOfType(psiFile, SqliteSqlStmt::class.java).forEach { sqlStmt ->
-        sqlStmt.createViewStmt?.let(result::add)
-      }
+      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqliteCreateViewStmt::class.java))
       return@iterateSqliteFiles true
     }
     return result

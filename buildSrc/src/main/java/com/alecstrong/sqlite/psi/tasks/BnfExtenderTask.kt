@@ -91,6 +91,7 @@ open class BnfExtenderTask : SourceTask() {
   private fun generateRules(firstRule: String, rules: Map<String, String>): String {
     val keyFinder = Regex("([^a-zA-Z_]|^)(${rules.keys.joinToString("|")})([^a-zA-Z_]|$)")
     val pinFinder = Regex("[\\s\\S]+pin *= *([0-9]*)[\\s\\S]+")
+    val recoverWhileFinder = Regex("[\\s\\S]+recoverWhile *= *([a-zA-Z_]*)[\\s\\S]+")
 
     val builder = StringBuilder("root ::= ${firstRule.extensionReplacements(keyFinder)}\n")
     for ((rule, definition) in rules) {
@@ -99,6 +100,9 @@ open class BnfExtenderTask : SourceTask() {
               "  elementType = $rule\n")
       pinFinder.matchEntire(definition)?.groupValues?.getOrNull(1)?.let {
         builder.append("  pin=$it\n")
+      }
+      recoverWhileFinder.matchEntire(definition)?.groupValues?.getOrNull(1)?.let {
+        builder.append("  recoverWhile=$it\n")
       }
       builder.append("}\n")
     }
@@ -121,9 +125,6 @@ open class BnfExtenderTask : SourceTask() {
       "${match.groupValues[1]}${match.groupValues[2]}_real${match.groupValues[3]}"
     }
     // We have to do it twice because the matcher doesn't catch three adjacent rules.
-    if (endsWith("}")) {
-      return substring(0, indexOf("{") - 1).matcher().matcher()
-    }
     return matcher().matcher()
   }
 

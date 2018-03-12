@@ -13,6 +13,6 @@ internal abstract class CreateViewMixin(
     SqliteCreateViewStmt,
     TableElement {
   override fun tableExposed() = LazyQuery(viewName) {
-    QueryResult(viewName, compoundSelectStmt.queryExposed().flatMap { it.columns })
+    QueryResult(viewName, compoundSelectStmt?.queryExposed()?.flatMap { it.columns } ?: emptyList())
   }
 }
