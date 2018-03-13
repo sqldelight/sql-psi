@@ -1,1 +1,1 @@
-Table.s line 2:0 - ',', ';', <compound operator real>, FROM, GROUP, LIMIT, ORDER or WHERE expected, got 'FRM'
+Table.s line 2:0 - ',', <compound operator real>, FROM, GROUP, LIMIT, ORDER or WHERE expected, got 'FRM'

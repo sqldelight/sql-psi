@@ -10,4 +10,4 @@ WHERE test2._id = ?;
 -- errors.
 SELECT test2.*
 FROM test
-WHERE test2._id = ?
+WHERE test2._id = ?;
