@@ -46,8 +46,11 @@
   extends(".*expr")=expr
 }
 
-sql_stmt_list ::= ( sql_stmt ';' ) * {
+sql_stmt_list ::= statement * {
   mixin="com.alecstrong.sqlite.psi.core.psi.mixins.SqlStmtListMixin"
+}
+statement ::= sql_stmt ';' {
+  pin=1
 }
 sql_stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
                                           create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt | drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt |
@@ -125,11 +128,11 @@ common_table_expression ::= table_name [ '(' column_alias ( ',' column_alias ) *
 }
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
-  pin = 2
+  pin = 4
 }
 delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
-  pin = 2
+  pin = 4
 }
 detach_stmt ::= DETACH [ DATABASE ] database_name {
   pin = 1
@@ -232,7 +235,7 @@ literal_value ::= ( numeric_literal
 numeric_literal ::= ( digit [ '.' ( digit ) * ] | '.' digit ) [ E [ '+' | '-' ] digit ]
 insert_stmt ::= [ with_clause ] ( INSERT | REPLACE | INSERT OR REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InsertStmtMixin"
-  pin = 2
+  pin = 5
 }
 pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ] {
   pin = 1
@@ -295,11 +298,11 @@ compound_operator ::= ( UNION ALL
                       | EXCEPT )
 update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
-  pin = 2
+  pin = 4
 }
 update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
-  pin = 2
+  pin = 4
 }
 setter_expression ::= expr
 qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
