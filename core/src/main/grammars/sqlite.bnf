@@ -244,14 +244,15 @@ pragma_value ::= ( signed_number
 reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ] {
   pin = 1
 }
-compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' common_table_expression ) * ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' common_table_expression ) * ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | ',' ) limiting_term ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = [
     "com.alecstrong.sqlite.psi.core.psi.QueryElement";
     "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
   ]
-  pin = 2
+
 }
+limiting_term ::= expr
 select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.SelectStmtMixin"
   implements = [
