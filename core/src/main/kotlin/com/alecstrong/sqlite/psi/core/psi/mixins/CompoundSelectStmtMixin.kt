@@ -17,14 +17,14 @@ abstract internal class CompoundSelectStmtMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteCompoundSelectStmt {
-  override fun queryExposed(): List<QueryResult> {
+  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
     if (detectRecursion() != null) {
       return emptyList()
     }
     return selectStmtList.first().queryExposed()
   }
 
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+  override fun tablesAvailable(child: PsiElement): List<LazyQuery> = analyze("tablesAvailable") {
     return if (node.findChildByType(SqliteTypes.RECURSIVE) != null) {
       super.tablesAvailable(child) + commonTableExpressionList.map {
         LazyQuery(it.tableName) { it.queryExposed().single() }
@@ -36,7 +36,7 @@ abstract internal class CompoundSelectStmtMixin(
     }
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
     if (child is SqliteExpr) {
       return queryExposed()
     } else if (child is SqliteOrderingTerm) {

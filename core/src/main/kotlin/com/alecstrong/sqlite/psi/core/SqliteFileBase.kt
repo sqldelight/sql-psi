@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core
 
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
+import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
@@ -21,21 +22,32 @@ abstract class SqliteFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  private val tablesAvailable by lazy {
+  private val tables by lazy {
     val result = ArrayList<Pair<TableElement, LazyQuery>>()
-    iterateSqliteFiles { psiFile ->
-      PsiTreeUtil.findChildrenOfType(psiFile, TableElement::class.java).forEach { sqlStmt ->
-        result.add(sqlStmt to sqlStmt.tableExposed())
-      }
-      return@iterateSqliteFiles true
+    PsiTreeUtil.findChildrenOfType(this, TableElement::class.java).forEach { sqlStmt ->
+      result.add(sqlStmt to sqlStmt.tableExposed())
     }
     return@lazy result
   }
 
+  fun printAnalysis(printer: (String) -> Unit) {
+    PsiTreeUtil.findChildrenOfType(this, SqliteCompositeElement::class.java).forEach { element ->
+      if (element.analytics().isEmpty()) return@forEach
+      printer("$element : ${element.analytics()}")
+    }
+  }
+
   open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
-    return tablesAvailable
-        .filter { it.first != sqlStmtElement }
-        .map { it.second }
+    val result = ArrayList<LazyQuery>()
+    iterateSqliteFiles { psiFile ->
+      if (psiFile is SqliteFileBase) {
+        result.addAll(psiFile.tables
+            .filter { it.first != sqlStmtElement }
+            .map { it.second })
+      }
+      return@iterateSqliteFiles true
+    }
+    return result
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {

@@ -11,6 +11,8 @@ internal open class SqliteCompositeElementImpl(
     node: ASTNode
 ) : ASTWrapperPsiElement(node),
     SqliteCompositeElement {
+  private val analytics = mutableMapOf<String, Analytics>()
+
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     return (parent as SqliteCompositeElement).queryAvailable(this)
   }
@@ -26,9 +28,21 @@ internal open class SqliteCompositeElementImpl(
     return "${super.toString()}: ${(parent as SqliteCompositeElement).queryAvailable(this)}"
   }
 
+  inline fun <T> analyze(key: String, block: () -> T): T {
+    val start = System.currentTimeMillis()
+    try {
+      return block()
+    } finally {
+      val duration = System.currentTimeMillis() - start
+      analytics.put(key, analytics.getOrDefault(key, Analytics()) + duration)
+    }
+  }
+
   protected fun tableAvailable(child: PsiElement, name: String): List<QueryResult> {
     return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query }
   }
+
+  override fun analytics() = analytics
 
   override fun getContainingFile() = super.getContainingFile() as SqliteFileBase
 }
