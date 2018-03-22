@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteResultColumn
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
@@ -20,6 +21,9 @@ internal abstract class ResultColumnMixin(
       // expr [ '.' column_alias ]
       columnAlias?.let { alias ->
         return listOf(QueryResult(null, listOf(alias)))
+      }
+      if (it is SqliteColumnExpr) {
+        return listOf(QueryResult(null, listOf(it.columnName.reference?.resolve() ?: it)))
       }
       return listOf(QueryResult(null, listOf(it)))
     }
