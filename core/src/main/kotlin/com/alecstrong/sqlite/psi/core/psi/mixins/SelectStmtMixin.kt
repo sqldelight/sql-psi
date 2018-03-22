@@ -11,21 +11,21 @@ internal abstract class SelectStmtMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteSelectStmt {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
     if (child in resultColumnList) return fromQuery()
     if (child in exprList) return fromQuery() + super.queryAvailable(this)
     if (child == joinClause) return super.queryAvailable(child)
     return super.queryAvailable(child)
   }
 
-  override fun queryExposed(): List<QueryResult> {
+  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
     if (valuesExpressionList.isNotEmpty()) {
       return listOf(QueryResult(null, valuesExpressionList.first().exprList))
     }
     return resultColumnList.flatMap { it.queryExposed() }
   }
 
-  internal fun fromQuery(): List<QueryResult> {
+  internal fun fromQuery(): List<QueryResult> = analyze("fromQuery") {
     joinClause?.let {
       return it.queryExposed()
     }

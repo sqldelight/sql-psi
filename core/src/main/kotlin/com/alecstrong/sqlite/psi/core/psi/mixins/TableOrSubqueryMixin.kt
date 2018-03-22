@@ -9,25 +9,27 @@ internal abstract class TableOrSubqueryMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteTableOrSubquery {
-  override fun queryExposed(): List<QueryResult> {
+  private val queryExposed: List<QueryResult> by lazy {
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)
       if (result.isEmpty()) {
-        return emptyList()
+        return@lazy emptyList<QueryResult>()
       }
       tableAlias?.let { alias ->
-        return listOf(QueryResult(alias, result.flatMap { it.columns }))
+        return@lazy listOf(QueryResult(alias, result.flatMap { it.columns }))
       }
-      return result
+      return@lazy result
     }
     compoundSelectStmt?.let {
       val result = it.queryExposed()
       tableAlias?.let { alias ->
-        return result.map { it.copy(table = alias) }
+        return@lazy result.map { it.copy(table = alias) }
       }
-      return result
+      return@lazy result
     }
-    joinClause?.let { return it.queryExposed() }
-    return tableOrSubqueryList.flatMap { it.queryExposed() }
+    joinClause?.let { return@lazy it.queryExposed() }
+    return@lazy tableOrSubqueryList.flatMap { it.queryExposed() }
   }
+
+  override fun queryExposed() = queryExposed
 }
