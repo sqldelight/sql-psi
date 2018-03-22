@@ -1,0 +1,7 @@
+CREATE TABLE test (
+  value TEXT
+);
+
+SELECT *
+FROM test
+WHERE EXISTS (SELECT * FROM test);

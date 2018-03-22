@@ -42,27 +42,17 @@ abstract internal class JoinClauseMixin(
     var queryAvailable = tableOrSubqueryList[0].queryExposed()
     tableOrSubqueryList.drop(1)
         .zip(joinConstraintList)
-        .zip(joinOperatorList) { (subquery, constraint), operator ->
-          val subqueryExposed = subquery.queryExposed().let { query ->
+        .zip(joinOperatorList) zip2@{ (subquery, constraint), operator ->
+          queryAvailable += subquery.queryExposed().let { query ->
             when {
-              query.isEmpty() -> return@zip
-              query.size == 1 -> query.single().copy(joinOperator = operator)
+              query.isEmpty() -> return@zip2
               else -> QueryResult(
                   table = query.first().table,
                   columns = query.flatMap { it.columns },
-                  joinOperator = operator
+                  joinOperator = operator,
+                  joinConstraint = constraint
               )
             }
-          }
-          if (constraint.node.findChildByType(SqliteTypes.USING) != null) {
-            val columnNames = constraint.columnNameList.map { it.name }
-            queryAvailable += subqueryExposed.copy(
-                columns = subqueryExposed.columns
-                    .filterIsInstance<PsiNamedElement>()
-                    .filter { it.name !in columnNames }
-            )
-          } else {
-            queryAvailable += subqueryExposed
           }
         }
     return queryAvailable

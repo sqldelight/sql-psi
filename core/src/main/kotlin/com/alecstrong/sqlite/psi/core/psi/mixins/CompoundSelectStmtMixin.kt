@@ -70,9 +70,7 @@ abstract internal class CompoundSelectStmtMixin(
   private fun detectRecursion(): String? {
     val view = parent as? SqliteCreateViewStmt ?: return null
 
-    val viewName = view.viewName ?: return null
-
-    val viewTree = linkedSetOf(viewName.name)
+    val viewTree = linkedSetOf(view.viewName.name)
 
     fun SqliteCreateViewStmt.recursion(): String? {
       PsiTreeUtil.findChildrenOfType(compoundSelectStmt, TableNameMixin::class.java).forEach {

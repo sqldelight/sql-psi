@@ -13,3 +13,7 @@ WHERE count > 5;
 SELECT *
 FROM AB
 WHERE a_id = 1;
+
+SELECT B.a_id
+FROM A
+JOIN B USING (a_id);
