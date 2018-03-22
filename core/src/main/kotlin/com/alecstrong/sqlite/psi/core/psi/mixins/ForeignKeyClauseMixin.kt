@@ -13,7 +13,7 @@ internal abstract class ForeignKeyClauseMixin(
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child in columnNameList) {
       val table = tablesAvailable(child).firstOrNull { it.tableName.name == foreignTable.name } ?: return emptyList()
-      return listOf(table.query())
+      return listOf(table.query)
     }
     return super.queryAvailable(child)
   }

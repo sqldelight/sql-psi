@@ -21,16 +21,21 @@ abstract class SqliteFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
-    val result = ArrayList<LazyQuery>()
+  private val tablesAvailable by lazy {
+    val result = ArrayList<Pair<TableElement, LazyQuery>>()
     iterateSqliteFiles { psiFile ->
       PsiTreeUtil.findChildrenOfType(psiFile, TableElement::class.java).forEach { sqlStmt ->
-        if (sqlStmt == sqlStmtElement) return@forEach
-        result.add(sqlStmt.tableExposed())
+        result.add(sqlStmt to sqlStmt.tableExposed())
       }
       return@iterateSqliteFiles true
     }
-    return result
+    return@lazy result
+  }
+
+  open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
+    return tablesAvailable
+        .filter { it.first != sqlStmtElement }
+        .map { it.second }
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {

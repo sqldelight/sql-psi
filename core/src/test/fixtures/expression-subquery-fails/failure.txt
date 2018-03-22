@@ -1,1 +1,0 @@
-Test.s line 6:24 - Expression subquery must have exactly one value

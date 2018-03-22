@@ -27,7 +27,7 @@ internal open class SqliteCompositeElementImpl(
   }
 
   protected fun tableAvailable(child: PsiElement, name: String): List<QueryResult> {
-    return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query() }
+    return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query }
   }
 
   override fun getContainingFile() = super.getContainingFile() as SqliteFileBase

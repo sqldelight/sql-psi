@@ -15,7 +15,7 @@ internal abstract class CreateTriggerMixin(
     SqliteCreateTriggerStmt {
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child is MutatorMixin) {
-      val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query()
+      val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
       if (hasElement(SqliteTypes.INSERT)) {
         return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns))
       }

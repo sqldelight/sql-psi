@@ -13,7 +13,7 @@ internal abstract class CreateIndexMixin(
     SqliteCreateIndexStmt {
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child in indexedColumnList || child == expr) {
-      return listOf(tablesAvailable(child).first { it.tableName.name == tableName?.name }.query())
+      return listOf(tablesAvailable(child).first { it.tableName.name == tableName?.name }.query)
     }
     return super.queryAvailable(child)
   }

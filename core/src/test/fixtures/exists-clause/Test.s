@@ -1,5 +1,6 @@
 CREATE TABLE test (
-  value TEXT
+  value TEXT,
+  value2 TEXT
 );
 
 SELECT *

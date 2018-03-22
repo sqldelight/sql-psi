@@ -216,9 +216,7 @@ in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ]
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InExprMixin"
   pin = 3
 }
-exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')' {
-  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.ExistsExprMixin"
-}
+exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
 case_expr ::= CASE [ expr ] WHEN expr THEN expr [ ELSE expr ] END
 raise_expr ::= raise_function
 raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'

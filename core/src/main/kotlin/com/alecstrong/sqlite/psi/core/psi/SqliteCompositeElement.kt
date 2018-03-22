@@ -47,4 +47,6 @@ internal interface SqliteCompositeElement : SqliteAnnotatedElement {
   override fun getContainingFile(): SqliteFileBase
 }
 
-data class LazyQuery(val tableName: NamedElement, val query: () -> QueryResult)
+class LazyQuery(val tableName: NamedElement, query: () -> QueryResult) {
+  val query by lazy(query)
+}
