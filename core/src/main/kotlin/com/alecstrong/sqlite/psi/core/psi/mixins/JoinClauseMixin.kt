@@ -21,12 +21,10 @@ abstract internal class JoinClauseMixin(
             if (child == constraint) {
               if (child.node.findChildByType(SqliteTypes.USING) != null) {
                 return listOf(QueryResult(null, queryAvailable.flatMap { it.columns }
-                    .filterIsInstance<PsiNamedElement>()
-                    .filter {
-                      it.name!! in subquery.queryExposed()
+                    .filter { (column, _) ->
+                      column is PsiNamedElement && column.name!! in subquery.queryExposed()
                           .flatMap { it.columns }
-                          .filterIsInstance<PsiNamedElement>()
-                          .mapNotNull { it.name }
+                          .mapNotNull { (it.element as? PsiNamedElement)?.name }
                     }))
               }
               return queryAvailable + subquery.queryExposed()
@@ -46,12 +44,13 @@ abstract internal class JoinClauseMixin(
           queryAvailable += subquery.queryExposed().let { query ->
             when {
               query.isEmpty() -> return@zip2
-              else -> QueryResult(
-                  table = query.first().table,
-                  columns = query.flatMap { it.columns },
-                  joinOperator = operator,
-                  joinConstraint = constraint
-              )
+              else -> {
+                var columns = query.flatMap { it.columns }
+                if (operator.node.findChildByType(SqliteTypes.LEFT) != null) {
+                  columns = columns.map { it.copy(nullable = true) }
+                }
+                QueryResult(query.first().table, columns, joinConstraint = constraint)
+              }
             }
           }
         }

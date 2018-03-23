@@ -40,22 +40,22 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
     }
 
     val columns = tables.flatMap { it.columns }
-        .filterIsInstance<PsiNamedElement>()
-        .filter { it.name == element.name }
+        .filter { it.element is PsiNamedElement && it.element.name == element.name }
+        .map { it.element as PsiNamedElement }
     val synthesizedColumns = tables.flatMap { it.synthesizedColumns }
         .filter { element.name in it.acceptableValues }
         .map { it.table }
     val elements = columns + synthesizedColumns
 
     if (elements.size > 1) {
-      val columns = tables.filter { it.adjacent }
+      val adjacentColumns = tables.filter { it.adjacent }
           .flatMap { it.columns }
-          .filterIsInstance<PsiNamedElement>()
-          .filter { it.name == element.name }
-      if (columns.size > 1) {
+          .filter { it.element is PsiNamedElement && it.element.name == element.name }
+          .map { it.element as PsiNamedElement }
+      if (adjacentColumns.size > 1) {
         throw AnnotationException("Multiple columns found with name ${element.name}")
       }
-      return columns.firstOrNull()
+      return adjacentColumns.firstOrNull()
     }
     return elements.firstOrNull()
   }
@@ -65,14 +65,15 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
       // Only include columns for the already specified table.
       return availableQuery().filter { it.table?.name == tableName.name }
           .flatMap { it.columns }
+          .map { it.element }
           .toLookupArray()
     }
     if (element.parent is SqliteColumnExpr) {
       // Also include table names.
-      return availableQuery().flatMap { it.columns + it.table }.toLookupArray()
+      return availableQuery().flatMap { it.columns.map { it.element } + it.table }.toLookupArray()
     }
     // Include all column names.
-    return availableQuery().flatMap { it.columns }.toLookupArray()
+    return availableQuery().flatMap { it.columns.map { it.element } }.toLookupArray()
   }
 
   private fun List<PsiElement?>.toLookupArray(): Array<Any> = filterIsInstance<PsiNamedElement>()

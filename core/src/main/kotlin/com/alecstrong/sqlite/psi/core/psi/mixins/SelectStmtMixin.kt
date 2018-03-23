@@ -4,6 +4,7 @@ import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteSelectStmt
+import com.alecstrong.sqlite.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
@@ -23,7 +24,7 @@ internal abstract class SelectStmtMixin(
 
   override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
     if (valuesExpressionList.isNotEmpty()) {
-      return listOf(QueryResult(null, valuesExpressionList.first().exprList))
+      return listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
     }
     return listOf(QueryResult(
         null,

@@ -13,7 +13,7 @@ internal abstract class InsertStmtMixin(
     SqliteInsertStmt {
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     val table = tableAvailable(this, tableName.name).firstOrNull() ?: return
-    val columns = table.columns.map { (it as SqliteColumnName).name }
+    val columns = table.columns.map { (it.element as SqliteColumnName).name }
     val setColumns =
         if (columnNameList.isEmpty() && node.findChildByType(SqliteTypes.DEFAULT) == null) {
           columns
@@ -37,8 +37,8 @@ internal abstract class InsertStmtMixin(
     }
 
     val needsDefaultValue = table.columns
-        .filterIsInstance<SqliteColumnName>()
-        .filterNot { it.name in setColumns }
+        .filterNot { (element, _) -> element is SqliteColumnName && element.name in setColumns }
+        .map { it.element as SqliteColumnName }
         .filterNot { (it.parent as SqliteColumnDef).hasDefaultValue() }
     if (needsDefaultValue.size == 1) {
       annotationHolder.createErrorAnnotation(this, "Cannot populate default value for column " +

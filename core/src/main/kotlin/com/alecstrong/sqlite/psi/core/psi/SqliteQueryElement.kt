@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi
 
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryColumn
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
@@ -25,17 +26,23 @@ interface QueryElement: PsiElement {
    *   asking for query results.
    */
   data class QueryResult(
-    val table: PsiNamedElement?,
-    val columns: List<PsiElement>,
+    val table: PsiNamedElement? = null,
+    val columns: List<QueryColumn>,
     val synthesizedColumns: List<SynthesizedColumn> = emptyList(),
-    val joinOperator: SqliteJoinOperator? = null,
     val joinConstraint: SqliteJoinConstraint? = null,
     val adjacent: Boolean = false
   ) {
+    constructor(column: PsiElement) : this(columns = listOf(QueryColumn(column)))
+
     override fun toString(): String {
-      return "${table?.name} : [${columns.joinToString { it.text }}]"
+      return "${table?.name} : [${columns.joinToString { it.element.text }}]"
     }
   }
+
+  data class QueryColumn(
+    val element: PsiElement,
+    val nullable: Boolean = false
+  )
 
   /**
    * These aren't considered part of the exposed query (ie performing a SELECT * does not return
@@ -46,3 +53,5 @@ interface QueryElement: PsiElement {
     val acceptableValues: List<String>
   )
 }
+
+internal fun List<PsiElement>.asColumns() = map { QueryColumn(it) }

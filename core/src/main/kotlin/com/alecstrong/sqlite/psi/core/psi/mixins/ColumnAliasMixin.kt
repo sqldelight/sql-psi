@@ -23,7 +23,7 @@ internal abstract class ColumnAliasMixin(
 
         is SqliteCteTableName -> {
           val index = it.columnAliasList.indexOf(this)
-          it.selectStatement().queryExposed().flatMap { it.columns }.get(index)
+          it.selectStatement().queryExposed().flatMap { it.columns }.map { it.element }.get(index)
         }
 
         else -> throw IllegalStateException("Unexpected column alias parent $it")

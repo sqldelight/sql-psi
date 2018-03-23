@@ -20,12 +20,12 @@ internal abstract class ResultColumnMixin(
     expr?.let {
       // expr [ '.' column_alias ]
       columnAlias?.let { alias ->
-        return listOf(QueryResult(null, listOf(alias)))
+        return listOf(QueryResult(alias))
       }
       if (it is SqliteColumnExpr) {
-        return listOf(QueryResult(null, listOf(it.columnName.reference?.resolve() ?: it)))
+        return listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
       }
-      return listOf(QueryResult(null, listOf(it)))
+      return listOf(QueryResult(it))
     }
 
     // *
@@ -39,8 +39,7 @@ internal abstract class ResultColumnMixin(
         return@fold left + right.copy(
             table = null,
             columns = right.columns
-                .filterIsInstance<PsiNamedElement>()
-                .filter { it.name !in columnNames }
+                .filter { (column, _) -> column is PsiNamedElement && column.name !in columnNames }
         )
       } else {
         return@fold left + right.copy(table = null)

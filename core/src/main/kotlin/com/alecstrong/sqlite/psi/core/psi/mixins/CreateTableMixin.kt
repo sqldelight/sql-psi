@@ -12,6 +12,7 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteForeignKeyClause
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
 import com.alecstrong.sqlite.psi.core.psi.TableElement
+import com.alecstrong.sqlite.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -39,7 +40,7 @@ internal abstract class CreateTableMixin(
     }
     return listOf(QueryResult(
         table = tableName,
-        columns = columnDefList.map { it.columnName },
+        columns = columnDefList.map { it.columnName }.asColumns(),
         synthesizedColumns = synthesizedColumns
     ))
   }

@@ -7,6 +7,7 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateVirtualTableStmt
 import com.alecstrong.sqlite.psi.core.psi.TableElement
+import com.alecstrong.sqlite.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 
 internal abstract class CreateVirtualTableMixin(
@@ -28,7 +29,7 @@ internal abstract class CreateVirtualTableMixin(
     return LazyQuery(tableName) {
       QueryResult(
           table = tableName,
-          columns = findChildrenByClass(SqliteColumnName::class.java).asList(),
+          columns = findChildrenByClass(SqliteColumnName::class.java).asList().asColumns(),
           synthesizedColumns = synthesizedColumns
       )
     }

@@ -4,6 +4,7 @@ import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteWithClause
+import com.alecstrong.sqlite.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
@@ -26,7 +27,7 @@ internal abstract class WithClauseContainer(
             val query = QueryResult(name.tableName,
                 selectStmt.queryExposed().flatMap { it.columns })
             return@LazyQuery if (name.columnAliasList.isNotEmpty()) {
-              QueryResult(name.tableName, name.columnAliasList)
+              QueryResult(name.tableName, name.columnAliasList.asColumns())
             } else {
               query
             }
