@@ -33,7 +33,6 @@ internal class SqliteTableReference<T: SqliteNamedElementImpl>(
 
   private fun PsiElement.isDefinition() = when (this) {
     is SqliteCreateTableStmt -> true
-    is SqliteCommonTableExpression -> true
     is SqliteCteTableName -> true
     is SqliteCreateVirtualTableStmt -> true
     is SqliteCreateViewStmt -> true

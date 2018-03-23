@@ -3,19 +3,19 @@ package com.alecstrong.sqlite.psi.core.psi.mixins
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteOrderingTerm
 import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
+import com.alecstrong.sqlite.psi.core.psi.SqliteWithClause
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 abstract internal class CompoundSelectStmtMixin(
     node: ASTNode
-) : SqliteCompositeElementImpl(node),
+) : WithClauseContainer(node),
     SqliteCompoundSelectStmt {
   override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
     if (detectRecursion() != null) {
@@ -25,15 +25,17 @@ abstract internal class CompoundSelectStmtMixin(
   }
 
   override fun tablesAvailable(child: PsiElement): List<LazyQuery> = analyze("tablesAvailable") {
-    return if (node.findChildByType(SqliteTypes.RECURSIVE) != null) {
-      super.tablesAvailable(child) + commonTableExpressionList.map {
-        LazyQuery(it.tableName) { it.queryExposed().single() }
+    val tablesAvailable = super.tablesAvailable(child)
+    val parent = parent
+    if (parent is SqliteWithClause) {
+      if (parent.node.findChildByType(SqliteTypes.RECURSIVE) != null
+          && child != selectStmtList.first()) {
+        return tablesAvailable + parent.tablesExposed()
       }
-    } else {
-      super.tablesAvailable(child) + commonTableExpressionList.filter { it != child }.map {
-        LazyQuery(it.tableName) { it.queryExposed().single() }
-      }
+      val myIndex = parent.compoundSelectStmtList.indexOf(this)
+      return tablesAvailable + parent.tablesExposed().filterIndexed { index, _ -> index != myIndex }
     }
+    return tablesAvailable
   }
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
@@ -79,7 +81,7 @@ abstract internal class CompoundSelectStmtMixin(
           return viewTree.joinToString(" -> ") + " -> $name"
         }
         containingFile.views()
-            .filter { it.viewName?.name == name }
+            .filter { it.viewName.name == name }
             .forEach {
               it.recursion()?.let { return it }
             }

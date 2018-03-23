@@ -13,7 +13,10 @@ internal abstract class SelectStmtMixin(
     SqliteSelectStmt {
   override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
     if (child in resultColumnList) return fromQuery()
-    if (child in exprList) return fromQuery() + super.queryAvailable(this)
+    if (child in exprList) {
+      return fromQuery().map { it.copy(adjacent = true) } +
+          super.queryAvailable(this).map { it.copy(adjacent = false) }
+    }
     if (child == joinClause) return super.queryAvailable(child)
     return super.queryAvailable(child)
   }
@@ -22,7 +25,10 @@ internal abstract class SelectStmtMixin(
     if (valuesExpressionList.isNotEmpty()) {
       return listOf(QueryResult(null, valuesExpressionList.first().exprList))
     }
-    return resultColumnList.flatMap { it.queryExposed() }
+    return listOf(QueryResult(
+        null,
+        columns = resultColumnList.flatMap { it.queryExposed().flatMap { it.columns } }
+    ))
   }
 
   internal fun fromQuery(): List<QueryResult> = analyze("fromQuery") {

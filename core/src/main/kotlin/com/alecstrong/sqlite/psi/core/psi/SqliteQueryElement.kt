@@ -20,12 +20,17 @@ interface QueryElement: PsiElement {
    */
   fun queryExposed(): List<QueryResult>
 
+  /**
+   * @param adjacent true if this query result comes from a FROM clause adjacent to the element
+   *   asking for query results.
+   */
   data class QueryResult(
     val table: PsiNamedElement?,
     val columns: List<PsiElement>,
     val synthesizedColumns: List<SynthesizedColumn> = emptyList(),
     val joinOperator: SqliteJoinOperator? = null,
-    val joinConstraint: SqliteJoinConstraint? = null
+    val joinConstraint: SqliteJoinConstraint? = null,
+    val adjacent: Boolean = false
   ) {
     override fun toString(): String {
       return "${table?.name} : [${columns.joinToString { it.text }}]"

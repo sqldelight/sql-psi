@@ -48,7 +48,14 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
     val elements = columns + synthesizedColumns
 
     if (elements.size > 1) {
-      throw AnnotationException("Multiple columns found with name ${element.name}")
+      val columns = tables.filter { it.adjacent }
+          .flatMap { it.columns }
+          .filterIsInstance<PsiNamedElement>()
+          .filter { it.name == element.name }
+      if (columns.size > 1) {
+        throw AnnotationException("Multiple columns found with name ${element.name}")
+      }
+      return columns.firstOrNull()
     }
     return elements.firstOrNull()
   }

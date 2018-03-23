@@ -119,13 +119,6 @@ with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')
   pin = 1
 }
 cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
-common_table_expression ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ] AS '(' compound_select_stmt ')' {
-  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CommonTableExpressionMixin"
-  implements = [
-    "com.alecstrong.sqlite.psi.core.psi.QueryElement";
-    "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
-  ]
-}
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
   pin = 4
@@ -244,13 +237,12 @@ pragma_value ::= ( signed_number
 reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ] {
   pin = 1
 }
-compound_select_stmt ::= [ WITH [ RECURSIVE ] common_table_expression ( ',' common_table_expression ) * ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | ',' ) limiting_term ] ] {
+compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | ',' ) limiting_term ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = [
     "com.alecstrong.sqlite.psi.core.psi.QueryElement";
     "com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
   ]
-
 }
 limiting_term ::= expr
 select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * {

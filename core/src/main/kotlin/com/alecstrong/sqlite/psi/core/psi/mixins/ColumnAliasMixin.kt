@@ -2,7 +2,6 @@ package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.parser.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnAlias
-import com.alecstrong.sqlite.psi.core.psi.SqliteCommonTableExpression
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCteTableName
 import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl
@@ -25,11 +24,6 @@ internal abstract class ColumnAliasMixin(
         is SqliteCteTableName -> {
           val index = it.columnAliasList.indexOf(this)
           it.selectStatement().queryExposed().flatMap { it.columns }.get(index)
-        }
-
-        is SqliteCommonTableExpression -> {
-          val index = it.columnAliasList.indexOf(this)
-          it.compoundSelectStmt.queryExposed().flatMap { it.columns }.get(index)
         }
 
         else -> throw IllegalStateException("Unexpected column alias parent $it")

@@ -12,16 +12,12 @@ CREATE TABLE hockey_player (
 );
 
 SELECT *
-FROM hockey_player AS one
-JOIN (
-  SELECT *
-  FROM (
-    SELECT *
-    FROM (
-      SELECT *
-      FROM hockey_player
-      WHERE team = 'ducks'
-    )
-  )
-)
-GROUP BY team;
+FROM hockey_player
+WHERE first_name = 'Alec'
+UNION
+SELECT cheetos.*
+FROM hockey_player cheetos
+WHERE first_name = 'Jake'
+UNION SELECT hockey_player.*
+FROM hockey_player
+WHERE first_name = 'Matt';

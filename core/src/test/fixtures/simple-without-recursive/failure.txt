@@ -1,0 +1,3 @@
+Test.s line 2:40 - No column found with name x
+Test.s line 2:49 - No table found with name cnt
+Test.s line 2:59 - No column found with name x
