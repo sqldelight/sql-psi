@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
@@ -12,12 +13,14 @@ internal class SqliteTableReference<T: SqliteNamedElementImpl>(
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
-  override fun resolve(): PsiElement? {
-    if (element.parent.isDefinition()) return element
-    return variants.mapNotNull { it.psiElement }
+  private val resolved: PsiElement? by ModifiableFileLazy(element.containingFile) lazy@{
+    if (element.parent.isDefinition()) return@lazy element
+    return@lazy variants.mapNotNull { it.psiElement }
         .filterIsInstance<PsiNamedElement>()
         .firstOrNull { it.name == element.name }
   }
+
+  override fun resolve() = resolved
 
   override fun getVariants(): Array<LookupElement> {
     if (element.parent.isDefinition()) return emptyArray()

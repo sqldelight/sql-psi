@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.AnnotationException
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin
 import com.alecstrong.sqlite.psi.core.psi.mixins.SingleRow
@@ -15,13 +16,15 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
-  override fun resolve(): PsiElement? {
-    return try {
+  private val resolved: PsiElement? by ModifiableFileLazy(element.containingFile) {
+    try {
       unsafeResolve()
     } catch (e: AnnotationException) {
       null
     }
   }
+
+  override fun resolve() = resolved
 
   internal fun unsafeResolve(): PsiElement? {
     if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return element

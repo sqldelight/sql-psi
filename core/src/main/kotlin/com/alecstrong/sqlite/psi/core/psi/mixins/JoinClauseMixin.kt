@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteJoinClause
@@ -36,7 +37,7 @@ abstract internal class JoinClauseMixin(
     return super.queryAvailable(child)
   }
 
-  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
+  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
     var queryAvailable = tableOrSubqueryList[0].queryExposed()
     tableOrSubqueryList.drop(1)
         .zip(joinConstraintList)
@@ -54,6 +55,8 @@ abstract internal class JoinClauseMixin(
             }
           }
         }
-    return queryAvailable
+    return@ModifiableFileLazy queryAvailable
   }
+
+  override fun queryExposed() = analyze("queryExposed") { queryExposed }
 }

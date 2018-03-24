@@ -22,10 +22,20 @@ abstract class SqliteFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  private val tables by lazy {
-    val result = ArrayList<Pair<TableElement, LazyQuery>>()
+  private val tables by ModifiableFileLazy(this) {
+    val result = LinkedHashMap<TableElement, LazyQuery>()
     PsiTreeUtil.findChildrenOfType(this, TableElement::class.java).forEach { sqlStmt ->
-      result.add(sqlStmt to sqlStmt.tableExposed())
+      result.put(sqlStmt, sqlStmt.tableExposed())
+    }
+    return@ModifiableFileLazy result
+  }
+
+  private val otherTables by lazy {
+    val result = ArrayList<LazyQuery>()
+    iterateSqliteFiles { psiFile ->
+      if (psiFile == this) return@iterateSqliteFiles true
+      else if (psiFile is SqliteFileBase) result.addAll(psiFile.tables.values)
+      return@iterateSqliteFiles true
     }
     return@lazy result
   }
@@ -38,16 +48,7 @@ abstract class SqliteFileBase(
   }
 
   open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
-    val result = ArrayList<LazyQuery>()
-    iterateSqliteFiles { psiFile ->
-      if (psiFile is SqliteFileBase) {
-        result.addAll(psiFile.tables
-            .filter { it.first != sqlStmtElement }
-            .map { it.second })
-      }
-      return@iterateSqliteFiles true
-    }
-    return result
+    return otherTables + tables.filterKeys { it != sqlStmtElement }.values
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {

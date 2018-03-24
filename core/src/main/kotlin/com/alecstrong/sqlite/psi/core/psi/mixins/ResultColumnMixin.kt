@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
@@ -12,28 +13,30 @@ internal abstract class ResultColumnMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteResultColumn {
-  override fun queryExposed(): List<QueryResult> {
+  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return queryAvailable(this).filter { it.table?.name == tableNameElement.name }
+      return@lazy queryAvailable(this).filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
       // expr [ '.' column_alias ]
       columnAlias?.let { alias ->
-        return listOf(QueryResult(alias))
+        return@lazy listOf(QueryResult(alias))
       }
       if (it is SqliteColumnExpr) {
-        return listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
+        return@lazy listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
       }
-      return listOf(QueryResult(it))
+      return@lazy listOf(QueryResult(it))
     }
 
     // *
     val queryAvailable = queryAvailable(this)
-    if (queryAvailable.size <= 1) return queryAvailable
+    if (queryAvailable.size <= 1) {
+      return@lazy queryAvailable
+    }
 
     val leftmostQuery = QueryResult(table = null, columns = queryAvailable.first().columns)
-    return queryAvailable.drop(1).fold(listOf(leftmostQuery)) { left, right ->
+    return@lazy queryAvailable.drop(1).fold(listOf(leftmostQuery)) { left, right ->
       if (right.joinConstraint?.node?.findChildByType(SqliteTypes.USING) != null) {
         val columnNames = right.joinConstraint.columnNameList.map { it.name }
         return@fold left + right.copy(
@@ -46,4 +49,6 @@ internal abstract class ResultColumnMixin(
       }
     }
   }
+
+  override fun queryExposed() = queryExposed
 }

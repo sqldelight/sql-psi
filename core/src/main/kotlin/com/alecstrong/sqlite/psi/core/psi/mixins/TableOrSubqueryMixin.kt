@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
 import com.alecstrong.sqlite.psi.core.psi.SqliteTableOrSubquery
@@ -9,7 +10,7 @@ internal abstract class TableOrSubqueryMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteTableOrSubquery {
-  private val queryExposed: List<QueryResult> by lazy {
+  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)
       if (result.isEmpty()) {

@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
@@ -12,6 +13,16 @@ internal abstract class SelectStmtMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteSelectStmt {
+  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
+    if (valuesExpressionList.isNotEmpty()) {
+      return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
+    }
+    return@ModifiableFileLazy listOf(QueryResult(
+        null,
+        columns = resultColumnList.flatMap { it.queryExposed().flatMap { it.columns } }
+    ))
+  }
+
   override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
     if (child in resultColumnList) return fromQuery()
     if (child in exprList) {
@@ -22,15 +33,7 @@ internal abstract class SelectStmtMixin(
     return super.queryAvailable(child)
   }
 
-  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
-    if (valuesExpressionList.isNotEmpty()) {
-      return listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
-    }
-    return listOf(QueryResult(
-        null,
-        columns = resultColumnList.flatMap { it.queryExposed().flatMap { it.columns } }
-    ))
-  }
+  override fun queryExposed() = analyze("queryExposed") { queryExposed }
 
   internal fun fromQuery(): List<QueryResult> = analyze("fromQuery") {
     joinClause?.let {

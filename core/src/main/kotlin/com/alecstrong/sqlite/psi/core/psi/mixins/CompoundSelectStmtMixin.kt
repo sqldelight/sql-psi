@@ -1,5 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
+import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
@@ -17,12 +18,14 @@ abstract internal class CompoundSelectStmtMixin(
     node: ASTNode
 ) : WithClauseContainer(node),
     SqliteCompoundSelectStmt {
-  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") {
+  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
     if (detectRecursion() != null) {
-      return emptyList()
+      return@ModifiableFileLazy emptyList<QueryResult>()
     }
-    return selectStmtList.first().queryExposed()
+    return@ModifiableFileLazy selectStmtList.first().queryExposed()
   }
+
+  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") { queryExposed }
 
   override fun tablesAvailable(child: PsiElement): List<LazyQuery> = analyze("tablesAvailable") {
     val tablesAvailable = super.tablesAvailable(child)
