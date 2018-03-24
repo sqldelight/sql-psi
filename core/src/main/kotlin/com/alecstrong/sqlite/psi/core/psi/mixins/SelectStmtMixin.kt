@@ -23,7 +23,7 @@ internal abstract class SelectStmtMixin(
     ))
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child in resultColumnList) return fromQuery()
     if (child in exprList) {
       return fromQuery().map { it.copy(adjacent = true) } +
@@ -33,9 +33,9 @@ internal abstract class SelectStmtMixin(
     return super.queryAvailable(child)
   }
 
-  override fun queryExposed() = analyze("queryExposed") { queryExposed }
+  override fun queryExposed() = queryExposed
 
-  internal fun fromQuery(): List<QueryResult> = analyze("fromQuery") {
+  internal fun fromQuery(): List<QueryResult> {
     joinClause?.let {
       return it.queryExposed()
     }

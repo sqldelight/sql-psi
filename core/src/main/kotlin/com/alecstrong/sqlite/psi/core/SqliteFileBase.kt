@@ -1,10 +1,10 @@
 package com.alecstrong.sqlite.psi.core
 
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
-import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
+import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmtList
 import com.alecstrong.sqlite.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
@@ -40,13 +40,6 @@ abstract class SqliteFileBase(
     return@lazy result
   }
 
-  fun printAnalysis(printer: (String) -> Unit) {
-    PsiTreeUtil.findChildrenOfType(this, SqliteCompositeElement::class.java).forEach { element ->
-      if (element.analytics().isEmpty()) return@forEach
-      printer("$element : ${element.analytics()}")
-    }
-  }
-
   open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
     return otherTables + tables.filterKeys { it != sqlStmtElement }.values
   }
@@ -69,13 +62,36 @@ abstract class SqliteFileBase(
     return result
   }
 
-  open fun views(): List<SqliteCreateViewStmt> {
-    val result = ArrayList<SqliteCreateViewStmt>()
-    iterateSqliteFiles { psiFile ->
-      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqliteCreateViewStmt::class.java))
-      return@iterateSqliteFiles true
+  internal fun viewForName(name: String): SqliteCreateViewStmt? {
+    synchronized(FILE_UPDATED_AT) {
+      if (FILE_UPDATED_AT.isEmpty()) {
+        // Initialize the whole thing
+        iterateSqliteFiles { psiFile ->
+          if (psiFile !is SqliteFileBase) return@iterateSqliteFiles true
+          val views = psiFile.views()
+          VIEWS.putAll(views.map { it.viewName.name to it })
+          VIEW_OWNERS.putAll(views.map { it.viewName.name to psiFile })
+          FILE_UPDATED_AT.put(psiFile, psiFile.modificationStamp)
+          return@iterateSqliteFiles true
+        }
+      }
+      val owner = VIEW_OWNERS[name] ?: return null
+      if (FILE_UPDATED_AT[owner]!! != owner.modificationStamp) {
+        VIEW_OWNERS.filterValues { it == owner }.forEach { name, _ ->
+          VIEWS.remove(name)
+          VIEW_OWNERS.remove(name)
+        }
+        val views = owner.views()
+        VIEWS.putAll(views.map { it.viewName.name to it })
+        VIEW_OWNERS.putAll(views.map { it.viewName.name to owner })
+        FILE_UPDATED_AT.put(owner, owner.modificationStamp)
+      }
+      return VIEWS[name]
     }
-    return result
+  }
+
+  open fun views() = children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
+    it.sqlStmt.createViewStmt
   }
 
   protected open fun iterateSqliteFiles(iterator: (PsiFile) -> Boolean) {
@@ -86,5 +102,11 @@ abstract class SqliteFileBase(
       }
       true
     }
+  }
+
+  companion object {
+    private val VIEWS = LinkedHashMap<String, SqliteCreateViewStmt>()
+    private val VIEW_OWNERS = LinkedHashMap<String, SqliteFileBase>()
+    private val FILE_UPDATED_AT = LinkedHashMap<SqliteFileBase, Long>()
   }
 }

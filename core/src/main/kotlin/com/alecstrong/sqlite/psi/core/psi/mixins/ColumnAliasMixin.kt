@@ -16,7 +16,7 @@ internal abstract class ColumnAliasMixin(
     SqliteColumnAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqliteParser::column_alias_real
 
-  override fun source(): PsiElement = analyze("source") {
+  override fun source(): PsiElement {
     parent.let {
       return when (it) {
         is ResultColumnMixin -> it.expr!!

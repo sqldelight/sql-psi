@@ -28,7 +28,7 @@ internal abstract class CreateTableMixin(
     } ?: queryAvailable(this).single()
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> {
     val synthesizedColumns = if (node.findChildByType(SqliteTypes.WITHOUT) == null) {
       val columnNames = columnDefList.mapNotNull { it.columnName.name }
       listOf(SynthesizedColumn(

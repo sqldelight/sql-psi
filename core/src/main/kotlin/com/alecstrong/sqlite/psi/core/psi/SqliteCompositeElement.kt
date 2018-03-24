@@ -45,17 +45,6 @@ internal interface SqliteCompositeElement : SqliteAnnotatedElement {
   fun tablesAvailable(child: PsiElement): List<LazyQuery>
 
   override fun getContainingFile(): SqliteFileBase
-
-  fun analytics(): Map<String, Analytics>
-}
-
-internal data class Analytics(
-  val timesCalled: Int = 0,
-  val timeTaken: Long = 0
-) {
-  operator fun plus(time: Long): Analytics {
-    return Analytics(timesCalled + 1, timeTaken + time)
-  }
 }
 
 class LazyQuery(val tableName: NamedElement, query: () -> QueryResult) {

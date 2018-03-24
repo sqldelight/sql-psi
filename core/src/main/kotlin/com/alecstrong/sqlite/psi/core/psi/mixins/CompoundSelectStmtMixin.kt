@@ -25,9 +25,9 @@ abstract internal class CompoundSelectStmtMixin(
     return@ModifiableFileLazy selectStmtList.first().queryExposed()
   }
 
-  override fun queryExposed(): List<QueryResult> = analyze("queryExposed") { queryExposed }
+  override fun queryExposed() = queryExposed
 
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> = analyze("tablesAvailable") {
+  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
     val tablesAvailable = super.tablesAvailable(child)
     val parent = parent
     if (parent is SqliteWithClause) {
@@ -41,7 +41,7 @@ abstract internal class CompoundSelectStmtMixin(
     return tablesAvailable
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> = analyze("queryAvailable") {
+  override fun queryAvailable(child: PsiElement): List<QueryResult> {
     if (child is SqliteExpr) {
       return queryExposed()
     } else if (child is SqliteOrderingTerm) {
@@ -83,11 +83,7 @@ abstract internal class CompoundSelectStmtMixin(
         if (!viewTree.add(name)) {
           return viewTree.joinToString(" -> ") + " -> $name"
         }
-        containingFile.views()
-            .filter { it.viewName.name == name }
-            .forEach {
-              it.recursion()?.let { return it }
-            }
+        containingFile.viewForName(name)?.recursion()?.let { return it }
         viewTree.remove(name)
       }
       return null
