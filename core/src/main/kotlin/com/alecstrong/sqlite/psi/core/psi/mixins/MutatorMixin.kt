@@ -13,7 +13,7 @@ internal abstract class MutatorMixin(
   open fun getQualifiedTableName(): SqliteQualifiedTableName = throw AssertionError()
   open fun getTableName() = getQualifiedTableName().tableName
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     val tableExposed = tableAvailable(child, getTableName().name)
 
     return if (child !is SqliteWithClause) {

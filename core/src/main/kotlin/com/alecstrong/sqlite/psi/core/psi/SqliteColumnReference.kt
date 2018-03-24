@@ -96,7 +96,7 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
     return null
   }
 
-  private fun availableQuery(): List<QueryResult> {
+  private fun availableQuery(): Collection<QueryResult> {
     return (element.parent as SqliteCompositeElement).queryAvailable(element)
   }
 }

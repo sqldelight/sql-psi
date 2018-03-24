@@ -23,7 +23,7 @@ internal abstract class TableNameMixin(
     // Handled by ColumnNameMixin
     if (parent is SqliteColumnExpr) return
 
-    val matches: List<QueryResult> by lazy { tableAvailable(this, name) }
+    val matches by lazy { tableAvailable(this, name) }
     val references = reference.resolve()
     if (references == this) {
       if(matches.any { it.table != this }) {

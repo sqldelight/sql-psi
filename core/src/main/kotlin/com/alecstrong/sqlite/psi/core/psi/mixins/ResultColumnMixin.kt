@@ -13,7 +13,7 @@ internal abstract class ResultColumnMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteResultColumn {
-  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
+  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
       return@lazy queryAvailable(this).filter { it.table?.name == tableNameElement.name }

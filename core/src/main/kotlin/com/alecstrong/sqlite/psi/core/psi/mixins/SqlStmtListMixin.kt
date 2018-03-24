@@ -8,11 +8,11 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class SqlStmtListMixin(node: ASTNode) : SqliteCompositeElementImpl(node) {
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+  override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
     return (parent as SqliteFileBase).tablesAvailable(child)
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     return emptyList()
   }
 }

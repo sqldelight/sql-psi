@@ -5,6 +5,7 @@ import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmtList
+import com.alecstrong.sqlite.psi.core.psi.SqliteStatement
 import com.alecstrong.sqlite.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
@@ -19,29 +20,21 @@ abstract class SqliteFileBase(
     viewProvider: FileViewProvider,
     language: Language
 ) : PsiFileBase(viewProvider, language) {
+  private val symbolTable = SymbolTable()
+
+  private var viewNames = setOf(*views().map { it.viewName.name }.toTypedArray())
+  private var tableElements = setOf(*tables().toTypedArray())
+
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  private val tables by ModifiableFileLazy(this) {
-    val result = LinkedHashMap<TableElement, LazyQuery>()
-    PsiTreeUtil.findChildrenOfType(this, TableElement::class.java).forEach { sqlStmt ->
-      result.put(sqlStmt, sqlStmt.tableExposed())
+  open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
+    symbolTable.checkInitialized()
+    val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.single()
+    if (statement !is TableElement) {
+      return symbolTable.tables.values
     }
-    return@ModifiableFileLazy result
-  }
-
-  private val otherTables by lazy {
-    val result = ArrayList<LazyQuery>()
-    iterateSqliteFiles { psiFile ->
-      if (psiFile == this) return@iterateSqliteFiles true
-      else if (psiFile is SqliteFileBase) result.addAll(psiFile.tables.values)
-      return@iterateSqliteFiles true
-    }
-    return@lazy result
-  }
-
-  open fun tablesAvailable(sqlStmtElement: PsiElement): List<LazyQuery> {
-    return otherTables + tables.filterKeys { it != sqlStmtElement }.values
+    return symbolTable.tables.filterKeys { it != statement }.values
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {
@@ -63,35 +56,44 @@ abstract class SqliteFileBase(
   }
 
   internal fun viewForName(name: String): SqliteCreateViewStmt? {
-    synchronized(FILE_UPDATED_AT) {
-      if (FILE_UPDATED_AT.isEmpty()) {
-        // Initialize the whole thing
-        iterateSqliteFiles { psiFile ->
-          if (psiFile !is SqliteFileBase) return@iterateSqliteFiles true
-          val views = psiFile.views()
-          VIEWS.putAll(views.map { it.viewName.name to it })
-          VIEW_OWNERS.putAll(views.map { it.viewName.name to psiFile })
-          FILE_UPDATED_AT.put(psiFile, psiFile.modificationStamp)
-          return@iterateSqliteFiles true
-        }
-      }
-      val owner = VIEW_OWNERS[name] ?: return null
-      if (FILE_UPDATED_AT[owner]!! != owner.modificationStamp) {
-        VIEW_OWNERS.filterValues { it == owner }.forEach { name, _ ->
-          VIEWS.remove(name)
-          VIEW_OWNERS.remove(name)
-        }
-        val views = owner.views()
-        VIEWS.putAll(views.map { it.viewName.name to it })
-        VIEW_OWNERS.putAll(views.map { it.viewName.name to owner })
-        FILE_UPDATED_AT.put(owner, owner.modificationStamp)
-      }
-      return VIEWS[name]
+    symbolTable.checkInitialized()
+    return symbolTable.views[name]
+  }
+
+  private fun views(): List<SqliteCreateViewStmt> {
+    return children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
+      it.sqlStmt.createViewStmt
     }
   }
 
-  open fun views() = children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
-    it.sqlStmt.createViewStmt
+  private fun tables(): List<TableElement> {
+    return children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
+      it.sqlStmt.createViewStmt ?: it.sqlStmt.createTableStmt ?: it.sqlStmt.createVirtualTableStmt
+    }
+  }
+
+  override fun subtreeChanged() {
+    super.subtreeChanged()
+    if (parent == null) {
+      // Lightweight copy of the original file. Dont do any mods.
+      return
+    }
+    val newViews = views()
+    val newTables = tables()
+    iterateSqliteFiles { psiFile ->
+      if (psiFile !is SqliteFileBase) return@iterateSqliteFiles true
+
+      viewNames.forEach { psiFile.symbolTable.views.remove(it)}
+      tableElements.forEach { psiFile.symbolTable.tables.remove(it) }
+
+      psiFile.symbolTable.views.putAll(newViews.map { it.viewName.name to it })
+      psiFile.symbolTable.tables.putAll(newTables.map { it to it.tableExposed() })
+
+      return@iterateSqliteFiles true
+    }
+
+    viewNames = setOf(*newViews.map { it.viewName.name }.toTypedArray())
+    tableElements = setOf(*newTables.toTypedArray())
   }
 
   protected open fun iterateSqliteFiles(iterator: (PsiFile) -> Boolean) {
@@ -104,9 +106,45 @@ abstract class SqliteFileBase(
     }
   }
 
-  companion object {
-    private val VIEWS = LinkedHashMap<String, SqliteCreateViewStmt>()
-    private val VIEW_OWNERS = LinkedHashMap<String, SqliteFileBase>()
-    private val FILE_UPDATED_AT = LinkedHashMap<SqliteFileBase, Long>()
+  /**
+   * Creates a copy of this file keeping all external symbols intact.
+   */
+  fun copyWithSymbols(): SqliteFileBase {
+    val copy = copy() as SqliteFileBase
+
+    copy.symbolTable.views.putAll(symbolTable.views.filterKeys { it !in viewNames })
+    copy.symbolTable.tables.putAll(symbolTable.tables.filterKeys { it !in tableElements })
+
+    copy.symbolTable.views.putAll(copy.views().map { it.viewName.name to it })
+    copy.symbolTable.tables.putAll(copy.tables().map { it to it.tableExposed() })
+
+    copy.symbolTable.initialized = true
+    return copy
+  }
+
+  inner class SymbolTable {
+    internal val views = LinkedHashMap<String, SqliteCreateViewStmt>()
+    internal val tables = LinkedHashMap<TableElement, LazyQuery>()
+    internal var initialized = false
+
+    fun checkInitialized() {
+      synchronized(initialized) {
+        if (initialized) return
+
+        iterateSqliteFiles { psiFile ->
+          if (psiFile !is SqliteFileBase) return@iterateSqliteFiles true
+          psiFile.views().let {
+            views.putAll(it.map { it.viewName.name to it })
+          }
+          psiFile.tables().let {
+            tables.putAll(it.map { it to it.tableExposed() })
+          }
+
+          return@iterateSqliteFiles true
+        }
+
+        initialized = true
+      }
+    }
   }
 }

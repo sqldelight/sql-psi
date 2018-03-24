@@ -18,7 +18,7 @@ abstract internal class CompoundSelectStmtMixin(
     node: ASTNode
 ) : WithClauseContainer(node),
     SqliteCompoundSelectStmt {
-  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
     if (detectRecursion() != null) {
       return@ModifiableFileLazy emptyList<QueryResult>()
     }
@@ -27,7 +27,7 @@ abstract internal class CompoundSelectStmtMixin(
 
   override fun queryExposed() = queryExposed
 
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+  override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
     val tablesAvailable = super.tablesAvailable(child)
     val parent = parent
     if (parent is SqliteWithClause) {
@@ -41,7 +41,7 @@ abstract internal class CompoundSelectStmtMixin(
     return tablesAvailable
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqliteExpr) {
       return queryExposed()
     } else if (child is SqliteOrderingTerm) {

@@ -13,7 +13,7 @@ internal abstract class WithClauseContainer(
 ) : SqliteCompositeElementImpl(node) {
   abstract fun getWithClause(): SqliteWithClause?
 
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+  override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
     getWithClause()?.let {
       if (child != it) return super.tablesAvailable(child) + it.tablesExposed()
     }

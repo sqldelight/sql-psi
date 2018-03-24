@@ -14,7 +14,7 @@ abstract internal class JoinClauseMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteJoinClause {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqliteJoinConstraint) {
       var queryAvailable = tableOrSubqueryList[0].queryExposed()
       tableOrSubqueryList.drop(1).zip(joinConstraintList)
@@ -37,7 +37,7 @@ abstract internal class JoinClauseMixin(
     return super.queryAvailable(child)
   }
 
-  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
     var queryAvailable = tableOrSubqueryList[0].queryExposed()
     tableOrSubqueryList.drop(1)
         .zip(joinConstraintList)

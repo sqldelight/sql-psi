@@ -13,7 +13,7 @@ internal abstract class SelectStmtMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteSelectStmt {
-  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
     if (valuesExpressionList.isNotEmpty()) {
       return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
     }
@@ -23,7 +23,7 @@ internal abstract class SelectStmtMixin(
     ))
   }
 
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in resultColumnList) return fromQuery()
     if (child in exprList) {
       return fromQuery().map { it.copy(adjacent = true) } +
@@ -35,7 +35,7 @@ internal abstract class SelectStmtMixin(
 
   override fun queryExposed() = queryExposed
 
-  internal fun fromQuery(): List<QueryResult> {
+  internal fun fromQuery(): Collection<QueryResult> {
     joinClause?.let {
       return it.queryExposed()
     }

@@ -10,7 +10,7 @@ internal abstract class ForeignKeyClauseMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteForeignKeyClause {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in columnNameList) {
       val table = tablesAvailable(child).firstOrNull { it.tableName.name == foreignTable.name } ?: return emptyList()
       return listOf(table.query)

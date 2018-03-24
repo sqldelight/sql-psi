@@ -10,7 +10,7 @@ internal abstract class TableOrSubqueryMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteTableOrSubquery {
-  private val queryExposed: List<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
+  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)
       if (result.isEmpty()) {

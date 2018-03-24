@@ -1,2 +1,4 @@
 Test.s line 27:39 - No table found with name ancestor_of_alice
 Test.s line 27:63 - No column found with name name
+Test.s line 3:22 - No table found with name family
+Test.s line 4:22 - No table found with name family

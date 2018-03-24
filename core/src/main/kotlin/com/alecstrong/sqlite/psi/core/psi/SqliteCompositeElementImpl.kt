@@ -11,11 +11,11 @@ internal open class SqliteCompositeElementImpl(
     node: ASTNode
 ) : ASTWrapperPsiElement(node),
     SqliteCompositeElement {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     return (parent as SqliteCompositeElement).queryAvailable(this)
   }
 
-  override fun tablesAvailable(child: PsiElement): List<LazyQuery> {
+  override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
     return (parent as SqliteCompositeElement).tablesAvailable(this)
   }
 
@@ -26,7 +26,7 @@ internal open class SqliteCompositeElementImpl(
     return "${super.toString()}: ${(parent as SqliteCompositeElement).queryAvailable(this)}"
   }
 
-  protected fun tableAvailable(child: PsiElement, name: String): List<QueryResult> {
+  protected fun tableAvailable(child: PsiElement, name: String): Collection<QueryResult> {
     return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query }
   }
 

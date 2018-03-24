@@ -11,7 +11,7 @@ internal abstract class CreateIndexMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteCreateIndexStmt {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in indexedColumnList || child == expr) {
       return listOf(tablesAvailable(child).first { it.tableName.name == tableName?.name }.query)
     }

@@ -30,7 +30,7 @@ internal interface SqliteCompositeElement : SqliteAnnotatedElement {
    *     WHERE new._id = some_table._id;
    *   END;
    */
-  fun queryAvailable(child: PsiElement): List<QueryResult>
+  fun queryAvailable(child: PsiElement): Collection<QueryResult>
 
   /**
    * Returns a list of the selectable tables for the given child.
@@ -42,7 +42,7 @@ internal interface SqliteCompositeElement : SqliteAnnotatedElement {
    * FROM some_table
    *
    */
-  fun tablesAvailable(child: PsiElement): List<LazyQuery>
+  fun tablesAvailable(child: PsiElement): Collection<LazyQuery>
 
   override fun getContainingFile(): SqliteFileBase
 }

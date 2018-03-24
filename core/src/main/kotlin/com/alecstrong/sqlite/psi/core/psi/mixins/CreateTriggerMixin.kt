@@ -15,7 +15,7 @@ internal abstract class CreateTriggerMixin(
     node: ASTNode
 ) : SqliteCompositeElementImpl(node),
     SqliteCreateTriggerStmt {
-  override fun queryAvailable(child: PsiElement): List<QueryResult> {
+  override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is MutatorMixin || child is SqliteExpr) {
       val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
       if (hasElement(SqliteTypes.INSERT)) {

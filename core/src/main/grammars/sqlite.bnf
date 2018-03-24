@@ -91,6 +91,7 @@ create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name 
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
 create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ WITHOUT ROWID ] | AS compound_select_stmt ) {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTableMixin"
+  implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
 column_def ::= column_name [ type_name ] ( column_constraint ) *
@@ -108,10 +109,12 @@ create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ 
 }
 create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name AS compound_select_stmt {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateViewMixin"
+  implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<module_argument column_name>> ( ',' <<module_argument column_name>> ) * ')' ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin"
+  implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
 with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {

@@ -19,7 +19,7 @@ interface QueryElement: PsiElement {
    *
    * Would expose [QueryResult(a_table, [all of a_tables columns]), QueryResult(a_second_table, [all of a_second_tables columns])]
    */
-  fun queryExposed(): List<QueryResult>
+  fun queryExposed(): Collection<QueryResult>
 
   /**
    * @param adjacent true if this query result comes from a FROM clause adjacent to the element
