@@ -28,6 +28,10 @@ abstract class SqliteFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
+  val sqlStmtList: SqliteSqlStmtList by lazy {
+    findChildByClass(SqliteSqlStmtList::class.java)!!
+  }
+
   open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
     val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.single()
