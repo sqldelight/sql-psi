@@ -28,13 +28,12 @@ abstract class SqliteFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
-  val sqlStmtList: SqliteSqlStmtList by lazy {
-    findChildByClass(SqliteSqlStmtList::class.java)!!
-  }
+  val sqlStmtList
+    get() = findChildByClass(SqliteSqlStmtList::class.java)
 
   open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
-    val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.single()
+    val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.first()
     if (statement !is TableElement) {
       return symbolTable.tables.values
     }
@@ -65,15 +64,15 @@ abstract class SqliteFileBase(
   }
 
   private fun views(): List<SqliteCreateViewStmt> {
-    return children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
+    return sqlStmtList?.statementList?.mapNotNull {
       it.sqlStmt.createViewStmt
-    }
+    }.orEmpty()
   }
 
   private fun tables(): List<TableElement> {
-    return children.filterIsInstance<SqliteSqlStmtList>().single().statementList.mapNotNull {
+    return sqlStmtList?.statementList?.mapNotNull {
       it.sqlStmt.createViewStmt ?: it.sqlStmt.createTableStmt ?: it.sqlStmt.createVirtualTableStmt
-    }
+    }.orEmpty()
   }
 
   override fun subtreeChanged() {
