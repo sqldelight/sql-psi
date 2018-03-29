@@ -213,12 +213,13 @@ in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ]
   pin = 3
 }
 exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
-case_expr ::= CASE [ expr ] WHEN expr THEN expr [ ELSE expr ] END
+case_expr ::= CASE [ expr ] WHEN expr THEN expr ( WHEN expr THEN expr )* [ ELSE expr ] END {
+  pin = 1
+}
 raise_expr ::= raise_function
 raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'
 literal_value ::= ( numeric_literal
                   | string_literal
-                  | javadoc_literal
                   | blob_literal
                   | NULL
                   | CURRENT_TIME
@@ -344,7 +345,6 @@ identifier ::= id
 pragma_name ::= id
 function_name ::= id
 string_literal ::= string
-javadoc_literal ::= javadoc
 table_or_index_name ::= id
 new_table_name ::= id
 savepoint_name ::= id
