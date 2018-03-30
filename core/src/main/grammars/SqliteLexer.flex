@@ -27,10 +27,10 @@ WHITE_SPACE=\s+
 
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
-JAVADOC="/"\*\*([^]|\n)*\*"/"
+JAVADOC="/"\*\*(.|\n)*\*"/"
 DIGIT=[0-9]+(\.[0-9]*)?
 ID=([a-zA-Z0-9_\`\[\]])*
-STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
+STRING=('([^'])*'|\"([^\"])*\")
 
 %%
 <YYINITIAL> {
@@ -63,26 +63,34 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }
   "ALTER"                { return ALTER; }
-  "TABLE"                { return TABLE; }
-  "RENAME"               { return RENAME; }
-  "TO"                   { return TO; }
-  "ADD"                  { return ADD; }
-  "COLUMN"               { return COLUMN; }
   "ANALYZE"              { return ANALYZE; }
   "ATTACH"               { return ATTACH; }
-  "DATABASE"             { return DATABASE; }
-  "AS"                   { return AS; }
   "BEGIN"                { return BEGIN; }
-  "DEFERRED"             { return DEFERRED; }
-  "IMMEDIATE"            { return IMMEDIATE; }
-  "EXCLUSIVE"            { return EXCLUSIVE; }
-  "TRANSACTION"          { return TRANSACTION; }
   "COMMIT"               { return COMMIT; }
   "END"                  { return END; }
   "ROLLBACK"             { return ROLLBACK; }
   "SAVEPOINT"            { return SAVEPOINT; }
   "RELEASE"              { return RELEASE; }
   "CREATE"               { return CREATE; }
+  "DROP"                 { return DROP; }
+  "INSERT"               { return INSERT; }
+  "WITH"                 { return WITH; }
+  "UPDATE"               { return UPDATE; }
+  "DELETE"               { return DELETE; }
+  "SELECT"               { return SELECT; }
+  "PRAGMA"               { return PRAGMA; }
+  "REINDEX"              { return REINDEX; }
+  "TABLE"                { return TABLE; }
+  "RENAME"               { return RENAME; }
+  "TO"                   { return TO; }
+  "ADD"                  { return ADD; }
+  "COLUMN"               { return COLUMN; }
+  "DATABASE"             { return DATABASE; }
+  "AS"                   { return AS; }
+  "DEFERRED"             { return DEFERRED; }
+  "IMMEDIATE"            { return IMMEDIATE; }
+  "EXCLUSIVE"            { return EXCLUSIVE; }
+  "TRANSACTION"          { return TRANSACTION; }
   "UNIQUE"               { return UNIQUE; }
   "INDEX"                { return INDEX; }
   "IF"                   { return IF; }
@@ -106,8 +114,6 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "DEFAULT"              { return DEFAULT; }
   "FOREIGN"              { return FOREIGN; }
   "REFERENCES"           { return REFERENCES; }
-  "DELETE"               { return DELETE; }
-  "UPDATE"               { return UPDATE; }
   "SET"                  { return SET; }
   "CASCADE"              { return CASCADE; }
   "RESTRICT"             { return RESTRICT; }
@@ -126,7 +132,6 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "AFTER"                { return AFTER; }
   "INSTEAD"              { return INSTEAD; }
   "OF"                   { return OF; }
-  "INSERT"               { return INSERT; }
   "FOR"                  { return FOR; }
   "EACH"                 { return EACH; }
   "ROW"                  { return ROW; }
@@ -134,7 +139,6 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "VIEW"                 { return VIEW; }
   "VIRTUAL"              { return VIRTUAL; }
   "USING"                { return USING; }
-  "WITH"                 { return WITH; }
   "RECURSIVE"            { return RECURSIVE; }
   "FROM"                 { return FROM; }
   "ORDER"                { return ORDER; }
@@ -142,7 +146,6 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "LIMIT"                { return LIMIT; }
   "OFFSET"               { return OFFSET; }
   "DETACH"               { return DETACH; }
-  "DROP"                 { return DROP; }
   "AND"                  { return AND; }
   "OR"                   { return OR; }
   "DISTINCT"             { return DISTINCT; }
@@ -166,9 +169,6 @@ STRING=('([^']|\\.)*'|\"([^\"]|\\.)*\")
   "E"                    { return E; }
   "INTO"                 { return INTO; }
   "VALUES"               { return VALUES; }
-  "PRAGMA"               { return PRAGMA; }
-  "REINDEX"              { return REINDEX; }
-  "SELECT"               { return SELECT; }
   "ALL"                  { return ALL; }
   "GROUP"                { return GROUP; }
   "HAVING"               { return HAVING; }

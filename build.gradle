@@ -1,7 +1,7 @@
 buildscript {
   ext {
     kotlinVersion = '1.2.21'
-    ideaVersion = '2017.3'
+    ideaVersion = '2018.1'
 
     dep = [
         kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
