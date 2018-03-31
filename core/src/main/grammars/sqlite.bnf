@@ -150,11 +150,11 @@ expr ::= ( raise_expr
          | exists_expr
          | paren_expr
          | between_expr
-         | is_expr
-         | null_expr
          | binary_or_expr
          | binary_and_expr
          | binary_like_expr
+         | is_expr
+         | null_expr
          | collate_expr
          | cast_expr
          | function_expr
