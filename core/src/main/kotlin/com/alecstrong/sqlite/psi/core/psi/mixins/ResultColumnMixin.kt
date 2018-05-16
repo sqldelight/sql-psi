@@ -24,7 +24,10 @@ internal abstract class ResultColumnMixin(
         return@lazy listOf(QueryResult(alias))
       }
       if (it is SqliteColumnExpr) {
-        return@lazy listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
+        val reference = (it.columnName as ColumnNameMixin).reference
+        return@lazy reference.resolveToQuery()?.let {
+          listOf(QueryResult(columns = listOf(it)))
+        } ?: listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
       }
       return@lazy listOf(QueryResult(it))
     }

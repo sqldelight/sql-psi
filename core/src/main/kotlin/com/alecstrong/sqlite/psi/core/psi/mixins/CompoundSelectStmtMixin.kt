@@ -22,7 +22,19 @@ abstract internal class CompoundSelectStmtMixin(
     if (detectRecursion() != null) {
       return@ModifiableFileLazy emptyList<QueryResult>()
     }
-    return@ModifiableFileLazy selectStmtList.first().queryExposed()
+    if (parent is SqliteWithClause) {
+      // Compound information not needed.
+      return@ModifiableFileLazy selectStmtList.first().queryExposed()
+    }
+    return@ModifiableFileLazy selectStmtList.drop(1).fold(selectStmtList.first().queryExposed()) { query, compounded ->
+      val columns = query.flatMap { it.columns }
+      val compoundedColumns = compounded.queryExposed().flatMap { it.columns }
+      return@fold listOf(query.first().copy(
+          columns = columns.zip(compoundedColumns) { column, compounded ->
+            column.copy(compounded = column.compounded + compounded)
+          }
+      ))
+    }
   }
 
   override fun queryExposed() = queryExposed

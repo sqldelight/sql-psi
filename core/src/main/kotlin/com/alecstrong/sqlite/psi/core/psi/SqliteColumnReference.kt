@@ -2,6 +2,7 @@ package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.AnnotationException
 import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
+import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryColumn
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin
 import com.alecstrong.sqlite.psi.core.psi.mixins.SingleRow
@@ -25,6 +26,23 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
   }
 
   override fun resolve() = resolved
+
+  internal fun resolveToQuery(): QueryColumn? {
+    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return null
+
+    val tableName = tableName()
+    val tables: List<QueryResult>
+    if (tableName != null) {
+      tables = availableQuery().filter { it.table?.name == tableName.name }
+      if (tables.isEmpty()) return null
+    } else {
+      tables = availableQuery().filterNot { it.table is SingleRow }
+    }
+
+    return tables.flatMap { it.columns }
+        .filter { it.element is PsiNamedElement && it.element.name == element.name }
+        .firstOrNull()
+  }
 
   internal fun unsafeResolve(): PsiElement? {
     if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return element
