@@ -28,6 +28,7 @@ private object TestFileType : LanguageFileType(TestLanguage) {
 private class TestParserDefinition: SqliteParserDefinition() {
   override fun createFile(p0: FileViewProvider) = TestFile(p0)
   override fun getFileNodeType() = FILE
+  override fun getLanguage() = TestLanguage
 
   companion object {
     val FILE = IFileElementType(TestLanguage)

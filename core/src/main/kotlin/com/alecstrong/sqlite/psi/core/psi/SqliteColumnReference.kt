@@ -58,6 +58,9 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
       if (adjacentColumns.size > 1) {
         throw AnnotationException("Multiple columns found with name ${element.name}")
       }
+      if (adjacentColumns.isEmpty()) {
+        return elements.firstOrNull()
+      }
       return adjacentColumns.firstOrNull()
     }
     return elements.firstOrNull()

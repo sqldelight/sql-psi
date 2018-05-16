@@ -28,6 +28,7 @@ class SampleParserDefinition : SqliteParserDefinition() {
 
   override fun createFile(fileViewProvider: FileViewProvider) = SampleFile(fileViewProvider)
   override fun getFileNodeType() = FILE
+  override fun getLanguage() = SampleLanguage
 
   companion object {
     val FILE = IFileElementType(SampleLanguage)
