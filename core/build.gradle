@@ -60,3 +60,5 @@ task generateSqliteParser(type: GenerateParser) {
 
 generateSqliteParser.dependsOn generateSqliteExtendableGrammar
 compileKotlin.dependsOn generateSqliteLexer, generateSqliteParser
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
