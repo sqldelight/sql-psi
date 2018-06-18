@@ -291,13 +291,16 @@ compound_operator ::= ( UNION ALL
                       | UNION
                       | INTERSECT
                       | EXCEPT )
-update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] {
+update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression update_stmt_subsequent_setter * [ WHERE expr ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
   pin = 4
 }
-update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression ( ',' column_name '=' setter_expression ) * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name SET column_name '=' setter_expression update_stmt_subsequent_setter * [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.MutatorMixin"
   pin = 4
+}
+update_stmt_subsequent_setter ::= ',' column_name '=' setter_expression {
+  pin = 1
 }
 setter_expression ::= expr
 qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
