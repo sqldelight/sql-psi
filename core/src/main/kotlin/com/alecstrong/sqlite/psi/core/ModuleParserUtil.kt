@@ -10,6 +10,7 @@ abstract class ModuleParserUtil : GeneratedParserUtilBase() {
       val marker = enter_section_(builder)
       var result = true
       result = result && columnName.parse(builder, level)
+      if (!result) return result
       var parens = 0
       while (builder.tokenType != SqliteTypes.COMMA) {
         if (builder.tokenType == SqliteTypes.LP) parens++

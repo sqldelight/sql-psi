@@ -112,7 +112,7 @@ create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ databa
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
-create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<module_argument column_name>> ( ',' <<module_argument column_name>> ) * ')' ] {
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<module_argument column_def>> ( ',' <<module_argument column_def>> ) * ')' ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
