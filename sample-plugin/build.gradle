@@ -1,5 +1,5 @@
 plugins {
-  id 'org.jetbrains.intellij' version '0.2.18'
+  id 'org.jetbrains.intellij' version '0.3.7'
 }
 
 intellij {
@@ -17,8 +17,7 @@ sourceSets {
 }
 
 dependencies {
-  compile dep.kotlinStdLib
-  compile dep.kotlinReflect
+  implementation project(":sample-core")
 
-  compile project(":sample-core")
+  implementation dep.kotlinStdLib
 }

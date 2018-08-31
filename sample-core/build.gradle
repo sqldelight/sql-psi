@@ -23,10 +23,8 @@ sourceSets {
 dependencies {
   compileOnly dep.intellijCore
 
-  compile dep.kotlinStdLib
-  compile dep.kotlinReflect
-
-  compile project(':core')
+  implementation dep.kotlinStdLib
+  implementation project(':core')
 }
 
 task generateSampleParser(type: GenerateParser) {

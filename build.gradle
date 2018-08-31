@@ -1,14 +1,17 @@
 buildscript {
   ext {
-    kotlinVersion = '1.2.21'
+    kotlinVersion = '1.2.61'
     ideaVersion = '2018.1'
 
     dep = [
         kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
-        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
         kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
         intellij: "IC-$ideaVersion",
-        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: ['*.jar']),
+        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: [
+            'idea.jar', 'openapi.jar', 'util.jar', 'trove4j.jar', 'extensions.jar',
+            'picocontainer.jar', 'asm-all.jar', 'automaton.jar',
+            'platform-api.jar', 'platform-impl.jar', 'java-api.jar', 'guava-21.0.jar'
+        ]),
         junit: 'junit:junit:4.12',
         truth: 'com.google.truth:truth:0.30',
     ]

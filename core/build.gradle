@@ -26,12 +26,11 @@ sourceSets {
 dependencies {
   compileOnly dep.intellijCore
 
-  compile dep.kotlinStdLib
-  compile dep.kotlinReflect
+  implementation dep.kotlinStdLib
 
-  testCompile dep.intellijCore
-  testCompile dep.junit
-  testCompile dep.truth
+  testImplementation dep.intellijCore
+  testImplementation dep.junit
+  testImplementation dep.truth
 }
 
 task generateSqliteLexer(type: GenerateLexer) {

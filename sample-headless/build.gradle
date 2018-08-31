@@ -1,9 +1,8 @@
 apply plugin: 'kotlin'
 
 dependencies {
-  compile dep.kotlinStdLib
-  compile dep.kotlinReflect
-  compile dep.intellijCore
+  implementation project(':sample-core')
 
-  compile project(':sample-core')
+  implementation dep.kotlinStdLib
+  implementation dep.intellijCore
 }
