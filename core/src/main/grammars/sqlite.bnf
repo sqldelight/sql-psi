@@ -94,7 +94,7 @@ create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ data
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
-column_def ::= column_name [ type_name ] ( column_constraint ) *
+column_def ::= column_name type_name ( column_constraint ) *
 type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | CHECK '(' expr ')' | DEFAULT ( signed_number | literal_value | '(' expr ')' ) | COLLATE collation_name | foreign_key_clause )
 signed_number ::= [ '+' | '-' ] numeric_literal
@@ -112,11 +112,12 @@ create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ databa
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
-create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<module_argument column_def>> ( ',' <<module_argument column_def>> ) * ')' ] {
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument column_def>> ( ',' <<custom_module_argument column_def>> ) * ')' ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6
 }
+module_argument ::= [ column_def ]
 with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.WithClauseMixin"
   pin = 1

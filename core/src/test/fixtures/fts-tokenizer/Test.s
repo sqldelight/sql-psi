@@ -7,3 +7,7 @@ DELETE FROM entity_fts;
 
 INSERT INTO entity_fts (text_content)
 VALUES (?);
+
+--tokenizer is unselectable.
+SELECT text_content, docid, tokenize
+FROM entity_fts;
