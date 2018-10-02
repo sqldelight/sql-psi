@@ -150,9 +150,9 @@ expr ::= ( raise_expr
          | case_expr
          | exists_expr
          | paren_expr
-         | between_expr
          | binary_or_expr
          | binary_and_expr
+         | between_expr
          | binary_like_expr
          | is_expr
          | null_expr
