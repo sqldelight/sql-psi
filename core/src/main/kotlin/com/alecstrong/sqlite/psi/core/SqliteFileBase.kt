@@ -33,11 +33,7 @@ abstract class SqliteFileBase(
 
   open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
-    val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.first()
-    if (statement !is TableElement) {
-      return symbolTable.tables.values
-    }
-    return symbolTable.tables.filterKeys { it != statement }.values
+    return symbolTable.tables.values
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {
