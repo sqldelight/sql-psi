@@ -2,6 +2,7 @@ package com.alecstrong.sqlite.psi.core
 
 import com.alecstrong.sqlite.psi.core.psi.LazyQuery
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateIndexStmt
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTriggerStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteSqlStmtList
@@ -33,7 +34,11 @@ abstract class SqliteFileBase(
 
   open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
-    return symbolTable.tables.values
+    val statement = (sqlStmtElement as SqliteStatement).sqlStmt.children.first()
+    if (statement !is TableElement || statement is SqliteCreateTableStmt) {
+      return symbolTable.tables.values
+    }
+    return symbolTable.tables.filterKeys { it != statement }.values
   }
 
   open fun indexes(): List<SqliteCreateIndexStmt> {
