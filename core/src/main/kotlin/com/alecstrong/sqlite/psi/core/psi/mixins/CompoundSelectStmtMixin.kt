@@ -57,10 +57,11 @@ abstract internal class CompoundSelectStmtMixin(
     if (child is SqliteExpr) {
       return queryExposed()
     } else if (child is SqliteOrderingTerm) {
-      val exposed = queryExposed()
+      val exposed = (selectStmtList.first() as SelectStmtMixin).fromQuery()
       val exposedColumns = exposed.flatMap { it.columns }
+      
       // Ordering terms are also applicable in the select statement's from clause.
-      return (selectStmtList.first() as SelectStmtMixin).fromQuery().filter { it !in exposed }
+      return queryExposed().filter { it !in exposed }
           .map { QueryResult(it.table, it.columns.filter { it !in exposedColumns }) }
           .plus(exposed)
     }
