@@ -1,6 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.ModifiableFileLazy
+import com.alecstrong.sqlite.psi.core.psi.QueryElement
 import com.alecstrong.sqlite.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl
@@ -19,17 +20,21 @@ internal abstract class ResultColumnMixin(
       return@lazy queryAvailable(this).filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
-      // expr [ '.' column_alias ]
-      columnAlias?.let { alias ->
-        return@lazy listOf(QueryResult(alias))
-      }
+      var column: QueryElement.QueryColumn
       if (it is SqliteColumnExpr) {
         val reference = (it.columnName as ColumnNameMixin).reference
-        return@lazy reference.resolveToQuery()?.let {
-          listOf(QueryResult(columns = listOf(it)))
-        } ?: listOf(QueryResult(it.columnName.reference?.resolve() ?: it))
+        column = reference.resolveToQuery()
+            ?: QueryElement.QueryColumn(it.columnName.reference?.resolve() ?: it)
+      } else {
+        column = QueryElement.QueryColumn(it)
       }
-      return@lazy listOf(QueryResult(it))
+
+      // expr [ '.' column_alias ]
+      columnAlias?.let { alias ->
+        column = column.copy(element = alias)
+      }
+
+      return@lazy listOf(QueryResult(columns = listOf(column)))
     }
 
     // *
