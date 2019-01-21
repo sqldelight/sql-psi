@@ -73,11 +73,8 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
           .flatMap { it.columns }
           .filter { it.element is PsiNamedElement && it.element.name == element.name }
           .map { it.element as PsiNamedElement }
-      if (adjacentColumns.size > 1) {
+      if (adjacentColumns.size != 1) {
         throw AnnotationException("Multiple columns found with name ${element.name}")
-      }
-      if (adjacentColumns.isEmpty()) {
-        return elements.firstOrNull()
       }
       return adjacentColumns.firstOrNull()
     }
