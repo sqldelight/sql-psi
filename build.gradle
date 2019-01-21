@@ -9,8 +9,8 @@ buildscript {
         intellij: "IC-$ideaVersion",
         intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: [
             'idea.jar', 'openapi.jar', 'util.jar', 'trove4j.jar', 'extensions.jar',
-            'picocontainer.jar', 'asm-all.jar', 'automaton.jar',
-            'platform-api.jar', 'platform-impl.jar', 'java-api.jar', 'guava-21.0.jar'
+            'picocontainer-1.2.jar', 'asm-all-7.0.jar', 'automaton-1.12-1.jar',
+            'platform-api.jar', 'platform-impl.jar', 'java-api.jar', 'guava-25.1-jre.jar',
         ]),
         junit: 'junit:junit:4.12',
         truth: 'com.google.truth:truth:0.30',
