@@ -21,6 +21,12 @@ internal abstract class SqliteNamedElementImpl(
   override fun getName() = text
 
   override fun setName(name: String): PsiElement {
+    // This whole thing is a hack. Its copied from an internal implementation of creating a fake
+    // file tree, with some changes here so that we're not creating the entire fake file and just
+    // doing the replacement inline. If this needs changing check out how Properties plugin
+    // is implemented since it's inspired by that, which is documented online in IntelliJ's
+    // official documentation for writing a language plugin. Good luck!
+
     val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language) as SqliteParserDefinition
     var builder = PsiBuilderFactory.getInstance().createBuilder(
         project, parent.node, parserDefinition.createLexer(project), language, name
@@ -28,6 +34,7 @@ internal abstract class SqliteNamedElementImpl(
     builder = GeneratedParserUtilBase.adapt_builder_(node.elementType, builder, SqliteParser(),
         SqliteParser.EXTENDS_SETS_
     )
+    GeneratedParserUtilBase.ErrorState.get(builder).currentFrame = GeneratedParserUtilBase.Frame()
 
     parseRule(builder, 0)
     val element = builder.treeBuilt

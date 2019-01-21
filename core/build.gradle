@@ -4,7 +4,7 @@ buildscript {
   }
 
   dependencies {
-    classpath "com.github.hurricup:gradle-grammar-kit-plugin:${ideaVersion}.1"
+    classpath "com.github.hurricup:gradle-grammar-kit-plugin:${ideaVersion}"
   }
 }
 

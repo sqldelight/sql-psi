@@ -1,5 +1,5 @@
 plugins {
-  id 'org.jetbrains.intellij' version '0.3.7'
+  id 'org.jetbrains.intellij' version '0.4.1'
 }
 
 intellij {
@@ -9,8 +9,8 @@ intellij {
 
 apply plugin: 'kotlin'
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 sourceSets {
   main.java.srcDir "src/generated/kotlin"
