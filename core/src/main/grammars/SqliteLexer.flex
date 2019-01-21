@@ -44,6 +44,7 @@ STRING=('([^'])*'|\"([^\"])*\")
   ","                    { return COMMA; }
   "+"                    { return PLUS; }
   "-"                    { return MINUS; }
+  "~"                    { return BITWISE_NOT; }
   ">>"                   { return SHIFT_RIGHT; }
   "<<"                   { return SHIFT_LEFT; }
   "<"                    { return LT; }
