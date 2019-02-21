@@ -42,7 +42,8 @@ interface QueryElement: PsiElement {
   data class QueryColumn(
     val element: PsiElement,
     val nullable: Boolean = false,
-    val compounded: List<QueryColumn> = emptyList()
+    val compounded: List<QueryColumn> = emptyList(),
+    val hiddenByUsing: Boolean = false
   )
 
   /**

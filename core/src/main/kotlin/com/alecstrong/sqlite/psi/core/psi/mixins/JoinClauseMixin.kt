@@ -50,6 +50,12 @@ abstract internal class JoinClauseMixin(
                 if (operator.node.findChildByType(SqliteTypes.LEFT) != null) {
                   columns = columns.map { it.copy(nullable = true) }
                 }
+                if (constraint.node?.findChildByType(SqliteTypes.USING) != null) {
+                  val columnNames = constraint.columnNameList.map { it.name }
+                  columns = columns.map {
+                    it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
+                  }
+                }
                 QueryResult(query.first().table, columns, joinConstraint = constraint)
               }
             }

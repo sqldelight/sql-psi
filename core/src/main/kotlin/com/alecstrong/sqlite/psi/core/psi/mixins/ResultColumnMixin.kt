@@ -43,18 +43,8 @@ internal abstract class ResultColumnMixin(
       return@lazy queryAvailable
     }
 
-    val leftmostQuery = QueryResult(table = null, columns = queryAvailable.first().columns)
-    return@lazy queryAvailable.drop(1).fold(listOf(leftmostQuery)) { left, right ->
-      if (right.joinConstraint?.node?.findChildByType(SqliteTypes.USING) != null) {
-        val columnNames = right.joinConstraint.columnNameList.map { it.name }
-        return@fold left + right.copy(
-            table = null,
-            columns = right.columns
-                .filter { (column, _) -> column is PsiNamedElement && column.name !in columnNames }
-        )
-      } else {
-        return@fold left + right.copy(table = null)
-      }
+    return@lazy queryAvailable.fold(emptyList<QueryResult>()) { left, right ->
+      left + right.copy(table = null, columns = right.columns.filter { !it.hiddenByUsing })
     }
   }
 

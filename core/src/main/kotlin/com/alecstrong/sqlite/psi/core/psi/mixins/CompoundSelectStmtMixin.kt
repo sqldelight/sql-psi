@@ -56,6 +56,7 @@ abstract internal class CompoundSelectStmtMixin(
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqliteOrderingTerm && selectStmtList.size == 1) {
       val exposed = (selectStmtList.first() as SelectStmtMixin).fromQuery()
+          .map { it.copy(columns = it.columns.filter { !it.hiddenByUsing }) }
       val exposedColumns = exposed.flatMap { it.columns }
 
       // Ordering terms are also applicable in the select statement's from clause.
