@@ -1,0 +1,2 @@
+Test.s line 5:36 - No table found with name not_a_table
+Test.s line 1:7 - No column found with name stuffs

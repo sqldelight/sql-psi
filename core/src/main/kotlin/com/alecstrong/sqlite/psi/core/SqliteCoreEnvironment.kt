@@ -1,6 +1,9 @@
 package com.alecstrong.sqlite.psi.core
 
 import com.alecstrong.sqlite.psi.core.psi.SqliteAnnotatedElement
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateTableStmt
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateViewStmt
+import com.alecstrong.sqlite.psi.core.psi.SqliteCreateVirtualTableStmt
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
@@ -53,13 +56,27 @@ open class SqliteCoreEnvironment(
   }
 
   fun annotate(annotationHolder: SqliteAnnotationHolder) {
+    val otherFailures = mutableListOf<() -> Unit>()
+    val myHolder = object : SqliteAnnotationHolder {
+      override fun createErrorAnnotation(element: PsiElement, s: String) {
+        if (PsiTreeUtil.getNonStrictParentOfType(element, SqliteCreateTableStmt::class.java, SqliteCreateVirtualTableStmt::class.java, SqliteCreateViewStmt::class.java) != null) {
+          annotationHolder.createErrorAnnotation(element, s)
+        } else {
+          otherFailures.add {
+            annotationHolder.createErrorAnnotation(element, s)
+          }
+        }
+      }
+
+    }
     forSourceFiles {
       PsiTreeUtil.findChildOfType(it, PsiErrorElement::class.java)?.let { error ->
-        annotationHolder.createErrorAnnotation(error, error.errorDescription)
+        myHolder.createErrorAnnotation(error, error.errorDescription)
         return@forSourceFiles
       }
-      it.annotateRecursively(annotationHolder)
+      it.annotateRecursively(myHolder)
     }
+    otherFailures.forEach { it.invoke() }
   }
 
   fun forSourceFiles(action: (PsiFile) -> Unit) {
