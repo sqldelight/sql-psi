@@ -19,14 +19,14 @@ internal abstract class CreateTriggerMixin(
     if (child is MutatorMixin || child is SqliteExpr) {
       val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
       if (hasElement(SqliteTypes.INSERT)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns))
+        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns, synthesizedColumns = table.synthesizedColumns))
       }
       if (hasElement(SqliteTypes.UPDATE)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns),
-            QueryResult(SingleRow(tableName!!, "old"), table.columns))
+        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns, synthesizedColumns = table.synthesizedColumns),
+            QueryResult(SingleRow(tableName!!, "old"), table.columns, synthesizedColumns = table.synthesizedColumns))
       }
       if (hasElement(SqliteTypes.DELETE)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "old"), table.columns))
+        return listOf(QueryResult(SingleRow(tableName!!, "old"), table.columns, synthesizedColumns = table.synthesizedColumns))
       }
     }
     if (child is SqliteColumnName) {
