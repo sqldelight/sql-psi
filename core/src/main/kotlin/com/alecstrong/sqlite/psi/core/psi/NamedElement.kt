@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiNameIdentifierOwner
 
-interface NamedElement : PsiNamedElement {
+interface NamedElement : PsiNameIdentifierOwner {
   override fun getName(): String
 }
