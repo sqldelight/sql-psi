@@ -37,7 +37,7 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
     val expectedFailure = File(fixtureRoot, "failure.txt")
     if (expectedFailure.exists()) {
       assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(
-          expectedFailure.readText().split("\n").filterNot { it.isEmpty() }
+          expectedFailure.readText().splitLines().filter { it.isNotEmpty() }
       )
     } else {
       assertWithMessage(sourceFiles.toString()).that(errors).isEmpty()
@@ -59,3 +59,5 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
         .map { arrayOf(it, it.name) }
   }
 }
+
+private fun String.splitLines() = split("\\r\\n?".toRegex())
