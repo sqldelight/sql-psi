@@ -15,3 +15,21 @@ WHERE content LIKE '%' | ? | '%';
 
 SELECT docid
 FROM data;
+
+SELECT *
+FROM data
+WHERE data MATCH ?;
+
+SELECT *
+FROM data
+WHERE data.data MATCH ?;
+
+SELECT *
+FROM data
+WHERE main.data.data MATCH ?
+ORDER BY rank(matchinfo(data));
+
+-- Expected failure - data is not a valid column in this context
+SELECT *
+FROM data
+WHERE main.data MATCH ?;
