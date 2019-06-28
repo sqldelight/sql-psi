@@ -60,4 +60,4 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
   }
 }
 
-private fun String.splitLines() = split("\\r\\n?".toRegex())
+private fun String.splitLines() = split("\\r?\\n".toRegex())
