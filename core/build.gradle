@@ -6,9 +6,6 @@ import com.alecstrong.sqlite.psi.tasks.BnfExtenderTask
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
-
 sourceSets {
   main.java.srcDir "gen"
 }
@@ -31,8 +28,8 @@ task generateSqliteLexer(type: GenerateLexer) {
 }
 
 task generateSqliteExtendableGrammar(type: BnfExtenderTask) {
-  source "src"
-  include "main/grammars/sqlite.bnf"
+  source "src/main/grammars/sqlite.bnf"
+  //include "main/grammars/sqlite.bnf"
   outputDirectory = file("gen")
   outputPackage = "com.alecstrong.sqlite.psi.core"
 }
