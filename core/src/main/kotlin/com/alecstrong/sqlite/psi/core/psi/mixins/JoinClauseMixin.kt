@@ -56,11 +56,7 @@ abstract internal class JoinClauseMixin(
                     it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
                   }
                 }
-                QueryResult(
-                        table = query.first().table,
-                        columns = columns,
-                        synthesizedColumns = query.first().synthesizedColumns,
-                        joinConstraint = constraint)
+                QueryResult(query.first().table, columns, joinConstraint = constraint)
               }
             }
           }
