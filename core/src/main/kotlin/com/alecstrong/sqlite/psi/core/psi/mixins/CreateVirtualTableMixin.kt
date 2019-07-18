@@ -20,7 +20,7 @@ internal abstract class CreateVirtualTableMixin(
       listOf(
           SynthesizedColumn(
               table = this,
-              acceptableValues = listOf("docid", "rowid", "oid", "_oid_", tableName.name)
+              acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
           )
       )
     } else {
