@@ -2,7 +2,7 @@ CREATE TABLE item(
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   packageName TEXT NOT NULL,
   className TEXT NOT NULL,
-  deprecated INTEGER AS Boolean NOT NULL DEFAULT 0,
+  deprecated INTEGER NOT NULL DEFAULT 0,
   link TEXT NOT NULL,
 
   UNIQUE (packageName, className)
@@ -25,11 +25,9 @@ BEGIN
   WHERE docid = new.id;
 END;
 
-insertItem:
 INSERT OR FAIL INTO item(packageName, className, deprecated, link) VALUES (?, ?, ?, ?)
 ;
 
-updateItem:
 UPDATE item
 SET deprecated = ?3,
     link = ?4
@@ -37,35 +35,18 @@ WHERE packageName = ?1
   AND className = ?2
 ;
 
-count:
 SELECT COUNT(id)
 FROM item
 ;
 
-queryTerm:
 SELECT item.*
-FROM item_index
-JOIN item ON (docid = item.id)
-WHERE content MATCH ?1
+FROM item
+JOIN item_index ON docid = item.id
+WHERE item_index MATCH ?1
 ORDER BY
   -- deprecated classes are always last
   deprecated ASC,
-  CASE
-    -- exact match
-    WHEN className LIKE ?1 ESCAPE '\' THEN 1
-    -- prefix match with no nested type
-    WHEN className LIKE ?1 || '%' ESCAPE '\' AND instr(className, '.') = 0 THEN 2
-    -- exact match on nested type
-    WHEN className LIKE '%.' || ?1 ESCAPE '\' THEN 3
-    -- prefix match (allowing nested types)
-    WHEN className LIKE ?1 || '%' ESCAPE '\' THEN 4
-    -- prefix match on nested type
-    WHEN className LIKE '%.' || ?1 || '%' ESCAPE '\' THEN 5
-    -- infix match
-    ELSE 6
-  END ASC,
-  -- prefer "closer" matches based on length
-  length(className) ASC,
+  rank(matchinfo(item_index)) ASC,
   -- alphabetize to eliminate any remaining non-determinism
   packageName ASC,
   className ASC
