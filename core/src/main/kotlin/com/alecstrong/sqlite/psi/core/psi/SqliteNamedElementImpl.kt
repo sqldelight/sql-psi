@@ -8,14 +8,14 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiBuilderFactory
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.GeneratedMarkerVisitor
 import com.intellij.psi.impl.source.tree.TreeElement
 
 internal abstract class SqliteNamedElementImpl(
   node: ASTNode
 ) : SqliteCompositeElementImpl(node),
-    PsiNamedElement {
+    PsiNameIdentifierOwner {
   abstract val parseRule: (builder: PsiBuilder, level: Int) -> Boolean
 
   override fun getName() = text
@@ -41,5 +41,9 @@ internal abstract class SqliteNamedElementImpl(
     (element as TreeElement).acceptTree(GeneratedMarkerVisitor())
     parent.node.replaceChild(node, element)
     return this
+  }
+
+  override fun getNameIdentifier(): PsiElement? {
+    return findChildByType<PsiElement>(SqliteTypes.ID)
   }
 }
