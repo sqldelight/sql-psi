@@ -47,8 +47,11 @@ abstract internal class JoinClauseMixin(
               query.isEmpty() -> return@zip2
               else -> {
                 var columns = query.flatMap { it.columns }
+                var synthesizedColumns = query.flatMap { it.synthesizedColumns }
+
                 if (operator.node.findChildByType(SqliteTypes.LEFT) != null) {
                   columns = columns.map { it.copy(nullable = true) }
+                  synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
                 }
                 if (constraint.node?.findChildByType(SqliteTypes.USING) != null) {
                   val columnNames = constraint.columnNameList.map { it.name }
@@ -59,7 +62,7 @@ abstract internal class JoinClauseMixin(
                 QueryResult(
                         table = query.first().table,
                         columns = columns,
-                        synthesizedColumns = query.first().synthesizedColumns,
+                        synthesizedColumns = synthesizedColumns,
                         joinConstraint = constraint)
               }
             }

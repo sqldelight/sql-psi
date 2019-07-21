@@ -16,24 +16,32 @@ internal abstract class CreateVirtualTableMixin(
     SqliteCreateVirtualTableStmt,
     TableElement {
   override fun tableExposed(): LazyQuery {
-    val synthesizedColumns = if (moduleName?.text?.startsWith(prefix ="fts", ignoreCase = true) == true) {
+    val columnNameElements = findChildrenByClass(SqliteModuleArgument::class.java)
+        .mapNotNull { it.columnDef?.columnName }
+
+    val synthesizedColumns = if (usesFtsModule) {
+      val columnNames = columnNameElements.map { it.name }
+
       listOf(
           SynthesizedColumn(
               table = this,
               acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
+                  .filter { it !in columnNames }
           )
       )
     } else {
       emptyList()
     }
+
     return LazyQuery(tableName) {
       QueryResult(
           table = tableName,
-          columns = findChildrenByClass(SqliteModuleArgument::class.java)
-              .mapNotNull { it.columnDef?.columnName }
-              .asColumns(),
+          columns = columnNameElements.asColumns(),
           synthesizedColumns = synthesizedColumns
       )
     }
   }
 }
+
+val SqliteCreateVirtualTableStmt.usesFtsModule: Boolean
+  get() = this.moduleName?.text?.startsWith(prefix ="fts", ignoreCase = true) == true

@@ -206,7 +206,10 @@ paren_expr ::= '(' expr ')' {
 }
 cast_expr ::= CAST '(' expr AS type_name ')'
 collate_expr ::= expr COLLATE collation_name
-binary_like_expr ::= expr [ NOT ] ( LIKE | GLOB | REGEXP | MATCH ) expr [ ESCAPE expr ]
+binary_like_operator ::= ( LIKE | GLOB | REGEXP | MATCH )
+binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] {
+  mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.BinaryLikeExprMixin"
+}
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
 is_expr ::= expr IS [ NOT ] expr
 between_expr ::= expr [ NOT ] BETWEEN expr AND expr

@@ -52,7 +52,8 @@ interface QueryElement: PsiElement {
    */
   data class SynthesizedColumn(
     val table: PsiElement,
-    val acceptableValues: List<String>
+    val acceptableValues: List<String>,
+    val nullable: Boolean = false
   )
 }
 
