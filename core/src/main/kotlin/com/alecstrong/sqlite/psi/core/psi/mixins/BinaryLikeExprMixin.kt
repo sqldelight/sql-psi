@@ -67,12 +67,12 @@ internal abstract class BinaryLikeExprMixin(
       expression: SqliteColumnExpr,
       columnName: SqliteColumnName
   ): Boolean {
-    val createVirtualTableStatement = PsiTreeUtil.findFirstParent(columnName) { it is SqliteCreateVirtualTableStmt }
+    val table = PsiTreeUtil.findFirstParent(columnName) { it is SqliteCreateVirtualTableStmt }
         as? SqliteCreateVirtualTableStmt
 
-    return if (createVirtualTableStatement != null && createVirtualTableStatement.usesFtsModule) {
+    return if (table?.usesFtsModule == true) {
       queryAvailable(expression)
-          .filter { it.table?.name == createVirtualTableStatement.tableName.name }
+          .filter { it.table?.name == table.tableName.name }
           .any { query ->
             query.columns.filter { it.element.text == expression.columnName.name }.any { it.nullable }
           }
