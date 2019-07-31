@@ -108,7 +108,7 @@ create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ 
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateTriggerMixin"
   pin = 6
 }
-create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name AS compound_select_stmt {
+create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name[ '(' column_alias ( ',' column_alias ) * ')' ] AS compound_select_stmt {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.CreateViewMixin"
   implements = "com.alecstrong.sqlite.psi.core.psi.TableElement"
   pin = 6

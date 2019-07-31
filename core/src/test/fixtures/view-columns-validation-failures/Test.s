@@ -2,10 +2,7 @@ CREATE TABLE test (
   _id INTEGER NOT NULL PRIMARY KEY
 );
 
-CREATE VIEW view1 AS
-SELECT *
-FROM test;
-
-CREATE VIEW view2 AS
+CREATE VIEW view1(first_name,second_name)
+AS
 SELECT *
 FROM test;
