@@ -1,0 +1,1 @@
+Test.s line 5:0 - number of aliases is different from the number of columns
