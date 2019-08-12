@@ -33,7 +33,7 @@ internal abstract class CreateTableMixin(
       val columnNames = columnDefList.mapNotNull { it.columnName.name }
       listOf(SynthesizedColumn(
           table = this,
-          acceptableValues = listOf("rowid", "oid", "_oid_").filter { it !in columnNames }
+          acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames }
       ))
     } else {
       emptyList()
