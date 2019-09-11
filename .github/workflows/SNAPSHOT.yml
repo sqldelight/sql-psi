@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Publish a SNAPSHOT
+      run: ./gradlew clean uploadArchives
