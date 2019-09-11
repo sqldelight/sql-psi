@@ -13,4 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Publish a SNAPSHOT
+      env:
+        SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
       run: ./gradlew clean uploadArchives
