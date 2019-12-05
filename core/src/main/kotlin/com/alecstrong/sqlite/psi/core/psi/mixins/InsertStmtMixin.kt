@@ -70,8 +70,8 @@ internal abstract class InsertStmtMixin(
       }
 
       if (conflictResolution != null && upsertDoUpdate != null) {
-        annotationHolder.createErrorAnnotation(upsertDoUpdate, "Cannot use DO UPDATE when " +
-                "OR $conflictResolution conflict resolution algorithm was specified")
+        annotationHolder.createErrorAnnotation(upsertDoUpdate, "Cannot use DO UPDATE while " +
+                "also specifying a conflict resolution algorithm ($conflictResolution)")
       }
     }
 
