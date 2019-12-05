@@ -10,9 +10,6 @@ internal abstract class UpsertClauseMixin(
 ) : SqliteCompositeElementImpl(node),
         SqliteUpsertClause {
 
-    override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
-        return super.tablesAvailable(child)
-    }
     override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
         val insertStmt = (this.parent as InsertStmtMixin)
         val tableName = insertStmt.tableName
@@ -23,9 +20,13 @@ internal abstract class UpsertClauseMixin(
         }
 
         if (child is SqliteUpsertDoUpdate) {
-            // TODO: Ensure the table alias is available here too (and add it to the grammar)
-            val excludedTable = QueryElement.QueryResult(SingleRow(tableName, "excluded"), table.columns, synthesizedColumns = table.synthesizedColumns)
-            return super.queryAvailable(child) + listOf(excludedTable)
+            val excludedTable = QueryElement.QueryResult(
+                    SingleRow(tableName, "excluded"), table.columns,
+                    synthesizedColumns = table.synthesizedColumns)
+
+            val available = arrayListOf(excludedTable)
+            available += super.queryAvailable(child)
+            return available
         }
 
         return super.queryAvailable(child)

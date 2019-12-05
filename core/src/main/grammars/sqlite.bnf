@@ -233,7 +233,7 @@ literal_value ::= ( numeric_literal
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.LiteralValueMixin"
 }
 numeric_literal ::= ( digit [ '.' ( digit ) * ] | '.' digit ) [ E [ '+' | '-' ] digit ]
-insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) [ upsert_clause ] {
+insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ AS table_alias ] [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) [ upsert_clause ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InsertStmtMixin"
   pin = 5
 }

@@ -1,11 +1,9 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.psi.SqliteColumnDef
-import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
-import com.alecstrong.sqlite.psi.core.psi.SqliteInsertStmt
-import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
+import com.alecstrong.sqlite.psi.core.psi.*
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 
 internal abstract class InsertStmtMixin(
     node: ASTNode
@@ -85,5 +83,21 @@ internal abstract class InsertStmtMixin(
     } || columnConstraintList.none {
       it.node.findChildByType(SqliteTypes.NOT) != null
     }
+  }
+
+  override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
+    // Aliasing the table in an insert is useful when doing an UPSERT operation:
+    // INSERT INTO tbl AS tblAlias (..) VALUES (..) ON CONFLICT (..) DO UPDATE SET x = tblAlias.x + excluded.x
+    //                    ^^^^^^^^                                                     ^^^^^^^^
+    tableAlias?.let { alias ->
+      val available = ArrayList(super.queryAvailable(child))
+      val tableResult = available.find { it.table?.name == tableName.name }
+      check(tableResult != null)
+      available.remove(tableResult)
+      available += tableResult.copy(table = alias)
+      return available
+    }
+
+    return super.queryAvailable(child)
   }
 }

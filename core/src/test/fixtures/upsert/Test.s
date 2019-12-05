@@ -2,7 +2,8 @@ CREATE TABLE transaction(
     transaction_id INTEGER PRIMARY KEY,
     transaction_uuid TEXT NOT NULL UNIQUE,
     opened_time TEXT NOT NULL,
-    finalized_time TEXT
+    finalized_time TEXT,
+    count INTEGER
 );
 
 INSERT INTO transaction(transaction_uuid, opened_time, finalized_time)
@@ -46,3 +47,23 @@ ON CONFLICT (transaction_uuid) DO NOTHING;
 INSERT OR REPLACE INTO transaction(transaction_uuid, opened_time, finalized_time)
 VALUES (?, ?, ?)
 ON CONFLICT (transaction_uuid) DO UPDATE SET opened_time = excluded.opened_time;
+
+-- Should pass
+INSERT INTO transaction(transaction_uuid, opened_time, finalized_time, count)
+VALUES (?, ?, ?, ?)
+ON CONFLICT (transaction_uuid) DO UPDATE SET count = transaction.count + excluded.count;
+
+-- Should fail
+INSERT INTO transaction(transaction_uuid, opened_time, finalized_time, count)
+VALUES (?, ?, ?, ?)
+ON CONFLICT (transaction_uuid) DO UPDATE SET count = transaction_alias.count + excluded.count;
+
+-- Should fail
+INSERT INTO transaction AS transaction_alias(transaction_uuid, opened_time, finalized_time, count)
+VALUES (?, ?, ?, ?)
+ON CONFLICT (transaction_uuid) DO UPDATE SET count = transaction.count + excluded.count;
+
+-- Should pass
+INSERT INTO transaction AS transaction_alias(transaction_uuid, opened_time, finalized_time, count)
+VALUES (?, ?, ?, ?)
+ON CONFLICT (transaction_uuid) DO UPDATE SET count = transaction_alias.count + excluded.count;
