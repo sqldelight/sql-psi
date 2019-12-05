@@ -1,0 +1,2 @@
+Test.s line 38:13 - No column found with name foo
+Test.s line 48:41 - Cannot use DO UPDATE when OR REPLACE conflict resolution algorithm was specified

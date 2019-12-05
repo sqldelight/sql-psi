@@ -14,8 +14,10 @@ internal abstract class InsertStmtMixin(
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     val table = tableAvailable(this, tableName.name).firstOrNull() ?: return
     val columns = table.columns.map { (it.element as SqliteColumnName).name }
+    // DEFAULT VALUES clause
+    val insertDefaultValues = node.findChildByType(SqliteTypes.DEFAULT) != null
     val setColumns =
-        if (columnNameList.isEmpty() && node.findChildByType(SqliteTypes.DEFAULT) == null) {
+        if (columnNameList.isEmpty() && !insertDefaultValues) {
           columns
         } else {
           columnNameList.mapNotNull { it.name }
@@ -46,6 +48,31 @@ internal abstract class InsertStmtMixin(
     } else if (needsDefaultValue.size > 1) {
       annotationHolder.createErrorAnnotation(this, "Cannot populate default values for columns " +
           "(${needsDefaultValue.joinToString { it.name }}), they must be specified in insert statement.")
+    }
+
+    upsertClause?.let { upsert ->
+      val upsertDoUpdate = upsert.upsertDoUpdate
+      if (insertDefaultValues && upsertDoUpdate != null) {
+        annotationHolder.createErrorAnnotation(upsert, "The upsert clause is not supported after DEFAULT VALUES")
+      }
+
+      val insertOr = node.findChildByType(SqliteTypes.INSERT)?.treeNext
+      val replace = node.findChildByType(SqliteTypes.REPLACE)
+      val conflictResolution = when {
+        replace != null -> SqliteTypes.REPLACE
+        insertOr != null && insertOr.elementType == SqliteTypes.OR -> {
+          val type = insertOr.treeNext.elementType
+          check(type == SqliteTypes.ROLLBACK || type == SqliteTypes.ABORT ||
+                  type == SqliteTypes.FAIL || type == SqliteTypes.IGNORE)
+          type
+        }
+        else -> null
+      }
+
+      if (conflictResolution != null && upsertDoUpdate != null) {
+        annotationHolder.createErrorAnnotation(upsertDoUpdate, "Cannot use DO UPDATE when " +
+                "OR $conflictResolution conflict resolution algorithm was specified")
+      }
     }
 
     super.annotate(annotationHolder)
