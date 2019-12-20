@@ -53,10 +53,24 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
       }
     }
 
-    if (expectedFailures.isNotEmpty()) {
-      assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(expectedFailures)
-    } else {
-      assertWithMessage(sourceFiles.toString()).that(errors).isEmpty()
+    val errorsStr = formatErrorList(errors)
+    val expectedFailuresStr = formatErrorList(expectedFailures)
+    val missingList = expectedFailures.filter { it !in errors }
+    val missingStr = formatErrorList(missingList)
+    val extrasList = errors.filter { it !in expectedFailures }
+    val extrasStr = formatErrorList(extrasList)
+
+    val assertionMsgEnd = "\nOverall we expected to see $expectedFailuresStr but got $errorsStr"
+    when {
+      missingList.isNotEmpty() && extrasList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output is missing $missingStr and unexpectedly has $extrasStr. $assertionMsgEnd")
+      }
+      missingList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output is missing $missingStr. $assertionMsgEnd")
+      }
+      extrasList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output unexpectedly has $extrasStr. $assertionMsgEnd")
+      }
     }
   }
 
@@ -74,6 +88,13 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
         .filter { it.isDirectory }
         .map { arrayOf(it, it.name) }
   }
+}
+
+private fun formatErrorList(errors: List<String>): String {
+  if (errors.isEmpty()) {
+    return "no errors"
+  }
+  return errors.joinToString("\n", prefix = "the errors <[\n", postfix = "\n]>") { "    $it" }
 }
 
 private val inlineErrorRegex = "^--\\s*error\\[col (\\d+)]:(.+)$".toRegex(RegexOption.MULTILINE)
