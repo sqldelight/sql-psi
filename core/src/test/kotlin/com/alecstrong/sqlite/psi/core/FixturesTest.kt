@@ -34,11 +34,27 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
       }
     }
 
-    val expectedFailure = File(fixtureRoot, "failure.txt")
-    if (expectedFailure.exists()) {
-      assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(
-          expectedFailure.readText().splitLines().filter { it.isNotEmpty() }
-      )
+    val expectedFailures = ArrayList<String>()
+    val expectedFailuresFile = File(fixtureRoot, "failure.txt")
+    if (expectedFailuresFile.exists()) {
+      expectedFailures += expectedFailuresFile.readText().splitLines().filter { it.isNotEmpty() }
+    }
+
+    environment.forSourceFiles { file ->
+      val inlineErrors = inlineErrorRegex.findAll(file.text)
+      val document = PsiDocumentManager.getInstance(file.project).getDocument(file.containingFile)!!
+
+      for (errorMatch in inlineErrors) {
+        // Add 1 to make it 1-based, and another 1 because the line where the error should happen is the next line
+        // after the error comment line
+        val lineNum = document.getLineNumber(errorMatch.range.first) + 1 + 1
+        val (offsetInLine, errMsg) = errorMatch.destructured
+        expectedFailures += "${file.name} line $lineNum:$offsetInLine - ${errMsg.trim()}"
+      }
+    }
+
+    if (expectedFailures.isNotEmpty()) {
+      assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(expectedFailures)
     } else {
       assertWithMessage(sourceFiles.toString()).that(errors).isEmpty()
     }
@@ -59,5 +75,7 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
         .map { arrayOf(it, it.name) }
   }
 }
+
+private val inlineErrorRegex = "^--\\s*error\\[col (\\d+)]:(.+)$".toRegex(RegexOption.MULTILINE)
 
 private fun String.splitLines() = split("\\r?\\n".toRegex())
