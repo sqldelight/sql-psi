@@ -28,7 +28,9 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
   override fun resolve() = resolved
 
   internal fun resolveToQuery(): QueryColumn? {
-    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return null
+    // This element is part of a DDL statement that itself brings the column into scope.
+    // There is no query to refer to, so we can only return null here.
+    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin || element.parent is SqliteAlterTableRenameColumnClause) return null
 
     val tableName = tableName()
     val tables: List<QueryResult>
@@ -45,7 +47,8 @@ internal class SqliteColumnReference<T: SqliteNamedElementImpl>(
   }
 
   internal fun unsafeResolve(): PsiElement? {
-    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin) return element
+    // This element is part of a DDL statement, so itself defines this column
+    if (element.parent is SqliteColumnDef || element.parent is CreateVirtualTableMixin || element.parent is SqliteAlterTableRenameColumnClause) return element
 
     val tableName = tableName()
     val tables: List<QueryResult>

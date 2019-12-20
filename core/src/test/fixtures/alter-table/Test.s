@@ -1,0 +1,8 @@
+CREATE TABLE user(
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+ALTER TABLE user RENAME COLUMN id TO user_id;
+
+ALTER TABLE user RENAME user_id TO id;

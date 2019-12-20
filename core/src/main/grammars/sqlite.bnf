@@ -61,9 +61,10 @@ sql_stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | atta
   pin = 2
 }
 private sql_stmt_recovery ::= !( ';' | ALTER | ANALYZE | ATTACH | BEGIN | COMMIT | END | ROLLBACK | SAVEPOINT | RELEASE | CREATE | DROP | INSERT | WITH | UPDATE | DELETE | SELECT | PRAGMA | REINDEX )
-alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name ( RENAME TO new_table_name | ADD [ COLUMN ] column_def ) {
+alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name ( RENAME TO new_table_name | ADD [ COLUMN ] column_def | alter_table_rename_column_clause ) {
   pin = 1
 }
+alter_table_rename_column_clause ::= RENAME [ COLUMN ] column_name TO column_name
 analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
   pin = 1
 }
