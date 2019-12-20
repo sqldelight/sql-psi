@@ -184,6 +184,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "INTERSECT"            { return INTERSECT; }
   "EXCEPT"               { return EXCEPT; }
   "VACUUM"               { return VACUUM; }
+  "TRUE"                 { return TRUE; }
+  "FALSE"                { return FALSE; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }

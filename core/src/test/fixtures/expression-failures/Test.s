@@ -16,3 +16,5 @@ WHERE _id IN (
   SELECT _id, other_column
   FROM test
 );
+
+INSERT INTO test(other_column) VALUES (TRUE), (FALSE);
