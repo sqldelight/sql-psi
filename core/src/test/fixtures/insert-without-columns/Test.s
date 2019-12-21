@@ -25,12 +25,15 @@ INSERT INTO test (_id, column1, column2) VALUES (?, ?, ?);
 INSERT INTO test (_id, column2) VALUES (?, ?);
 
 -- Fails as column2 must be specified.
+-- error[col 0]: Cannot populate default value for column column2, it must be specified in insert statement.
 INSERT INTO test (_id, column1, column3) VALUES (?, ?, ?);
 
 -- Fails as _id must be specified.
+-- error[col 0]: Cannot populate default value for column _id, it must be specified in insert statement.
 INSERT INTO test(column1, column2, column3) VALUES (?, ?, ?);
 
 -- Fails since not all columns can have default values.
+-- error[col 0]: Cannot populate default values for columns (_id, column2), they must be specified in insert statement.
 INSERT INTO test DEFAULT VALUES;
 
 
@@ -45,10 +48,12 @@ INSERT INTO test2 (_id, column1, column2) VALUES (?, ?, ?);
 INSERT INTO test2 (_id, column2) VALUES (?, ?);
 
 -- Fails as column2 must be specified.
+-- error[col 0]: Cannot populate default value for column column2, it must be specified in insert statement.
 INSERT INTO test2 (_id, column1, column3) VALUES (?, ?, ?);
 
 -- Works. An INTEGER PRIMARY KEY has a default value.
 INSERT INTO test2(column1, column2, column3) VALUES (?, ?, ?);
 
 -- Fails since not all columns can have default values.
+-- error[col 0]: Cannot populate default value for column column2, it must be specified in insert statement.
 INSERT INTO test2 DEFAULT VALUES;
