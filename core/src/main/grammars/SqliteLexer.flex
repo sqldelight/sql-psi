@@ -29,7 +29,7 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
 JAVADOC="/"\*\*(.|\n)*\*"/"
 DIGIT=[0-9]+(\.[0-9]*)?
-ID=([a-zA-Z0-9_\`\[\]])*
+ID=([a-zA-Z_][a-zA-Z_0-9]*)|`([a-zA-Z_][a-zA-Z_0-9]*)`|\[([a-zA-Z_][a-zA-Z_0-9]*)\]|\"([a-zA-Z_][a-zA-Z_0-9]*)\"
 STRING=('([^'])*'|\"([^\"])*\")
 
 %%
@@ -167,6 +167,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "CURRENT_TIME"         { return CURRENT_TIME; }
   "CURRENT_DATE"         { return CURRENT_DATE; }
   "CURRENT_TIMESTAMP"    { return CURRENT_TIMESTAMP; }
+  "TRUE"                 { return TRUE; }
+  "FALSE"                { return FALSE; }
   "E"                    { return E; }
   "INTO"                 { return INTO; }
   "VALUES"               { return VALUES; }
@@ -184,8 +186,6 @@ STRING=('([^'])*'|\"([^\"])*\")
   "INTERSECT"            { return INTERSECT; }
   "EXCEPT"               { return EXCEPT; }
   "VACUUM"               { return VACUUM; }
-  "TRUE"                 { return TRUE; }
-  "FALSE"                { return FALSE; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }

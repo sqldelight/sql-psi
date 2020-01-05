@@ -92,7 +92,7 @@ internal abstract class CreateTableMixin(
 
   private fun checkForDuplicateColumns(annotationHolder: SqliteAnnotationHolder) {
     columnDefList.map { it.columnName }
-        .groupBy { it.name.trim('\'', '"', '`', '[', ']') }
+        .groupBy { it.name }
         .map { it.value }
         .filter { it.size > 1 }
         .flatMap { it }
