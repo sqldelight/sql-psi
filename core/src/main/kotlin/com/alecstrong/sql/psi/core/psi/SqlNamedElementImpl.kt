@@ -18,7 +18,16 @@ internal abstract class SqlNamedElementImpl(
     PsiNameIdentifierOwner {
   abstract val parseRule: (builder: PsiBuilder, level: Int) -> Boolean
 
-  override fun getName() = text
+  override fun getName(): String {
+    val text = this.text
+    return when {
+      text.startsWith('[') && text.endsWith(']') ||
+      text.startsWith('"') && text.endsWith('"') ||
+      text.startsWith('`') && text.endsWith('`') ||
+      text.startsWith('\'') && text.endsWith('\'') -> text.substring(1, text.length - 1)
+      else -> text
+    }
+  }
 
   override fun setName(name: String): PsiElement {
     // This whole thing is a hack. Its copied from an internal implementation of creating a fake
