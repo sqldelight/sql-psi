@@ -186,6 +186,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "VACUUM"               { return VACUUM; }
   "DO"                   { return DO; }
   "NOTHING"              { return NOTHING; }
+  "TRUE"                 { return TRUE; }
+  "FALSE"                { return FALSE; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }

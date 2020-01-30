@@ -34,13 +34,43 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
       }
     }
 
-    val expectedFailure = File(fixtureRoot, "failure.txt")
-    if (expectedFailure.exists()) {
-      assertWithMessage(sourceFiles.toString()).that(errors).containsExactlyElementsIn(
-          expectedFailure.readText().splitLines().filter { it.isNotEmpty() }
-      )
-    } else {
-      assertWithMessage(sourceFiles.toString()).that(errors).isEmpty()
+    val expectedFailures = ArrayList<String>()
+    val expectedFailuresFile = File(fixtureRoot, "failure.txt")
+    if (expectedFailuresFile.exists()) {
+      expectedFailures += expectedFailuresFile.readText().splitLines().filter { it.isNotEmpty() }
+    }
+
+    environment.forSourceFiles { file ->
+      val inlineErrors = inlineErrorRegex.findAll(file.text)
+      val document = PsiDocumentManager.getInstance(file.project).getDocument(file.containingFile)!!
+
+      for (errorMatch in inlineErrors) {
+        // Add 1 to make it 1-based, and another 1 because the line where the error should happen is the next line
+        // after the error comment line
+        val lineNum = document.getLineNumber(errorMatch.range.first) + 1 + 1
+        val (offsetInLine, errMsg) = errorMatch.destructured
+        expectedFailures += "${file.name} line $lineNum:$offsetInLine - ${errMsg.trim()}"
+      }
+    }
+
+    val errorsStr = formatErrorList(errors)
+    val expectedFailuresStr = formatErrorList(expectedFailures)
+    val missingList = expectedFailures.filter { it !in errors }
+    val missingStr = formatErrorList(missingList)
+    val extrasList = errors.filter { it !in expectedFailures }
+    val extrasStr = formatErrorList(extrasList)
+
+    val assertionMsgEnd = "\nOverall we expected to see $expectedFailuresStr but got $errorsStr"
+    when {
+      missingList.isNotEmpty() && extrasList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output is missing $missingStr and unexpectedly has $extrasStr. $assertionMsgEnd")
+      }
+      missingList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output is missing $missingStr. $assertionMsgEnd")
+      }
+      extrasList.isNotEmpty() -> {
+        throw AssertionError("Test failed because the compile output unexpectedly has $extrasStr. $assertionMsgEnd")
+      }
     }
   }
 
@@ -59,5 +89,14 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
         .map { arrayOf(it, it.name) }
   }
 }
+
+private fun formatErrorList(errors: List<String>): String {
+  if (errors.isEmpty()) {
+    return "no errors"
+  }
+  return errors.joinToString("\n", prefix = "the errors <[\n", postfix = "\n]>") { "    $it" }
+}
+
+private val inlineErrorRegex = "^--\\s*error\\[col (\\d+)]:(.+)$".toRegex(RegexOption.MULTILINE)
 
 private fun String.splitLines() = split("\\r?\\n".toRegex())
