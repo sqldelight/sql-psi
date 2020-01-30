@@ -1,11 +1,9 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.psi.SqliteColumnDef
-import com.alecstrong.sqlite.psi.core.psi.SqliteColumnName
-import com.alecstrong.sqlite.psi.core.psi.SqliteInsertStmt
-import com.alecstrong.sqlite.psi.core.psi.SqliteTypes
+import com.alecstrong.sqlite.psi.core.psi.*
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 
 internal abstract class InsertStmtMixin(
     node: ASTNode
@@ -14,8 +12,10 @@ internal abstract class InsertStmtMixin(
   override fun annotate(annotationHolder: SqliteAnnotationHolder) {
     val table = tableAvailable(this, tableName.name).firstOrNull() ?: return
     val columns = table.columns.map { (it.element as SqliteColumnName).name }
+    // DEFAULT VALUES clause
+    val insertDefaultValues = node.findChildByType(SqliteTypes.DEFAULT) != null
     val setColumns =
-        if (columnNameList.isEmpty() && node.findChildByType(SqliteTypes.DEFAULT) == null) {
+        if (columnNameList.isEmpty() && !insertDefaultValues) {
           columns
         } else {
           columnNameList.mapNotNull { it.name }
@@ -48,6 +48,31 @@ internal abstract class InsertStmtMixin(
           "(${needsDefaultValue.joinToString { it.name }}), they must be specified in insert statement.")
     }
 
+    upsertClause?.let { upsert ->
+      val upsertDoUpdate = upsert.upsertDoUpdate
+      if (insertDefaultValues && upsertDoUpdate != null) {
+        annotationHolder.createErrorAnnotation(upsert, "The upsert clause is not supported after DEFAULT VALUES")
+      }
+
+      val insertOr = node.findChildByType(SqliteTypes.INSERT)?.treeNext
+      val replace = node.findChildByType(SqliteTypes.REPLACE)
+      val conflictResolution = when {
+        replace != null -> SqliteTypes.REPLACE
+        insertOr != null && insertOr.elementType == SqliteTypes.OR -> {
+          val type = insertOr.treeNext.elementType
+          check(type == SqliteTypes.ROLLBACK || type == SqliteTypes.ABORT ||
+                  type == SqliteTypes.FAIL || type == SqliteTypes.IGNORE)
+          type
+        }
+        else -> null
+      }
+
+      if (conflictResolution != null && upsertDoUpdate != null) {
+        annotationHolder.createErrorAnnotation(upsertDoUpdate, "Cannot use DO UPDATE while " +
+                "also specifying a conflict resolution algorithm ($conflictResolution)")
+      }
+    }
+
     super.annotate(annotationHolder)
   }
 
@@ -66,5 +91,21 @@ internal abstract class InsertStmtMixin(
         it.node.findChildByType(SqliteTypes.PRIMARY) != null
       }
     )
+  }
+
+  override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
+    // Aliasing the table in an insert is useful when doing an UPSERT operation:
+    // INSERT INTO tbl AS tblAlias (..) VALUES (..) ON CONFLICT (..) DO UPDATE SET x = tblAlias.x + excluded.x
+    //                    ^^^^^^^^                                                     ^^^^^^^^
+    tableAlias?.let { alias ->
+      val available = ArrayList(super.queryAvailable(child))
+      val tableResult = available.find { it.table?.name == tableName.name }
+      check(tableResult != null)
+      available.remove(tableResult)
+      available += tableResult.copy(table = alias)
+      return available
+    }
+
+    return super.queryAvailable(child)
   }
 }

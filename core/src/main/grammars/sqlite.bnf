@@ -236,11 +236,15 @@ numeric_literal ::= ( ( digit [ '.' ( digit ) * ] | '.' digit )
                       | TRUE
                       | FALSE
                     ) [ E [ '+' | '-' ] digit ]
-
-insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) {
+insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ AS table_alias ] [ '(' column_name ( ',' column_name ) * ')' ] ( VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES ) [ upsert_clause ] {
   mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.InsertStmtMixin"
   pin = 5
 }
+upsert_clause ::= ON CONFLICT ( upsert_conflict_target DO UPDATE upsert_do_update | [ upsert_conflict_target ] DO NOTHING ) {
+    mixin = "com.alecstrong.sqlite.psi.core.psi.mixins.UpsertClauseMixin"
+}
+upsert_conflict_target ::= '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ]
+upsert_do_update ::= SET column_name '=' setter_expression update_stmt_subsequent_setter * [ WHERE expr ]
 pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ] {
   pin = 1
 }
