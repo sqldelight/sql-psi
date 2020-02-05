@@ -1,0 +1,41 @@
+{
+  // Specify the parent parser.
+  overrides="com.alecstrong.sqlite.psi.core.SqliteParser"
+  elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
+
+  implements="com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElement"
+  extends="com.alecstrong.sqlite.psi.core.psi.SqliteCompositeElementImpl"
+
+  parserImports=[
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.INSERT"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.OR"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.REPLACE"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.ROLLBACK"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.ABORT"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.FAIL"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.IGNORE"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.INTO"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.AS"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.ON"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.CONFLICT"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.DO"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.UPDATE"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.NOTHING"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.SET"
+    "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.WHERE"
+  ]
+}
+insert_stmt ::= [ {with_clause} ]
+  ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT )
+  INTO [ {database_name} '.' ] {table_name} [ AS {table_alias} ]
+  [ '(' {column_name} ( ',' {column_name} ) * ')' ] {insert_stmt_values} [ upsert_clause ] {
+  extends = "com.alecstrong.sqlite.psi.core.sqlite_3_24.psi.mixins.InsertStmtMixin"
+  implements = "com.alecstrong.sqlite.psi.core.psi.SqliteInsertStmt"
+  pin = 5
+  override = true
+}
+upsert_clause ::= ON CONFLICT ( upsert_conflict_target DO UPDATE upsert_do_update | [ upsert_conflict_target ] DO NOTHING ) {
+    mixin = "com.alecstrong.sqlite.psi.core.sqlite_3_24.psi.mixins.UpsertClauseMixin"
+}
+upsert_conflict_target ::= '(' {indexed_column} ( ',' {indexed_column} ) * ')' [ WHERE <<expr '-1'>> ]
+upsert_do_update ::= SET {column_name} '=' {setter_expression} {update_stmt_subsequent_setter} * [ WHERE <<expr '-1'>> ]

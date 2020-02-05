@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.parser.SqliteParser
+import com.alecstrong.sqlite.psi.core.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnExpr
 import com.alecstrong.sqlite.psi.core.psi.SqliteForeignTable
 import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl

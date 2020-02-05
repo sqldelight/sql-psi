@@ -2,7 +2,7 @@ package com.alecstrong.sqlite.psi.core.psi.mixins
 
 import com.alecstrong.sqlite.psi.core.AnnotationException
 import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
-import com.alecstrong.sqlite.psi.core.parser.SqliteParser
+import com.alecstrong.sqlite.psi.core.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnReference
 import com.alecstrong.sqlite.psi.core.psi.SqliteNamedElementImpl
 import com.intellij.lang.ASTNode

@@ -1,7 +1,7 @@
 package com.alecstrong.sqlite.psi.core.psi
 
 import com.alecstrong.sqlite.psi.core.SqliteParserDefinition
-import com.alecstrong.sqlite.psi.core.parser.SqliteParser
+import com.alecstrong.sqlite.psi.core.SqliteParser
 import com.intellij.lang.ASTNode
 import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.lang.PsiBuilder

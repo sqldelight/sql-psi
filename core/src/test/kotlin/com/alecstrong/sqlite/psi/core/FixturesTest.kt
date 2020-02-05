@@ -10,8 +10,9 @@ import org.junit.runners.Parameterized.Parameters
 import java.io.File
 
 @RunWith(Parameterized::class)
-class FixturesTest(val fixtureRoot: File, val name: String) {
+class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
   @Test fun execute() {
+    dialect.setup()
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
     val environment = parser.build(fixtureRoot.path, object : SqliteAnnotationHolder {
@@ -82,12 +83,21 @@ class FixturesTest(val fixtureRoot: File, val name: String) {
   }
 
   companion object {
+    private val dialects = mapOf(
+        DialectPreset.SQLITE to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported"),
+        DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24")
+    )
+
     @Suppress("unused") // Used by Parameterized JUnit runner reflectively.
-    @Parameters(name = "{1}")
-    @JvmStatic fun parameters() = File("src/test/fixtures").listFiles()
-        .filter { it.isDirectory }
-        .map { arrayOf(it, it.name) }
-  }
+    @Parameters(name = "{0}: {1}")
+    @JvmStatic fun parameters() = dialects.flatMap { (dialect, fixtureFolders) ->
+      fixtureFolders.flatMap { fixtureFolder ->
+        File(fixtureFolder).listFiles()
+            .filter { it.isDirectory }
+            .map { arrayOf(dialect, it.name, it) }
+      }
+    }
+  } 
 }
 
 private fun formatErrorList(errors: List<String>): String {

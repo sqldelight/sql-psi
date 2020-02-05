@@ -1,16 +1,10 @@
 {
-  parserClass="com.alecstrong.sqlite.psi.sample.core.SampleParser"
-  elementTypeHolderClass="com.alecstrong.sqlite.psi.sample.core.SampleTypes"
-  psiPackage = "com.alecstrong.sqlite.psi.sample.core.psi"
-  psiImplPackage = "com.alecstrong.sqlite.psi.sample.core.psi.impl"
-
-  // "Real" rules are implemented by SqliteParser, so it acts as the parser util class.
-  parserUtilClass="com.alecstrong.sqlite.psi.core.parser.SqliteParser"
   elementTypeClass = "com.alecstrong.sqlite.psi.core.SqliteElementType"
 
+  // "Real" rules are implemented by SqliteParser, so it acts as the parser util class.
+  overrides="com.alecstrong.sqlite.psi.core.SqliteParser"
+
   parserImports=[
-    // Always needed
-    "static com.intellij.lang.parser.GeneratedParserUtilBase.*"
     // If you want to use a token from the core grammar it must be statically imported.
     "static com.alecstrong.sqlite.psi.core.psi.SqliteTypes.STRING"
   ]
@@ -20,11 +14,12 @@
 root ::= column_def
 
 // An overriden rule.
-column_def ::= <<column_name_real>> sqlite_type [ 'AS' java_type ] ( <<column_constraint_real>> ) * {
+column_def ::= {column_name} sqlite_type [ 'AS' java_type ] ( {column_constraint} ) * {
   // In order for the core to function properly, when you override a rule it should still implement
   // the core interface for that rule.
   implements="com.alecstrong.sqlite.psi.core.psi.SqliteColumnDef"
   extends="com.alecstrong.sqlite.psi.core.psi.impl.SqliteColumnDefImpl"
+  override=true
 }
 
 // Rules that your grammar uses.
