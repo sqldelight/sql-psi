@@ -1,10 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.grammarkit'
+apply plugin: 'com.alecstrong.grammar.kit.composer'
 
-import com.alecstrong.sqlite.psi.tasks.BnfExtenderTask
 import org.jetbrains.grammarkit.tasks.GenerateLexer
-import org.jetbrains.grammarkit.tasks.GenerateParser
 
 sourceSets {
   main.java.srcDir "gen"
@@ -27,24 +26,6 @@ task generateSqliteLexer(type: GenerateLexer) {
   purgeOldFiles = true
 }
 
-task generateSqliteExtendableGrammar(type: BnfExtenderTask) {
-  source "src/main/grammars/sqlite.bnf"
-  //include "main/grammars/sqlite.bnf"
-  outputDirectory = file("gen")
-  outputPackage = "com.alecstrong.sqlite.psi.core"
-}
-
-task generateSqliteParser(type: GenerateParser) {
-  source "gen/com/alecstrong/sqlite/psi/core/grammars/sqlite.bnf"
-  targetRoot = 'gen/'
-  pathToParser '/com/alecstrong/sqlite/psi/core/parser/SqliteParser.java'
-  pathToPsiRoot '/com/alecstrong/sqlite/psi/core/psi'
-  purgeOldFiles = true
-}
-
-// TODO (AlecStrong): generateSqliteParser isn't properly running when sqlite.bnf is edited.
-
-generateSqliteParser.dependsOn generateSqliteExtendableGrammar
-compileKotlin.dependsOn generateSqliteLexer, generateSqliteParser
+compileKotlin.dependsOn generateSqliteLexer
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

@@ -29,6 +29,7 @@ buildscript {
     classpath dep.kotlinGradlePlugin
     classpath 'de.undercouch:gradle-download-task:3.1.2'
     classpath "com.github.hurricup:gradle-grammar-kit-plugin:$ideaVersion"
+    classpath "com.alecstrong:grammar-kit-composer:0.1.0"
   }
 }
 
