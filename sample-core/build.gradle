@@ -1,5 +1,5 @@
 apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.grammarkit'
+apply plugin: 'com.alecstrong.grammar.kit.composer'
 
 import org.jetbrains.grammarkit.tasks.GenerateParser
 
@@ -13,13 +13,3 @@ dependencies {
   implementation dep.kotlinStdLib
   implementation project(':core')
 }
-
-task generateSampleParser(type: GenerateParser) {
-  source "src/main/grammars/sample-sqlite.bnf"
-  targetRoot = 'gen/'
-  pathToParser '/com/alecstrong/sqlite/psi/sample/core/parser/SampleParser.java'
-  pathToPsiRoot '/com/alecstrong/sqlite/psi/sample/core/psi'
-  purgeOldFiles = true
-}
-
-compileKotlin.dependsOn generateSampleParser
