@@ -1,6 +1,6 @@
 package com.alecstrong.sqlite.psi.core.psi.mixins
 
-import com.alecstrong.sqlite.psi.core.parser.SqliteParser
+import com.alecstrong.sqlite.psi.core.SqliteParser
 import com.alecstrong.sqlite.psi.core.psi.SqliteColumnAlias
 import com.alecstrong.sqlite.psi.core.psi.SqliteCompoundSelectStmt
 import com.alecstrong.sqlite.psi.core.psi.SqliteCteTableName
