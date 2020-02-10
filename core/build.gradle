@@ -19,13 +19,13 @@ dependencies {
   testImplementation dep.truth
 }
 
-task generateSqliteLexer(type: GenerateLexer) {
-  source 'src/main/grammars/SqliteLexer.flex'
-  targetDir 'gen/com/alecstrong/sqlite/psi/core/lexer/'
-  targetClass 'SqliteLexer'
+task generateSqlLexer(type: GenerateLexer) {
+  source 'src/main/kotlin/com/alecstrong/sql/psi/core/SqlLexer.flex'
+  targetDir 'gen/com/alecstrong/sql/psi/core/lexer/'
+  targetClass 'SqlLexer'
   purgeOldFiles = true
 }
 
-compileKotlin.dependsOn generateSqliteLexer
+compileKotlin.dependsOn generateSqlLexer
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"

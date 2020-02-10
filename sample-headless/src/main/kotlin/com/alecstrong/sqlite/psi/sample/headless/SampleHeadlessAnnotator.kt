@@ -1,9 +1,9 @@
-package com.alecstrong.sqlite.psi.sample.headless
+package com.alecstrong.sql.psi.sample.headless
 
-import com.alecstrong.sqlite.psi.core.SqliteAnnotationHolder
+import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.intellij.psi.PsiElement
 
-internal class SampleHeadlessAnnotator : SqliteAnnotationHolder {
+internal class SampleHeadlessAnnotator : SqlAnnotationHolder {
   override fun createErrorAnnotation(element: PsiElement, s: String) {
     System.err.println(s)
   }
