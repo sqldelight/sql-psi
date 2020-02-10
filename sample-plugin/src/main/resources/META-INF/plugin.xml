@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>com.alecstrong.sqlite.psi.sample</id>
+  <id>com.alecstrong.sql.psi.sample</id>
   <name>SQLite-PSI Sample</name>
   <category>Custom Languages</category>
   <idea-version
@@ -12,8 +12,8 @@
     ]]></description>
 
   <extensions defaultExtensionNs="com.intellij">
-    <lang.parserDefinition language="Sample" implementationClass="com.alecstrong.sqlite.psi.sample.core.SampleParserDefinition" />
-    <annotator language="Sample" implementationClass="com.alecstrong.sqlite.psi.core.SqliteAnnotator"/>
-    <fileTypeFactory implementation="com.alecstrong.sqlite.psi.sample.plugin.SampleFileTypeFactory"/>
+    <lang.parserDefinition language="Sample" implementationClass="com.alecstrong.sql.psi.sample.core.SampleParserDefinition" />
+    <annotator language="Sample" implementationClass="com.alecstrong.sql.psi.core.SqliteAnnotator"/>
+    <fileTypeFactory implementation="com.alecstrong.sql.psi.sample.plugin.SampleFileTypeFactory"/>
   </extensions>
 </idea-plugin>

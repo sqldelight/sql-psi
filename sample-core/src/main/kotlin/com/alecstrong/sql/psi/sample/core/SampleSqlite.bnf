@@ -1,0 +1,27 @@
+{
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  // "Real" rules are implemented by SqlParser, so it acts as the parser util class.
+  overrides="com.alecstrong.sql.psi.core.SqlParser"
+
+  parserImports=[
+    // If you want to use a token from the core grammar it must be statically imported.
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.STRING"
+  ]
+}
+// The grammar still needs to be well formed and so should contain a root element that is not
+// part of the generated psi.
+root ::= column_def
+
+// An overriden rule.
+column_def ::= {column_name} sqlite_type [ 'AS' java_type ] ( {column_constraint} ) * {
+  // In order for the core to function properly, when you override a rule it should still implement
+  // the core interface for that rule.
+  implements="com.alecstrong.sql.psi.core.psi.SqlColumnDef"
+  extends="com.alecstrong.sql.psi.core.psi.impl.SqlColumnDefImpl"
+  override=true
+}
+
+// Rules that your grammar uses.
+sqlite_type ::= ( 'TEXT' | 'BLOB' | 'INTEGER' | 'REAL' )
+java_type ::= string
