@@ -374,4 +374,4 @@ view_name ::= id {
   ]
 }
 module_name ::= id
-bind_parameter ::= ( '?' [digit] | ':' identifier )
+bind_parameter ::= '?'

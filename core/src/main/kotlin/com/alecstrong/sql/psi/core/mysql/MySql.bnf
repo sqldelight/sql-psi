@@ -1,0 +1,33 @@
+{
+  // Specify the parent parser.
+  overrides="com.alecstrong.sql.psi.core.SqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "MySql"
+}
+type_name ::= (
+  exact_numeric_data_type |
+  approximate_numeric_data_type |
+  date_data_type |
+  string_data_type |
+  binary_data_type |
+  json_data_type
+) [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ] {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
+  override = true
+}
+
+exact_numeric_data_type ::= 'INTEGER' | 'SMALLINT' | 'DECIMAL' | 'NUMERIC'
+
+approximate_numeric_data_type ::= 'FLOAT' | 'REAL' | ( 'DOUBLE' 'PRECISION' )
+
+date_data_type ::= 'DATE' | 'TIME' | 'DATETIME' | 'TIMESTAMP' | 'YEAR'
+
+string_data_type ::= 'CHAR' | 'VARCHAR' | 'TEXT' | 'ENUM' | 'SET'
+
+binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
+
+json_data_type ::= 'JSON'
