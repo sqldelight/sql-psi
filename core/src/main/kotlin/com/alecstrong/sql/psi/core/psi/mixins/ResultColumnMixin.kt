@@ -5,19 +5,23 @@ import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
+import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlResultColumn
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
 internal abstract class ResultColumnMixin(
     node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlResultColumn {
+  override fun getParent(): SelectStmtMixin = super.getParent() as SelectStmtMixin
+
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return@lazy queryAvailable(this).filter { it.table?.name == tableNameElement.name }
+      return@lazy parent.fromQuery().filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
       var column: QueryElement.QueryColumn
@@ -38,7 +42,7 @@ internal abstract class ResultColumnMixin(
     }
 
     // *
-    val queryAvailable = queryAvailable(this)
+    val queryAvailable = parent.fromQuery()
     if (queryAvailable.size <= 1) {
       return@lazy queryAvailable
     }

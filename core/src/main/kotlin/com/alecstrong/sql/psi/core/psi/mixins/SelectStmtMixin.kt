@@ -24,8 +24,7 @@ internal abstract class SelectStmtMixin(
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    if (child in resultColumnList) return fromQuery()
-    if (child in exprList) {
+    if (child in exprList || child in resultColumnList) {
       return fromQuery().map { it.copy(adjacent = true) } +
           super.queryAvailable(this).map { it.copy(adjacent = false) }
     }
