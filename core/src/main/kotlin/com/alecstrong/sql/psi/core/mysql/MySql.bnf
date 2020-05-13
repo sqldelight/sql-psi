@@ -20,9 +20,9 @@ type_name ::= (
   override = true
 }
 
-exact_numeric_data_type ::= 'INTEGER' | 'SMALLINT' | 'DECIMAL' | 'NUMERIC'
+exact_numeric_data_type ::= 'INTEGER' | 'INT' | 'SMALLINT' | 'DECIMAL' | 'DEC' | 'FIXED' | 'NUMERIC'
 
-approximate_numeric_data_type ::= 'FLOAT' | 'REAL' | ( 'DOUBLE' 'PRECISION' )
+approximate_numeric_data_type ::= 'FLOAT' | 'REAL' | ( 'DOUBLE' 'PRECISION' ) | 'DOUBLE'
 
 date_data_type ::= 'DATE' | 'TIME' | 'DATETIME' | 'TIMESTAMP' | 'YEAR'
 
