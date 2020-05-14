@@ -87,7 +87,8 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
     private val dialects = mapOf(
         DialectPreset.SQLITE_3_18 to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported"),
         DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24"),
-        DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql")
+        DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql"),
+        DialectPreset.POSTGRESQL to arrayOf("src/test/fixtures_postgresql")
     )
 
     @Suppress("unused") // Used by Parameterized JUnit runner reflectively.
