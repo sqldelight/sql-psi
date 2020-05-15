@@ -8,7 +8,12 @@
   psiClassPrefix = "MySql"
 }
 type_name ::= (
-  exact_numeric_data_type |
+  tiny_int_data_type |
+  small_int_data_type |
+  medium_int_data_type |
+  int_data_type |
+  big_int_data_type |
+  fixed_point_data_type |
   approximate_numeric_data_type |
   date_data_type |
   string_data_type |
@@ -20,7 +25,13 @@ type_name ::= (
   override = true
 }
 
-exact_numeric_data_type ::= 'INTEGER' | 'INT' | 'SMALLINT' | 'DECIMAL' | 'DEC' | 'FIXED' | 'NUMERIC'
+tiny_int_data_type ::= 'TINYINT'
+small_int_data_type ::= 'SMALLINT'
+medium_int_data_type ::= 'MEDIUMINT'
+int_data_type ::= 'INTEGER' | 'INT'
+big_int_data_type ::= 'BIGINT'
+
+fixed_point_data_type ::= 'DECIMAL' | 'DEC' | 'FIXED' | 'NUMERIC'
 
 approximate_numeric_data_type ::= 'FLOAT' | 'REAL' | ( 'DOUBLE' 'PRECISION' ) | 'DOUBLE'
 

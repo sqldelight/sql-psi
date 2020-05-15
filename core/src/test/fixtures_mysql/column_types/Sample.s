@@ -1,7 +1,10 @@
 CREATE TABLE all_types(
+  some_tiny_int TINYINT,
+  some_small_int SMALLINT,
+  some_medium_int MEDIUMINT,
   some_integer INTEGER,
   some_int INT,
-  same_small_int SMALLINT,
+  some_big_int BIGINT,
   some_decimal DECIMAL,
   some_dec DEC,
   some_fixed FIXED,
