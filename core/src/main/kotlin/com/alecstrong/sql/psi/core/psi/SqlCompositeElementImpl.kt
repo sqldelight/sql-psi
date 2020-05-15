@@ -8,7 +8,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal open class SqlCompositeElementImpl(
-    node: ASTNode
+  node: ASTNode
 ) : ASTWrapperPsiElement(node),
     SqlCompositeElement {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

@@ -3,7 +3,7 @@ package com.alecstrong.sql.psi.sample.core
 interface Data {
   fun _id(): Int
 
-  data class Impl(override val _id: Int): DataKt
+  data class Impl(override val _id: Int) : DataKt
 }
 
 interface DataKt : Data {
@@ -11,4 +11,3 @@ interface DataKt : Data {
 
   override fun _id() = _id
 }
-

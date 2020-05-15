@@ -71,7 +71,6 @@ open class SqlCoreEnvironment(
           }
         }
       }
-
     }
     forSourceFiles {
       PsiTreeUtil.findChildOfType(it, PsiErrorElement::class.java)?.let { error ->

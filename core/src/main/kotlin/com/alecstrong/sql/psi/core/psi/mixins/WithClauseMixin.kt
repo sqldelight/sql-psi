@@ -7,7 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SqlWithClause
 import com.intellij.lang.ASTNode
 
 internal abstract class WithClauseMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlWithClause {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {

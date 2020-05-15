@@ -11,7 +11,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class BinaryLikeExprMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlBinaryLikeExpr {
 
@@ -36,7 +36,7 @@ internal abstract class BinaryLikeExprMixin(
           is SqlCreateVirtualTableStmt ->
             isMatchUsageErrorOnSynthesizedColumn(firstExpression, resolvedReference)
           is SqlColumnName -> isMatchUsageErrorOnRegularColumn(firstExpression, resolvedReference)
-          null -> false  // Column is invalid, which is a different error that's handled by the column name element
+          null -> false // Column is invalid, which is a different error that's handled by the column name element
           else -> true
         }
       }
@@ -52,8 +52,8 @@ internal abstract class BinaryLikeExprMixin(
   }
 
   private fun isMatchUsageErrorOnSynthesizedColumn(
-      expression: SqlColumnExpr,
-      table: SqlCreateVirtualTableStmt
+    expression: SqlColumnExpr,
+    table: SqlCreateVirtualTableStmt
   ): Boolean {
     return if (table.usesFtsModule) {
       queryAvailable(expression)
@@ -65,8 +65,8 @@ internal abstract class BinaryLikeExprMixin(
   }
 
   private fun isMatchUsageErrorOnRegularColumn(
-      expression: SqlColumnExpr,
-      columnName: SqlColumnName
+    expression: SqlColumnExpr,
+    columnName: SqlColumnName
   ): Boolean {
     val table = PsiTreeUtil.findFirstParent(columnName) { it is SqlCreateVirtualTableStmt }
         as? SqlCreateVirtualTableStmt

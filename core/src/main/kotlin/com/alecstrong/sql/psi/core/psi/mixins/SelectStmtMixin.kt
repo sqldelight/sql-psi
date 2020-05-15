@@ -10,7 +10,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class SelectStmtMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlSelectStmt {
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {

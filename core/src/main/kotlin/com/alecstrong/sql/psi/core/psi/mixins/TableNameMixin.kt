@@ -13,7 +13,7 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiReference
 
 internal abstract class TableNameMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean
     get() = when (this) {
@@ -34,7 +34,7 @@ internal abstract class TableNameMixin(
     val matches by lazy { tableAvailable(this, name) }
     val references = reference.resolve()
     if (references == this) {
-      if(matches.any { it.table != this }) {
+      if (matches.any { it.table != this }) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (references == null) {

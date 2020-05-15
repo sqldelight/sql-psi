@@ -4,7 +4,7 @@ import com.alecstrong.sql.psi.core.psi.QueryElement.QueryColumn
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
-interface QueryElement: PsiElement {
+interface QueryElement : PsiElement {
   /**
    * Return all of the results that this query exposes. The select_stmt rule
    *
