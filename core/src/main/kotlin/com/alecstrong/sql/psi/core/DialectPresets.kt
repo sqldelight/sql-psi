@@ -1,11 +1,12 @@
 package com.alecstrong.sql.psi.core
 
+import com.alecstrong.sql.psi.core.hsql.HsqlParserUtil
 import com.alecstrong.sql.psi.core.mysql.MySqlParserUtil
 import com.alecstrong.sql.psi.core.sqlite_3_18.SqliteParserUtil as Sqlite_3_18Util
 import com.alecstrong.sql.psi.core.sqlite_3_24.SqliteParserUtil as Sqlite_3_24Util
 
 enum class DialectPreset {
-  SQLITE_3_18, SQLITE_3_24, MYSQL;
+  SQLITE_3_18, SQLITE_3_24, MYSQL, HSQL;
 
   fun setup() {
     val exhaustive = when (this) {
@@ -23,6 +24,11 @@ enum class DialectPreset {
         SqlParserUtil.reset()
         MySqlParserUtil.reset()
         MySqlParserUtil.overrideSqlParser()
+      }
+      HSQL -> {
+        SqlParserUtil.reset()
+        HsqlParserUtil.reset()
+        HsqlParserUtil.overrideSqlParser()
       }
     }
   }
