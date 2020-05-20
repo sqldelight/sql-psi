@@ -9,7 +9,7 @@ jobs:
   build:
 
     runs-on: ubuntu-18.04
-    
+
     steps:
     - uses: actions/checkout@v1
     - name: Publish a SNAPSHOT
@@ -17,3 +17,6 @@ jobs:
         SONATYPE_NEXUS_PASSWORD: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
       run: ./gradlew clean uploadArchives
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.configureondemand=true -Dorg.gradle.parallel=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
