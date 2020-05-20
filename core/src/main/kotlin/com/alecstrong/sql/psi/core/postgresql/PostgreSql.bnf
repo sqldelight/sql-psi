@@ -1,0 +1,36 @@
+{
+  // Specify the parent parser.
+  overrides="com.alecstrong.sql.psi.core.SqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "PostgreSql"
+}
+type_name ::= (
+  small_int_data_type |
+  int_data_type |
+  big_int_data_type |
+  numeric_data_type |
+  approximate_numeric_data_type |
+  string_data_type |
+  date_data_type |
+  json_data_type
+) [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ] {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
+  override = true
+}
+
+small_int_data_type ::= 'SMALLINT' | 'INT2'
+int_data_type ::= 'INTEGER' | 'INT' | 'INT4'
+big_int_data_type ::= 'BIGINT' | 'INT8'
+numeric_data_type ::= 'NUMERIC' | 'DECIMAL'
+
+approximate_numeric_data_type ::= 'REAL' | 'FLOAT4' | ( 'DOUBLE' 'PRECISION' ) | 'FLOAT8'
+
+string_data_type ::= ( 'CHARACTER' 'VARYING' ) | 'VARCHAR' | 'CHARACTER' | 'CHAR' | 'TEXT'
+
+date_data_type ::= 'DATE' | 'TIME' | 'TIMESTAMP'
+
+json_data_type ::= 'JSON'
