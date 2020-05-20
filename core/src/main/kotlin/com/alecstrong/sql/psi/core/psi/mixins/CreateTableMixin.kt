@@ -18,7 +18,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CreateTableMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlCreateTableStmt,
     TableElement {
@@ -82,8 +82,8 @@ internal abstract class CreateTableMixin(
         .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
         .forEach {
           val indexedColumns = it.indexedColumnList.map { it.columnName.name }
-          if (columns.map { it.name }.containsAll(indexedColumns)
-              && columns.size == indexedColumns.size) {
+          if (columns.map { it.name }.containsAll(indexedColumns) &&
+              columns.size == indexedColumns.size) {
             return true
           }
         }

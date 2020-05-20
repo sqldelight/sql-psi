@@ -6,7 +6,7 @@ import com.alecstrong.sql.psi.core.psi.SqlInExpr
 import com.intellij.lang.ASTNode
 
 internal abstract class InExprMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlInExpr {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {

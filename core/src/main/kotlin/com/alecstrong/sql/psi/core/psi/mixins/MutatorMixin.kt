@@ -7,7 +7,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class MutatorMixin(
-    node: ASTNode
+  node: ASTNode
 ) : WithClauseContainer(node) {
   // One of these will get overridden with what we want. If not error! Kind of type safe?
   open fun getQualifiedTableName(): SqlQualifiedTableName = throw AssertionError()

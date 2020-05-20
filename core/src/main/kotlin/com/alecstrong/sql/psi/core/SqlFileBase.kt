@@ -5,8 +5,8 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
-import com.alecstrong.sql.psi.core.psi.SqlStmtList
 import com.alecstrong.sql.psi.core.psi.SqlStmt
+import com.alecstrong.sql.psi.core.psi.SqlStmtList
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
@@ -18,8 +18,8 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
 
 abstract class SqlFileBase(
-    viewProvider: FileViewProvider,
-    language: Language
+  viewProvider: FileViewProvider,
+  language: Language
 ) : PsiFileBase(viewProvider, language) {
   private val symbolTable = SymbolTable()
 
@@ -87,7 +87,7 @@ abstract class SqlFileBase(
     iterateSqlFiles { psiFile ->
       if (psiFile !is SqlFileBase) return@iterateSqlFiles true
 
-      viewNames.forEach { psiFile.symbolTable.views.remove(it)}
+      viewNames.forEach { psiFile.symbolTable.views.remove(it) }
       tableElements.forEach { psiFile.symbolTable.tables.remove(it) }
 
       psiFile.symbolTable.views.putAll(newViews.map { it.viewName.name to it })

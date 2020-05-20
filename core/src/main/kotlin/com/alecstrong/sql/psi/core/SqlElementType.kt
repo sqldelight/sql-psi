@@ -3,7 +3,7 @@ package com.alecstrong.sql.psi.core
 import com.intellij.lang.Language
 import com.intellij.psi.tree.IElementType
 
-class SqlElementType(name: String): IElementType(name, null) {
+class SqlElementType(name: String) : IElementType(name, null) {
   override fun getLanguage(): Language = _language
 
   companion object {

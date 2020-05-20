@@ -15,7 +15,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CompoundSelectStmtMixin(
-    node: ASTNode
+  node: ASTNode
 ) : WithClauseContainer(node),
     SqlCompoundSelectStmt {
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
@@ -44,8 +44,8 @@ internal abstract class CompoundSelectStmtMixin(
     val parent = parent
     if (parent is SqlWithClause) {
       if (parent.node.findChildByType(
-              SqlTypes.RECURSIVE) != null
-          && child != selectStmtList.first()) {
+              SqlTypes.RECURSIVE) != null &&
+          child != selectStmtList.first()) {
         return tablesAvailable + parent.tablesExposed()
       }
       val myIndex = parent.compoundSelectStmtList.indexOf(this)

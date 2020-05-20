@@ -45,4 +45,4 @@ internal abstract class CreateVirtualTableMixin(
 }
 
 val SqlCreateVirtualTableStmt.usesFtsModule: Boolean
-  get() = this.moduleName?.text?.startsWith(prefix ="fts", ignoreCase = true) == true
+  get() = this.moduleName?.text?.startsWith(prefix = "fts", ignoreCase = true) == true

@@ -9,7 +9,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 
 internal abstract class ColumnNameMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::column_name_real
 

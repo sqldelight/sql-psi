@@ -10,8 +10,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
-abstract internal class JoinClauseMixin(
-    node: ASTNode
+internal abstract class JoinClauseMixin(
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlJoinClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
