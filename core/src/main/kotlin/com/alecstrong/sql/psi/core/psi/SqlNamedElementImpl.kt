@@ -1,7 +1,7 @@
 package com.alecstrong.sql.psi.core.psi
 
-import com.alecstrong.sql.psi.core.SqlParserDefinition
 import com.alecstrong.sql.psi.core.SqlParser
+import com.alecstrong.sql.psi.core.SqlParserDefinition
 import com.intellij.lang.ASTNode
 import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.lang.PsiBuilder

@@ -2,9 +2,9 @@ package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
 import com.intellij.psi.PsiElement
-import org.junit.Test
 import java.io.File
 import java.lang.AssertionError
+import org.junit.Test
 
 class NullabilityTest {
   @Test fun outerJoin() {

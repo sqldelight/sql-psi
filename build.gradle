@@ -30,10 +30,23 @@ buildscript {
     classpath 'de.undercouch:gradle-download-task:3.1.2'
     classpath "com.github.hurricup:gradle-grammar-kit-plugin:$ideaVersion"
     classpath "com.alecstrong:grammar-kit-composer:0.1.3"
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.29.0"
   }
 }
 
+apply plugin: "com.diffplug.gradle.spotless"
+
 apply from: 'updateDependencies.gradle'
+
+spotless {
+  kotlin {
+    target "**/*.kt"
+    targetExclude "**/gen/**/*.*"
+    ktlint('0.36.0').userData(["indent_size": "2"])
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+}
 
 allprojects {
   repositories {

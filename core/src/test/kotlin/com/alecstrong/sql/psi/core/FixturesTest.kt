@@ -2,11 +2,11 @@ package com.alecstrong.sql.psi.core
 
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
-import java.io.File
 
 @RunWith(Parameterized::class)
 class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
@@ -21,7 +21,7 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
         val document = documentManager.getDocument(element.containingFile)!!
         val lineNum = document.getLineNumber(element.textOffset)
         val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
-        errors.add("$name line ${lineNum+1}:$offsetInLine - $s")
+        errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
       }
     })
 
@@ -99,7 +99,7 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
             .map { arrayOf(dialect, it.name, it) }
       }
     }
-  } 
+  }
 }
 
 private fun formatErrorList(errors: List<String>): String {

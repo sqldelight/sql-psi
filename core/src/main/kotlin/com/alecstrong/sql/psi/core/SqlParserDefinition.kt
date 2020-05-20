@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 
-abstract class SqlParserDefinition: ParserDefinition {
+abstract class SqlParserDefinition : ParserDefinition {
   private val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
   private val COMMENTS = TokenSet.create(SqlTypes.COMMENT)
 

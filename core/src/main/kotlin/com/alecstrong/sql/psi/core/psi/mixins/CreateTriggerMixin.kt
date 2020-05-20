@@ -12,7 +12,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 
 internal abstract class CreateTriggerMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlCreateTriggerStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

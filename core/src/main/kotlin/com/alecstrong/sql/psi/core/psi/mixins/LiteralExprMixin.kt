@@ -13,7 +13,7 @@ import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class LiteralValueMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlLiteralValue {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {

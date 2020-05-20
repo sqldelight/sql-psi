@@ -1,6 +1,6 @@
 package com.alecstrong.sql.psi.core.sqlite_3_24.psi.mixins
 
-import com.alecstrong.sql.psi.core.psi.*
+import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.mixins.InsertStmtMixin
 import com.alecstrong.sql.psi.core.psi.mixins.SingleRow
@@ -11,7 +11,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class UpsertClauseMixin(
-        node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     UpsertClause {
 

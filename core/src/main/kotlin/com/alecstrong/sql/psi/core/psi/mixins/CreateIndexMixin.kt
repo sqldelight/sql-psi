@@ -8,7 +8,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class CreateIndexMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlCreateIndexStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

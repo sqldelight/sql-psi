@@ -1,17 +1,17 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
+import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.hasDefaultValue
 import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
+import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlInsertStmt
 import com.alecstrong.sql.psi.core.psi.SqlInsertStmtValues
 import com.alecstrong.sql.psi.core.psi.SqlTypes
-import com.alecstrong.sql.psi.core.SqlAnnotationHolder
-import com.alecstrong.sql.psi.core.hasDefaultValue
-import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.intellij.lang.ASTNode
 
 internal abstract class InsertStmtValuesMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlInsertStmtValues {
   override fun getParent(): SqlInsertStmt {

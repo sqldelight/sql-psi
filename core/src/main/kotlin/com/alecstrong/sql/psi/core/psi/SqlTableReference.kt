@@ -8,8 +8,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReferenceBase
 
-internal class SqlTableReference<T: SqlNamedElementImpl>(
-    element: T
+internal class SqlTableReference<T : SqlNamedElementImpl>(
+  element: T
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 

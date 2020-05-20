@@ -25,7 +25,7 @@ private object TestFileType : LanguageFileType(TestLanguage) {
   override fun getDescription() = "Test SQLite Language File"
 }
 
-private class TestParserDefinition: SqlParserDefinition() {
+private class TestParserDefinition : SqlParserDefinition() {
   override fun createFile(p0: FileViewProvider) = TestFile(p0)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = TestLanguage
