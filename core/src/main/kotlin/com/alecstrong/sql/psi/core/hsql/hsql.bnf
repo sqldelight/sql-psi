@@ -1,0 +1,65 @@
+{
+  // Specify the parent parser.
+  overrides="com.alecstrong.sql.psi.core.SqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "Hsql"
+  
+  parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DIGIT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITH"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITHOUT"
+  ]
+}
+type_name ::= (
+  tiny_int_data_type |
+  small_int_data_type |
+  int_data_type |
+  big_int_data_type |
+  fixed_point_data_type |
+  approximate_numeric_data_type |
+  boolean_data_type |
+  date_data_type |
+  character_string_data_type |
+  binary_string_data_type |
+  bit_string_data_type |
+  interval_data_type
+) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
+  override = true
+}
+
+tiny_int_data_type ::= 'TINYINT'
+small_int_data_type ::= 'SMALLINT'
+int_data_type ::= 'INTEGER' | 'INT'
+big_int_data_type ::= 'BIGINT'
+fixed_point_data_type ::= { 'NUMERIC' | 'DECIMAL' | 'DEC' } [ '(' precision [ ',' scale ] ')' ]
+approximate_numeric_data_type ::= 'FLOAT' [ '(' precision ')' ] | 'REAL' | ( 'DOUBLE' 'PRECISION' ) | 'DOUBLE'
+precision ::= digit
+scale ::= digit
+
+boolean_data_type ::= 'BOOLEAN'
+
+character_string_data_type ::= { ('CHARACTER' 'VARYING') | ('CHAR' 'VARYING') | 'VARCHAR' } '(' digit ')' | character_large_object_data_type | { 'CHARACTER' | 'CHAR' | 'LONGVARCHAR' } [ '(' digit ')' ]
+character_large_object_data_type ::= { ('CHARACTER' 'LARGE' 'OBJECT') | ('CHAR' 'LARGE' 'OBJECT') | 'CLOB' } [ '(' character_large_object_length ')' ]
+character_large_object_length ::= digit [ multiplier ] [ char_length_units ]
+multiplier ::= 'K' | 'M' | 'G'
+char_length_units ::= 'CHARACTERS' | 'OCTETS'
+
+binary_string_data_type ::= { ('BINARY' 'VARYING') | 'VARBINARY' } '(' digit ')' | binary_large_object_string_data_type | { 'BINARY' | 'LONGVARBINARY' } [ '(' digit ')' ] | 'UUID'
+binary_large_object_string_data_type ::= { ('BINARY' 'LARGE' 'OBJECT') | 'BLOB' } [ '(' digit ')' ]
+
+bit_string_data_type ::= ('BIT' 'VARYING') '(' digit ')' | 'BIT' [ '(' digit ')' ]
+
+date_data_type ::= 'DATE' | ( 'TIME' | 'TIMESTAMP' ) [ '(' digit ')' ] [ ( WITH | WITHOUT ) 'TIME ZONE' ]
+
+interval_data_type ::= 'INTERVAL' interval_qualifier
+interval_qualifier ::= start_field TO end_field | single_datetime_field
+start_field ::= non_second_primary_datetime_field [ '(' digit ')' ]
+end_field ::= non_second_primary_datetime_field | 'SECOND' [ '(' digit ')' ]
+single_datetime_field ::= non_second_primary_datetime_field [ '(' digit ')' ] | 'SECOND' [ '(' digit [ ',' digit ] ')' ]
+non_second_primary_datetime_field ::= 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE'
