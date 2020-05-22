@@ -22,7 +22,7 @@ class NullabilityTest {
       |);
       |
       |SELECT *
-      |FROM (SELECT owner.name, car.brand AS carBrand
+      |FROM (SELECT owner.name, car.brand AS carBrand, car.rowid AS rowid
       |      FROM owner
       |      LEFT OUTER JOIN car ON owner.carId = car.id)
       |WHERE carBrand = ?;
@@ -33,6 +33,7 @@ class NullabilityTest {
 
     assertThat(projection[0].nullable).isFalse()
     assertThat(projection[1].nullable).isTrue()
+    assertThat(projection[2].nullable).isTrue()
   }
 
   private fun compileFile(text: String): SqlFileBase {
