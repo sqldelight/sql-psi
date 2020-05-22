@@ -39,9 +39,13 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
       tables = availableQuery().filterNot { it.table is SingleRow }
     }
 
-    return tables.flatMap { it.columns }
+    val columns = tables.flatMap { it.columns }
         .filter { it.element is PsiNamedElement && it.element.name == element.name }
-        .firstOrNull()
+    val synthesizedColumns = tables.flatMap { it.synthesizedColumns }
+        .filter { element.name in it.acceptableValues }
+        .map { QueryColumn(it.table, it.nullable) }
+
+    return (columns + synthesizedColumns).firstOrNull()
   }
 
   internal fun unsafeResolve(): PsiElement? {
