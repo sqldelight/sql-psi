@@ -19,7 +19,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | index_name
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -54,6 +54,11 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
 bind_parameter ::= ( '?' | ':' {identifier} ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlBindParameterImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBindParameter"
+  override = true
+}
+table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE KEY | UNIQUE INDEX ) [index_name] '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')' | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause ) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableConstraintImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTableConstraint"
   override = true
 }
 
