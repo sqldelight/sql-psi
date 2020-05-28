@@ -21,7 +21,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INDEX"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint | index_name
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -31,10 +31,12 @@ type_name ::= (
   fixed_point_data_type |
   approximate_numeric_data_type |
   date_data_type |
-  string_data_type |
   binary_data_type |
   json_data_type
-) [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ] {
+) [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ] |
+character_type |
+enum_set_type
+{
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
   override = true
@@ -80,7 +82,13 @@ approximate_numeric_data_type ::= 'FLOAT' | 'REAL' | ( 'DOUBLE' 'PRECISION' ) | 
 
 date_data_type ::= 'DATE' | 'TIME' | 'DATETIME' | 'TIMESTAMP' | 'YEAR'
 
-string_data_type ::= 'CHAR' | 'VARCHAR' | 'TINYTEXT' | 'TEXT' | 'MEDIUMTEXT' | 'LONGTEXT' | 'ENUM' | 'SET'
+character_type ::= ( 'CHAR' | 'VARCHAR' | 'TINYTEXT' | 'TEXT' | 'MEDIUMTEXT' | 'LONGTEXT' )
+  [ '(' {signed_number} ')' ]
+  [ 'CHARACTER' 'SET' {identifier} ]
+
+enum_set_type ::= ( 'ENUM' | 'SET' )
+  [ '(' {string_literal} ( ',' {string_literal} ) * ')' ]
+  [ 'CHARACTER' 'SET' {identifier} ]
 
 binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
 
