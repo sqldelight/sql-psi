@@ -5,6 +5,7 @@ import com.alecstrong.sql.psi.core.SqlParser
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlForeignTable
 import com.alecstrong.sql.psi.core.psi.SqlNamedElementImpl
+import com.alecstrong.sql.psi.core.psi.SqlNewTableName
 import com.alecstrong.sql.psi.core.psi.SqlTableName
 import com.alecstrong.sql.psi.core.psi.SqlTableReference
 import com.alecstrong.sql.psi.core.psi.SqlViewName
@@ -20,6 +21,7 @@ internal abstract class TableNameMixin(
       is SqlTableName -> SqlParser::table_name_real
       is SqlViewName -> SqlParser::view_name_real
       is SqlForeignTable -> SqlParser::foreign_table_real
+      is SqlNewTableName -> SqlParser::new_table_name_real
       else -> throw IllegalStateException("Unknown table type ${this::class}")
     }
 

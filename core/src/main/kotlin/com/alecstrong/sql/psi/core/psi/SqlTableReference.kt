@@ -14,6 +14,7 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
   private val resolved: PsiElement? by ModifiableFileLazy(element.containingFile) lazy@{
+    if (element is SqlNewTableName) return@lazy element
     if (element.parent.isDefinition()) return@lazy element
     return@lazy variants.mapNotNull { it.psiElement }
         .filterIsInstance<PsiNamedElement>()
@@ -23,6 +24,7 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
   override fun resolve() = resolved
 
   override fun getVariants(): Array<LookupElement> {
+    if (element is SqlNewTableName) return emptyArray()
     if (element.parent.isDefinition()) return emptyArray()
     if (selectFromCurrentQuery()) {
       return (element.parent as SqlCompositeElement).queryAvailable(element)

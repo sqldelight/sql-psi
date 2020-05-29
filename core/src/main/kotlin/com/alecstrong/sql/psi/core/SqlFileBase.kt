@@ -3,6 +3,7 @@ package com.alecstrong.sql.psi.core
 import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
 import com.alecstrong.sql.psi.core.psi.LazyQuery
+import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
@@ -16,13 +17,14 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
   language: Language
 ) : PsiFileBase(viewProvider, language) {
-  private val symbolTable = SymbolTable()
+  private var symbolTable = SymbolTable()
 
   private var viewNames = setOf(*views().map { it.viewName.name }.toTypedArray())
   private var tableElements = setOf(*tables().toTypedArray())
@@ -38,10 +40,38 @@ abstract class SqlFileBase(
   open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
     val statement = (sqlStmtElement as SqlStmt).children.first()
+    var queries: Collection<LazyQuery>
+
     if (statement !is TableElement || statement is SqlCreateTableStmt) {
-      return symbolTable.tables.values
+      queries = symbolTable.tables.values
+    } else {
+      queries = symbolTable.tables.filterKeys { it != statement }.values
     }
-    return symbolTable.tables.filterKeys { it != statement }.values
+
+    if (order != null) {
+      // Gotta do some fancy shit to apply all the statements leading up to [sqlStmtElement]
+      sqlStmtList?.stmtList?.filterNotNull()?.forEach { statement ->
+        if (PsiTreeUtil.isAncestor(statement, sqlStmtElement, false)) return queries
+        statement.createTableStmt?.let { queries += it.tableExposed() }
+        statement.createVirtualTableStmt?.let { queries += it.tableExposed() }
+        statement.createViewStmt?.let { queries += it.tableExposed() }
+        statement.dropTableStmt?.let {
+          queries = queries.filterNot { query -> it.tableName?.text == query.tableName.text }
+        }
+        statement.dropViewStmt?.let {
+          queries = queries.filterNot { query -> it.viewName?.text == query.tableName.text }
+        }
+
+        statement.alterTableStmt?.let { alter ->
+          queries = queries.map {
+            if (it.tableName.text == alter.tableName.text) it.withAlterStatement(alter)
+            else it
+          }
+        }
+      }
+    }
+
+    return queries
   }
 
   open fun indexes(sqlStmtElement: PsiElement): Collection<SqlCreateIndexStmt> {
@@ -110,6 +140,18 @@ abstract class SqlFileBase(
       // Lightweight copy of the original file. Dont do any mods.
       return
     }
+
+    if (order != null) {
+      // Files with an order greater than this or null need to recompute entirely.
+      iterateSqlFiles {
+        if (it.order == null || it.order!! >= order!!) {
+          it.symbolTable = SymbolTable()
+        }
+        return@iterateSqlFiles true
+      }
+      return
+    }
+
     val newViews = views()
     val newTables = tables()
     iterateSqlFiles { psiFile ->
@@ -157,20 +199,37 @@ abstract class SqlFileBase(
     internal val tables = LinkedHashMap<TableElement, LazyQuery>()
     internal var initialized = false
 
+    private fun removeTableForName(name: NamedElement) {
+      val iterator = tables.iterator()
+      while (iterator.hasNext()) {
+        if (iterator.next().key.name().text == name.text) iterator.remove()
+      }
+    }
+
     fun checkInitialized() {
       synchronized(initialized) {
         if (initialized) return
 
-        iterateSqlFiles { psiFile ->
-          if (psiFile !is SqlFileBase) return@iterateSqlFiles true
-          psiFile.views().let {
-            views.putAll(it.map { it.viewName.name to it })
+        iteratePreviousStatements { statement ->
+          if (order != null && statement.containingFile == this@SqlFileBase) {
+            return@iteratePreviousStatements
           }
-          psiFile.tables().let {
-            tables.putAll(it.map { it to it.tableExposed() })
+          statement.createViewStmt?.let {
+            views[it.viewName.name] = it
+            tables[it] = it.tableExposed()
+          }
+          statement.dropViewStmt?.let {
+            views.remove(it.viewName?.name)
+            it.viewName?.let(::removeTableForName)
           }
 
-          return@iterateSqlFiles true
+          statement.createVirtualTableStmt?.let { tables[it] = it.tableExposed() }
+          statement.createTableStmt?.let { tables[it] = it.tableExposed() }
+          statement.alterTableStmt?.let { alter ->
+            removeTableForName(alter.tableName)
+            tables[alter] = alter.tableExposed()
+          }
+          statement.dropTableStmt?.tableName?.let(::removeTableForName)
         }
 
         initialized = true
