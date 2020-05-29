@@ -22,6 +22,8 @@ internal abstract class CreateTableMixin(
 ) : SqlCompositeElementImpl(node),
     SqlCreateTableStmt,
     TableElement {
+  override fun name() = tableName
+
   override fun tableExposed() = LazyQuery(tableName) {
     compoundSelectStmt?.let {
       QueryResult(tableName, it.queryExposed().flatMap { it.columns })

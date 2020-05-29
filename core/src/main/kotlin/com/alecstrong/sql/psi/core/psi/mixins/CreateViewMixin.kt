@@ -14,6 +14,7 @@ internal abstract class CreateViewMixin(
 ) : SqlCompositeElementImpl(node),
     SqlCreateViewStmt,
     TableElement {
+  override fun name() = viewName
 
   override fun tableExposed() = LazyQuery(viewName) {
     val columns =

@@ -15,6 +15,8 @@ internal abstract class CreateVirtualTableMixin(
 ) : SqlCompositeElementImpl(node),
     SqlCreateVirtualTableStmt,
     TableElement {
+  override fun name() = tableName
+
   override fun tableExposed(): LazyQuery {
     val columnNameElements = findChildrenByClass(
         SqlModuleArgument::class.java)

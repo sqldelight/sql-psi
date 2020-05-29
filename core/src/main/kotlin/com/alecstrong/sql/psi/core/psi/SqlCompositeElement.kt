@@ -47,6 +47,29 @@ internal interface SqlCompositeElement : SqlAnnotatedElement {
   override fun getContainingFile(): SqlFileBase
 }
 
-class LazyQuery(val tableName: NamedElement, query: () -> QueryResult) {
+class LazyQuery(
+  val tableName: NamedElement,
+  query: () -> QueryResult
+) {
   val query by lazy(query)
+
+  internal fun withAlterStatement(alter: SqlAlterTableStmt): LazyQuery {
+    if (alter.newTableName != null) {
+      return LazyQuery(
+          tableName = alter.newTableName!!,
+          query = {
+            query.copy(table = alter.newTableName)
+          }
+      )
+    }
+    if (alter.columnDef != null) {
+      return LazyQuery(
+          tableName = tableName,
+          query = {
+            query.copy(columns = query.columns + QueryElement.QueryColumn(alter.columnDef!!.columnName))
+          }
+      )
+    }
+    throw IllegalStateException("Unhandled alter statement $alter")
+  }
 }
