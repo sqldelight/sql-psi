@@ -70,7 +70,7 @@ table_constraint ::= [ CONSTRAINT {identifier} ] (
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableConstraint"
   override = true
 }
-default_constraint ::= [ NOT NULL | NULL ] DEFAULT ( {signed_number} | {literal_value} | '(' expr ')' ) {
+default_constraint ::= [ NOT NULL | NULL ] DEFAULT ( {signed_number} | {literal_value} | '(' {expr} ')' ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDefaultConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlDefaultConstraint"
   override = true
