@@ -19,9 +19,10 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FOREIGN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INDEX"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -47,7 +48,7 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
   NOT NULL {conflict_clause} |
   UNIQUE {conflict_clause} |
   {check_constraint} |
-  {default_constraint} |
+  default_constraint |
   COLLATE {collation_name} |
   {foreign_key_clause}
 ) {
@@ -67,6 +68,11 @@ table_constraint ::= [ CONSTRAINT {identifier} ] (
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableConstraint"
+  override = true
+}
+default_constraint ::= [ NOT NULL | NULL ] DEFAULT ( {signed_number} | {literal_value} | '(' <<expr '-1'>> ')' ) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDefaultConstraintImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlDefaultConstraint"
   override = true
 }
 
