@@ -1,0 +1,3 @@
+CREATE TABLE t1 (
+  retries INT NOT NULL DEFAULT 0
+);
