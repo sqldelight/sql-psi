@@ -1,5 +1,7 @@
 package com.alecstrong.sql.psi.core
 
+import androidx.collection.SparseArrayCompat
+import androidx.collection.forEach
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
@@ -13,9 +15,9 @@ import com.intellij.lang.Language
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
@@ -29,6 +31,8 @@ abstract class SqlFileBase(
   private val psiManager: PsiManager
     get() = PsiManager.getInstance(project)
 
+  abstract val order: Int?
+
   val sqlStmtList
     get() = findChildByClass(SqlStmtList::class.java)
 
@@ -41,13 +45,16 @@ abstract class SqlFileBase(
     return symbolTable.tables.filterKeys { it != statement }.values
   }
 
-  open fun indexes(): List<SqlCreateIndexStmt> {
-    val result = ArrayList<SqlCreateIndexStmt>()
-    iterateSqlFiles { psiFile ->
-      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqlCreateIndexStmt::class.java))
-      return@iterateSqlFiles true
+  open fun indexes(sqlStmtElement: PsiElement): Collection<SqlCreateIndexStmt> {
+    val result = MultiMap<String, SqlCreateIndexStmt>()
+    iteratePreviousStatements { statement ->
+      if (order != null && sqlStmtElement.parent == statement) {
+        return@indexes result.values()
+      }
+      statement.createIndexStmt?.let { result.putValue(it.indexName.text, it) }
+      statement.dropIndexStmt?.let { result.remove(it.indexName?.text) }
     }
-    return result
+    return result.values()
   }
 
   open fun triggers(): List<SqlCreateTriggerStmt> {
@@ -76,6 +83,25 @@ abstract class SqlFileBase(
     }.orEmpty()
   }
 
+  private inline fun iteratePreviousStatements(block: (SqlStmt) -> Unit) {
+    val files = SparseArrayCompat<SqlFileBase>()
+    val topFiles = LinkedHashSet<SqlFileBase>()
+    iterateSqlFiles { file ->
+      if (file == this) return@iterateSqlFiles true
+      else if (order != null && file.order == null) return@iterateSqlFiles true
+      else if (order == null && file.order == null) topFiles.add(file)
+      else if (order == null || (file.order != null && file.order!! < order!!)) files.put(file.order!!, file)
+
+      return@iterateSqlFiles true
+    }
+
+    files.forEach { _, file ->
+      file.sqlStmtList?.stmtList?.forEach(block)
+    }
+    topFiles.forEach { it.sqlStmtList?.stmtList?.forEach(block) }
+    sqlStmtList?.stmtList?.forEach(block)
+  }
+
   override fun subtreeChanged() {
     super.subtreeChanged()
     if (parent == null) {
@@ -85,8 +111,6 @@ abstract class SqlFileBase(
     val newViews = views()
     val newTables = tables()
     iterateSqlFiles { psiFile ->
-      if (psiFile !is SqlFileBase) return@iterateSqlFiles true
-
       viewNames.forEach { psiFile.symbolTable.views.remove(it) }
       tableElements.forEach { psiFile.symbolTable.tables.remove(it) }
 
@@ -100,11 +124,11 @@ abstract class SqlFileBase(
     tableElements = setOf(*newTables.toTypedArray())
   }
 
-  protected open fun iterateSqlFiles(iterator: (PsiFile) -> Boolean) {
+  protected open fun iterateSqlFiles(iterator: (SqlFileBase) -> Boolean) {
     ProjectRootManager.getInstance(project).fileIndex.iterateContent { file ->
       if (file.fileType != fileType) return@iterateContent true
       psiManager.findFile(file)?.let { psiFile ->
-        return@iterateContent iterator(psiFile)
+        return@iterateContent iterator(psiFile as SqlFileBase)
       }
       true
     }

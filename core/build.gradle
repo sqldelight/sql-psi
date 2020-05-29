@@ -13,6 +13,7 @@ dependencies {
   compileOnly dep.intellijCore
 
   implementation dep.kotlinStdLib
+  implementation dep.collections
 
   testImplementation dep.intellijCore
   testImplementation dep.junit

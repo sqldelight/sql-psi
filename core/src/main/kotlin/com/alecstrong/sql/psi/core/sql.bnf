@@ -137,6 +137,7 @@ detach_stmt ::= DETACH [ DATABASE ] database_name {
   pin = 1
 }
 drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexMixin"
   pin = 2
 }
 drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name {
