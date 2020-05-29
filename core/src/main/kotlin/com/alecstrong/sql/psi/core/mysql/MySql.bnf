@@ -61,7 +61,7 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
   override = true
 }
 table_constraint ::= [ CONSTRAINT {identifier} ] (
-  ( PRIMARY KEY | UNIQUE KEY | UNIQUE INDEX ) [{index_name}] '(' {indexed_column} ( ',' {indexed_column} ) * ')' {conflict_clause} |
+  ( PRIMARY KEY | [UNIQUE] KEY | [UNIQUE] INDEX ) [{index_name}] '(' {indexed_column} ( ',' {indexed_column} ) * ')' {conflict_clause} |
   CHECK '(' expr ')' |
   FOREIGN KEY '(' {column_name} ( ',' {column_name} ) * ')' {foreign_key_clause}
 ) {
