@@ -37,4 +37,8 @@ private class TestParserDefinition : SqlParserDefinition() {
 
 private class TestFile(viewProvider: FileViewProvider) : SqlFileBase(viewProvider, TestLanguage) {
   override fun getFileType() = TestFileType
+  override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
+    if (name.all { it in '0'..'9' }) name.toInt()
+    else null
+  }
 }

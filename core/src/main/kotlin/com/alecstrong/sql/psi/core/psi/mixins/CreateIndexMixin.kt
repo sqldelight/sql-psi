@@ -19,7 +19,7 @@ internal abstract class CreateIndexMixin(
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (containingFile.indexes().any { it != this && it.indexName.text == indexName.text }) {
+    if (containingFile.indexes(this).any { it != this && it.indexName.text == indexName.text }) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
     super.annotate(annotationHolder)
