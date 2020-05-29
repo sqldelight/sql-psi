@@ -16,7 +16,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
@@ -57,13 +56,16 @@ abstract class SqlFileBase(
     return result.values()
   }
 
-  open fun triggers(): List<SqlCreateTriggerStmt> {
-    val result = ArrayList<SqlCreateTriggerStmt>()
-    iterateSqlFiles { psiFile ->
-      result.addAll(PsiTreeUtil.findChildrenOfType(psiFile, SqlCreateTriggerStmt::class.java))
-      return@iterateSqlFiles true
+  open fun triggers(sqlStmtElement: PsiElement): Collection<SqlCreateTriggerStmt> {
+    val result = MultiMap<String, SqlCreateTriggerStmt>()
+    iteratePreviousStatements { statement ->
+      if (order != null && sqlStmtElement.parent == statement) {
+        return@triggers result.values()
+      }
+      statement.createTriggerStmt?.let { result.putValue(it.triggerName.text, it) }
+      statement.dropTriggerStmt?.let { result.remove(it.triggerName?.text) }
     }
-    return result
+    return result.values()
   }
 
   internal fun viewForName(name: String): SqlCreateViewStmt? {

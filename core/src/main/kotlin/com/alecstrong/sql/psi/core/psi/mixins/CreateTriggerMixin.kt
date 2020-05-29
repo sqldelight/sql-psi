@@ -36,7 +36,7 @@ internal abstract class CreateTriggerMixin(
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (containingFile.triggers().any { it != this && it.triggerName.text == triggerName.text }) {
+    if (containingFile.triggers(this).any { it != this && it.triggerName.text == triggerName.text }) {
       annotationHolder.createErrorAnnotation(triggerName,
           "Duplicate trigger name ${triggerName.text}")
     }
