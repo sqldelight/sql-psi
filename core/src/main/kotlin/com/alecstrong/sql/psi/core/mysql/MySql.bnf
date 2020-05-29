@@ -22,7 +22,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -99,3 +99,13 @@ enum_set_type ::= ( 'ENUM' | 'SET' )
 binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
 
 json_data_type ::= 'JSON'
+
+table_option ::= 'ENGINE' ['='] {identifier} |
+  'AUTO_INCREMENT' [ '=' ] {signed_number} |
+  [ 'DEFAULT' ] ( 'CHARACTER' 'SET' | 'CHARSET' ) [ '=' ] {identifier} |
+  'ROW_FORMAT' [ '=' ] ( 'DEFAULT' | 'DYNAMIC' | 'FIXED' | 'COMPRESSED' | 'REDUNDANT' | 'COMPACT' )
+{
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableOptionImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTableOption"
+  override = true
+}
