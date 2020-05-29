@@ -144,6 +144,7 @@ drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name {
   pin = 2
 }
 drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTriggerMixin"
   pin = 2
 }
 drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
