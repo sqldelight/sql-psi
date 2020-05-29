@@ -9,6 +9,7 @@
 
   parserImports=[
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONSTRAINT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.CREATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.PRIMARY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ASC"
@@ -19,10 +20,21 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FOREIGN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INDEX"
+<<<<<<< HEAD
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
   ]
 }
 overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint
+=======
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TEMP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TEMPORARY"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.IF"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.EXISTS"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ROWID"
+  ]
+}
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | table_option
+>>>>>>> Add table options support
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -99,3 +111,13 @@ enum_set_type ::= ( 'ENUM' | 'SET' )
 binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
 
 json_data_type ::= 'JSON'
+
+table_option ::= 'ENGINE' ['='] {identifier} |
+  'AUTO_INCREMENT' [ '=' ] {signed_number} |
+  [ 'DEFAULT' ] ( 'CHARACTER' 'SET' | 'CHARSET' ) [ '=' ] {identifier} |
+  'ROW_FORMAT' [ '=' ] ( 'DEFAULT' | 'DYNAMIC' | 'FIXED' | 'COMPRESSED' | 'REDUNDANT' | 'COMPACT' )
+{
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableOptionImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlTableOption"
+  override = true
+}

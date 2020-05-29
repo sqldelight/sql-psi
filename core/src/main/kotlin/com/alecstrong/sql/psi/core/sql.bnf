@@ -91,7 +91,7 @@ create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name 
   pin = 6
 }
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
-create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ WITHOUT ROWID ] | AS compound_select_stmt ) {
+create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ table_options ] | AS compound_select_stmt ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
@@ -387,3 +387,5 @@ view_name ::= id {
 }
 module_name ::= id
 bind_parameter ::= '?'
+table_options ::= table_option ( [','] table_option ) *
+table_option ::= WITHOUT ROWID
