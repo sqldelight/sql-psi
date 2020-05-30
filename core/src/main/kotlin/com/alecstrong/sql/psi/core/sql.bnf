@@ -234,7 +234,7 @@ literal_value ::= ( numeric_literal
                   | NULL
                   | CURRENT_TIME
                   | CURRENT_DATE
-                  | CURRENT_TIMESTAMP [ '(' signed_number ')' ] [ ON UPDATE CURRENT_TIMESTAMP [ '(' signed_number ')' ] ] ) {
+                  | CURRENT_TIMESTAMP ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.LiteralValueMixin"
 }
 numeric_literal ::= ( ( digit [ '.' ( digit ) * ] | '.' digit )

@@ -20,9 +20,12 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FOREIGN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INDEX"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ON"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.CURRENT_TIMESTAMP"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option | default_constraint
 type_name ::= (
   bit_data_type |
   tiny_int_data_type |
@@ -72,7 +75,12 @@ table_constraint ::= [ CONSTRAINT {identifier} ] (
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableConstraint"
   override = true
 }
-default_constraint ::= [ NOT NULL | NULL ] DEFAULT ( {signed_number} | {literal_value} | '(' <<expr '-1'>> ')' ) {
+default_constraint ::= [ NOT NULL | NULL ] DEFAULT (
+  CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP |
+  {signed_number} |
+  {literal_value} |
+  '(' <<expr '-1'>> ')'
+) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDefaultConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlDefaultConstraint"
   override = true
