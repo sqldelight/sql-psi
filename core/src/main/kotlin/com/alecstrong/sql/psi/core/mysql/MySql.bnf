@@ -24,6 +24,7 @@
 }
 overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option
 type_name ::= (
+  bit_data_type |
   tiny_int_data_type |
   small_int_data_type |
   medium_int_data_type |
@@ -34,7 +35,7 @@ type_name ::= (
   date_data_type |
   binary_data_type |
   json_data_type
-) [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ] |
+) [ '(' {signed_number} ')' [ 'unsigned' ] | '(' {signed_number} ',' {signed_number} ')' ] |
 character_type |
 enum_set_type
 {
@@ -50,7 +51,8 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
   {check_constraint} |
   default_constraint |
   COLLATE {collation_name} |
-  {foreign_key_clause}
+  {foreign_key_clause} |
+  comment_type
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlColumnConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnConstraint"
@@ -62,7 +64,7 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
   override = true
 }
 table_constraint ::= [ CONSTRAINT {identifier} ] (
-  ( PRIMARY KEY | [UNIQUE] KEY | [UNIQUE] INDEX ) [{index_name}] '(' {indexed_column} ( ',' {indexed_column} ) * ')' {conflict_clause} |
+  ( PRIMARY KEY | [ UNIQUE | 'FULLTEXT' ] KEY | [ UNIQUE | 'FULLTEXT' ] INDEX ) [{index_name}] '(' {indexed_column} [ '(' {signed_number} ')' ] ( ',' {indexed_column} [ '(' {signed_number} ')' ] ) * ')' {conflict_clause} [comment_type] |
   CHECK '(' expr ')' |
   FOREIGN KEY '(' {column_name} ( ',' {column_name} ) * ')' {foreign_key_clause}
 ) {
@@ -76,6 +78,7 @@ default_constraint ::= [ NOT NULL | NULL ] DEFAULT ( {signed_number} | {literal_
   override = true
 }
 
+bit_data_type ::= 'BIT'
 tiny_int_data_type ::= 'TINYINT'
 small_int_data_type ::= 'SMALLINT'
 medium_int_data_type ::= 'MEDIUMINT'
@@ -100,10 +103,13 @@ binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
 
 json_data_type ::= 'JSON'
 
+comment_type ::= 'COMMENT' {string_literal}
+
 table_option ::= 'ENGINE' ['='] {identifier} |
   'AUTO_INCREMENT' [ '=' ] {signed_number} |
   [ 'DEFAULT' ] ( 'CHARACTER' 'SET' | 'CHARSET' ) [ '=' ] {identifier} |
-  'ROW_FORMAT' [ '=' ] ( 'DEFAULT' | 'DYNAMIC' | 'FIXED' | 'COMPRESSED' | 'REDUNDANT' | 'COMPACT' )
+  'ROW_FORMAT' [ '=' ] ( 'DEFAULT' | 'DYNAMIC' | 'FIXED' | 'COMPRESSED' | 'REDUNDANT' | 'COMPACT' ) |
+  'COLLATE' [ '=' ] {identifier}
 {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableOptionImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableOption"
