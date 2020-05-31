@@ -20,7 +20,7 @@ internal fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase
 
   var result: SqlFileBase? = null
   environment.forSourceFiles {
-    result = (it as SqlFileBase)
+    if (it.name == fileName) result = it
   }
   return result!!
 }

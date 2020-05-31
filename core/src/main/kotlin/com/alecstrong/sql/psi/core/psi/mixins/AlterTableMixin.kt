@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
+import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
@@ -24,5 +25,16 @@ internal abstract class AlterTableMixin(
               .query
         }
     )
+  }
+
+  override fun annotate(annotationHolder: SqlAnnotationHolder) {
+    when (tableName?.reference?.resolve()?.parent) {
+      is AlterTableMixin, is CreateTableMixin -> return
+      else -> annotationHolder.createErrorAnnotation(
+          tableName ?: this,
+          "Attempting to alter something that is not a table."
+      )
+    }
+    super.annotate(annotationHolder)
   }
 }
