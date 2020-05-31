@@ -1,9 +1,6 @@
 package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
-import com.intellij.psi.PsiElement
-import java.io.File
-import java.lang.AssertionError
 import org.junit.Test
 
 class NullabilityTest {
@@ -34,27 +31,5 @@ class NullabilityTest {
     assertThat(projection[0].nullable).isFalse()
     assertThat(projection[1].nullable).isTrue()
     assertThat(projection[2].nullable).isTrue()
-  }
-
-  private fun compileFile(text: String): SqlFileBase {
-    val directory = File("build/tmp").apply { mkdirs() }
-    val file = File(directory, "temp.s").apply {
-      createNewFile()
-      deleteOnExit()
-    }
-    file.writeText(text)
-
-    val parser = TestHeadlessParser()
-    val environment = parser.build(directory.path, object : SqlAnnotationHolder {
-      override fun createErrorAnnotation(element: PsiElement, s: String) {
-        throw AssertionError(s)
-      }
-    })
-
-    var result: SqlFileBase? = null
-    environment.forSourceFiles {
-      result = (it as SqlFileBase)
-    }
-    return result!!
   }
 }
