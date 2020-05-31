@@ -63,7 +63,7 @@ private sql_stmt_recovery ::= !( ';' | ALTER | ANALYZE | ATTACH | BEGIN | COMMIT
 alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name ( RENAME TO new_table_name | ADD [ COLUMN ] column_def ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
-  pin = 4
+  pin = 1
 }
 analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
   pin = 1

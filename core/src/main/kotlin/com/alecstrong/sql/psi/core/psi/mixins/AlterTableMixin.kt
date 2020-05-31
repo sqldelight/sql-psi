@@ -12,10 +12,17 @@ internal abstract class AlterTableMixin(
 ) : SqlCompositeElementImpl(node),
     SqlAlterTableStmt,
     TableElement {
-  override fun name(): NamedElement = newTableName ?: tableName
+  override fun name(): NamedElement = newTableName ?: tableName!!
 
   override fun tableExposed(): LazyQuery {
-    val originalTable = tableName!!.reference!!.resolve()!!.parent as TableElement
-    return originalTable.tableExposed().withAlterStatement(this)
+    return LazyQuery(
+        tableName = name(),
+        query = {
+          (tableName!!.reference!!.resolve()!!.parent as TableElement)
+              .tableExposed()
+              .withAlterStatement(this)
+              .query
+        }
+    )
   }
 }
