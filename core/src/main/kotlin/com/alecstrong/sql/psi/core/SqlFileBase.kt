@@ -17,7 +17,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
-import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
@@ -37,41 +36,21 @@ abstract class SqlFileBase(
   val sqlStmtList
     get() = findChildByClass(SqlStmtList::class.java)
 
-  open fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
+  fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
-    val statement = (sqlStmtElement as SqlStmt).children.first()
-    var queries: Collection<LazyQuery>
-
-    if (statement !is TableElement || statement is SqlCreateTableStmt) {
-      queries = symbolTable.tables.values
-    } else {
-      queries = symbolTable.tables.filterKeys { it != statement }.values
-    }
-
+    val statement = (sqlStmtElement as SqlStmt).firstChild
+    var tables: MutableMap<TableElement, LazyQuery> = symbolTable.tables
     if (order != null) {
-      // Gotta do some fancy shit to apply all the statements leading up to [sqlStmtElement]
-      sqlStmtList?.stmtList?.filterNotNull()?.forEach { statement ->
-        if (PsiTreeUtil.isAncestor(statement, sqlStmtElement, false)) return queries
-        statement.createTableStmt?.let { queries += it.tableExposed() }
-        statement.createVirtualTableStmt?.let { queries += it.tableExposed() }
-        statement.createViewStmt?.let { queries += it.tableExposed() }
-        statement.dropTableStmt?.let {
-          queries = queries.filterNot { query -> it.tableName?.text == query.tableName.text }
-        }
-        statement.dropViewStmt?.let {
-          queries = queries.filterNot { query -> it.viewName?.text == query.tableName.text }
-        }
-
-        statement.alterTableStmt?.let { alter ->
-          queries = queries.map {
-            if (it.tableName.text == alter.tableName.text) it.withAlterStatement(alter)
-            else it
-          }
-        }
-      }
+      tables = tables.toMutableMap()
+      sqlStmtList!!.stmtList
+          .takeWhile { it.firstChild != statement }
+          .forEach { tables.applyStatement(it) }
     }
-
-    return queries
+    return if (statement !is TableElement || statement is SqlCreateTableStmt) {
+      symbolTable.tables.values
+    } else {
+      symbolTable.tables.filterKeys { it != statement }.values
+    }
   }
 
   open fun indexes(sqlStmtElement: PsiElement): Collection<SqlCreateIndexStmt> {
@@ -86,10 +65,10 @@ abstract class SqlFileBase(
     return result.values()
   }
 
-  open fun triggers(sqlStmtElement: PsiElement): Collection<SqlCreateTriggerStmt> {
+  open fun triggers(sqlStmtElement: PsiElement? = null): Collection<SqlCreateTriggerStmt> {
     val result = MultiMap<String, SqlCreateTriggerStmt>()
     iteratePreviousStatements { statement ->
-      if (order != null && sqlStmtElement.parent == statement) {
+      if (order != null && sqlStmtElement?.parent == statement) {
         return@triggers result.values()
       }
       statement.createTriggerStmt?.let { result.putValue(it.triggerName.text, it) }
@@ -98,9 +77,51 @@ abstract class SqlFileBase(
     return result.values()
   }
 
+  /**
+   * @return Tables this file exposes as LazyQuery.
+   *
+   * @param includeAll If true, also return tables that other files expose.
+   */
+  fun tables(includeAll: Boolean): Collection<LazyQuery> {
+    symbolTable.checkInitialized()
+    var tables: MutableMap<TableElement, LazyQuery> = symbolTable.tables
+
+    if (order != null) {
+      tables = tables.toMutableMap()
+      sqlStmtList!!.stmtList.forEach { tables.applyStatement(it) }
+    }
+
+    return if (includeAll) {
+      tables.values
+    } else {
+      tables.filterKeys { tableElement ->
+        tableElement in sqlStmtList!!.stmtList.mapNotNull { it.firstChild }
+      }.values
+    }
+  }
+
   internal fun viewForName(name: String): SqlCreateViewStmt? {
     symbolTable.checkInitialized()
     return symbolTable.views[name]
+  }
+
+  private fun MutableMap<TableElement, LazyQuery>.applyStatement(
+    statement: SqlStmt
+  ) {
+    fun removeTableForName(name: NamedElement) {
+      val iterator = iterator()
+      while (iterator.hasNext()) {
+        if (iterator.next().key.name().text == name.text) iterator.remove()
+      }
+    }
+
+    statement.dropViewStmt?.viewName?.let(::removeTableForName)
+    statement.dropTableStmt?.tableName?.let(::removeTableForName)
+    statement.alterTableStmt?.let { alter ->
+      val tableName = alter.tableName ?: return@let
+      removeTableForName(tableName)
+    }
+    (statement.firstChild as? TableElement)?.let { this[it] = it.tableExposed() }
   }
 
   private fun views(): List<SqlCreateViewStmt> {
@@ -199,13 +220,6 @@ abstract class SqlFileBase(
     internal val tables = LinkedHashMap<TableElement, LazyQuery>()
     internal var initialized = false
 
-    private fun removeTableForName(name: NamedElement) {
-      val iterator = tables.iterator()
-      while (iterator.hasNext()) {
-        if (iterator.next().key.name().text == name.text) iterator.remove()
-      }
-    }
-
     fun checkInitialized() {
       synchronized(initialized) {
         if (initialized) return
@@ -214,22 +228,7 @@ abstract class SqlFileBase(
           if (order != null && statement.containingFile == this@SqlFileBase) {
             return@iteratePreviousStatements
           }
-          statement.createViewStmt?.let {
-            views[it.viewName.name] = it
-            tables[it] = it.tableExposed()
-          }
-          statement.dropViewStmt?.let {
-            views.remove(it.viewName?.name)
-            it.viewName?.let(::removeTableForName)
-          }
-
-          statement.createVirtualTableStmt?.let { tables[it] = it.tableExposed() }
-          statement.createTableStmt?.let { tables[it] = it.tableExposed() }
-          statement.alterTableStmt?.let { alter ->
-            removeTableForName(alter.tableName)
-            tables[alter] = alter.tableExposed()
-          }
-          statement.dropTableStmt?.tableName?.let(::removeTableForName)
+          tables.applyStatement(statement)
         }
 
         initialized = true
