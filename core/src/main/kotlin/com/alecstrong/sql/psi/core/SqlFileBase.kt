@@ -17,6 +17,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
@@ -39,17 +40,17 @@ abstract class SqlFileBase(
   fun tablesAvailable(sqlStmtElement: PsiElement): Collection<LazyQuery> {
     symbolTable.checkInitialized()
     val statement = (sqlStmtElement as SqlStmt).firstChild
-    var tables: MutableMap<TableElement, LazyQuery> = symbolTable.tables
+    var symbolTable: MutableMap<TableElement, LazyQuery> = symbolTable.tables
     if (order != null) {
-      tables = tables.toMutableMap()
+      symbolTable = symbolTable.toMutableMap()
       sqlStmtList!!.stmtList
-          .takeWhile { it.firstChild != statement }
-          .forEach { tables.applyStatement(it) }
+          .takeWhile { !PsiTreeUtil.isAncestor(it, sqlStmtElement, false) }
+          .forEach { symbolTable.applyStatement(it) }
     }
     return if (statement !is TableElement || statement is SqlCreateTableStmt) {
-      symbolTable.tables.values
+      symbolTable.values
     } else {
-      symbolTable.tables.filterKeys { it != statement }.values
+      symbolTable.filterKeys { it != statement }.values
     }
   }
 
@@ -229,6 +230,8 @@ abstract class SqlFileBase(
             return@iteratePreviousStatements
           }
           tables.applyStatement(statement)
+          statement.createViewStmt?.let { views[it.viewName.text] = it }
+          statement.dropViewStmt?.viewName?.let { views.remove(it.text) }
         }
 
         initialized = true
