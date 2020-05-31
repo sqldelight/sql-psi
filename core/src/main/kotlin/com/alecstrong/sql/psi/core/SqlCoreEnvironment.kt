@@ -25,7 +25,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
@@ -82,11 +81,11 @@ open class SqlCoreEnvironment(
     otherFailures.forEach { it.invoke() }
   }
 
-  fun forSourceFiles(action: (PsiFile) -> Unit) {
+  open fun forSourceFiles(action: (SqlFileBase) -> Unit) {
     val psiManager = PsiManager.getInstance(projectEnvironment.project)
     ProjectRootManager.getInstance(projectEnvironment.project).fileIndex.iterateContent { file ->
-      if (file.fileType != fileType) return@iterateContent true
-      action(psiManager.findFile(file)!!)
+      val psiFile = psiManager.findFile(file) as? SqlFileBase ?: return@iterateContent true
+      action(psiFile)
       return@iterateContent true
     }
   }
