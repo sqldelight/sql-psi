@@ -20,7 +20,7 @@ internal abstract class CreateVirtualTableMixin(
   override fun tableExposed(): LazyQuery {
     val columnNameElements = findChildrenByClass(
         SqlModuleArgument::class.java)
-        .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName }
+        .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
 
     val synthesizedColumns = if (usesFtsModule) {
       val columnNames = columnNameElements.map { it.name }

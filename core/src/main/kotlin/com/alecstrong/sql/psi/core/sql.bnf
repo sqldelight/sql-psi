@@ -120,7 +120,7 @@ module_column_def ::= column_name [ type_name ] ( column_constraint ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ModuleColumnDefMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
 }
-module_argument_def ::= ( module_argument_name '=' (string_literal | identifier) ) | module_column_def
+module_argument_def ::= ( module_argument_name '=' (string_literal | identifier) ) | column_def | module_column_def
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument module_argument_def>> ( ',' <<custom_module_argument module_argument_def>> ) * ')' ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
