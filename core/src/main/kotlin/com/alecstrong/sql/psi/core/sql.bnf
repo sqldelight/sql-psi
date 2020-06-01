@@ -129,11 +129,11 @@ with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')
 cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
-  pin = 4
+  pin = 2
 }
 delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
-  pin = 4
+  pin = 2
 }
 detach_stmt ::= DETACH [ DATABASE ] database_name {
   pin = 1
