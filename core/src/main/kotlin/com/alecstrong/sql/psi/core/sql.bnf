@@ -116,12 +116,17 @@ create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ databa
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
 }
-create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument column_def>> ( ',' <<custom_module_argument column_def>> ) * ')' ] {
+module_column_def ::= column_name [ type_name ] ( column_constraint ) * {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.ModuleColumnDefMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
+}
+module_argument_def ::= ( module_argument_name '=' (string_literal | identifier) ) | column_def | module_column_def
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument module_argument_def>> ( ',' <<custom_module_argument module_argument_def>> ) * ')' ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
 }
-module_argument ::= [ column_def ]
+module_argument ::= [ module_argument_def ]
 with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.WithClauseMixin"
   pin = 1
@@ -386,6 +391,7 @@ view_name ::= id {
   ]
 }
 module_name ::= id
+module_argument_name ::= id
 bind_parameter ::= '?'
 table_options ::= table_option ( [','] table_option ) *
 table_option ::= WITHOUT ROWID
