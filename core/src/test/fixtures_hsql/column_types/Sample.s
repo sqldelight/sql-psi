@@ -14,6 +14,8 @@ CREATE TABLE all_types(
   some_boolean BOOLEAN,
   some_date DATE,
   some_time TIME,
+  some_time2 TIME(6) WITH TIME ZONE,
+  some_timestamp TIMESTAMP WITHOUT TIME ZONE,
   some_timestamp2 TIMESTAMP(6),
   some_char CHAR,
   some_character CHARACTER(6),
