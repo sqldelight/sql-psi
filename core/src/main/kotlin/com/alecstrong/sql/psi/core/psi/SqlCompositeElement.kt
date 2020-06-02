@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.core.psi
 
+import com.alecstrong.sql.psi.core.AnnotationException
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
@@ -70,6 +71,6 @@ class LazyQuery(
           }
       )
     }
-    throw IllegalStateException("Unhandled alter statement $alter")
+    throw AnnotationException("Unhandled alter statement", alter)
   }
 }
