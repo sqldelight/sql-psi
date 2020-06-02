@@ -35,10 +35,15 @@ open class SqlCoreEnvironment(
   sourceFolders: List<File>,
   disposable: Disposable = Disposer.newDisposable()
 ) {
+  private val fileIndex: CoreFileIndex
+
   protected val applicationEnvironment = CoreApplicationEnvironment(disposable)
   protected val projectEnvironment = CoreProjectEnvironment(disposable, applicationEnvironment)
 
   init {
+    val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
+    fileIndex = CoreFileIndex(sourceFolders, projectEnvironment.project,
+            directoryIndex, FileTypeRegistry.getInstance())
     CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
         MetaLanguage.EP_NAME, MetaLanguage::class.java)
     projectEnvironment.registerProjectComponent(ProjectRootManager::class.java,
@@ -46,12 +51,9 @@ open class SqlCoreEnvironment(
 
     with(applicationEnvironment) {
       val fileRegistry = FileTypeRegistry.ourInstanceGetter
-      val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
       FileTypeRegistry.ourInstanceGetter = fileRegistry
 
-      registerApplicationService(ProjectFileIndex::class.java,
-          CoreFileIndex(sourceFolders, projectEnvironment.project,
-              directoryIndex, FileTypeRegistry.getInstance()))
+      registerApplicationService(ProjectFileIndex::class.java, fileIndex)
       registerFileType(fileType, fileType.defaultExtension)
       registerParserDefinition(parserDefinition)
     }
@@ -83,7 +85,7 @@ open class SqlCoreEnvironment(
 
   open fun forSourceFiles(action: (SqlFileBase) -> Unit) {
     val psiManager = PsiManager.getInstance(projectEnvironment.project)
-    ProjectRootManager.getInstance(projectEnvironment.project).fileIndex.iterateContent { file ->
+    fileIndex.iterateContent { file ->
       val psiFile = psiManager.findFile(file) as? SqlFileBase ?: return@iterateContent true
       action(psiFile)
       return@iterateContent true
