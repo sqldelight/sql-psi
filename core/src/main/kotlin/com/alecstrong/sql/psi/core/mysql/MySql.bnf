@@ -22,10 +22,11 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ON"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CURRENT_TIMESTAMP"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option | default_constraint
+overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option | default_constraint | alter_table_rules
 type_name ::= (
   bit_data_type |
   tiny_int_data_type |
@@ -122,4 +123,15 @@ table_option ::= 'ENGINE' ['='] {identifier} |
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTableOptionImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableOption"
   override = true
+}
+
+alter_table_rules ::= ( {alter_table_add_column} | {alter_table_rename_table} | alter_table_change_column ) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
+  override = true
+}
+
+alter_table_change_column ::= 'CHANGE' [ COLUMN ] {column_name} {column_def} {
+  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableChangeColumnMixin"
+  pin = 1
 }
