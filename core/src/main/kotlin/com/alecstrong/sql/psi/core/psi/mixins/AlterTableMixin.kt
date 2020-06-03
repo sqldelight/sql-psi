@@ -20,10 +20,13 @@ internal abstract class AlterTableMixin(
     return LazyQuery(
         tableName = name(),
         query = {
-          (tableName!!.reference!!.resolve()!!.parent as TableElement)
+          val lazyQuery = (tableName!!.reference!!.resolve()!!.parent as TableElement)
               .tableExposed()
-              .withAlterStatement(this)
-              .query
+          try {
+            lazyQuery.withAlterStatement(this)
+          } catch (e: AnnotationException) {
+            lazyQuery
+          }.query
         }
     )
   }
