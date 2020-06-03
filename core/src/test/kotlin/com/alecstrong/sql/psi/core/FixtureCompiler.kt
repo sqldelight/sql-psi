@@ -14,7 +14,7 @@ internal fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase
   val parser = TestHeadlessParser()
   val environment = parser.build(directory.path, object : SqlAnnotationHolder {
     override fun createErrorAnnotation(element: PsiElement, s: String) {
-      throw AssertionError(s)
+      throw AssertionError("at ${element.textOffset} : $s")
     }
   })
 

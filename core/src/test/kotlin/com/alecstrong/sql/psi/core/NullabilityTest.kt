@@ -1,9 +1,23 @@
 package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
+import java.io.File
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 class NullabilityTest {
+  @Before
+  fun before() {
+    File("build/tmp").deleteRecursively()
+  }
+
+  @After
+  fun after() {
+    SqlParserUtil.reset()
+    File("build/tmp").deleteRecursively()
+  }
+
   @Test fun outerJoin() {
     val file = compileFile("""
       |CREATE TABLE car (

@@ -70,4 +70,11 @@ allprojects {
       jvmTarget = "1.8"
     }
   }
+
+  tasks.withType(Test) {
+    testLogging {
+      events = ["failed", "skipped", "passed"]
+      exceptionFormat "full"
+    }
+  }
 }

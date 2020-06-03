@@ -11,6 +11,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONSTRAINT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.PRIMARY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.AFTER"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ASC"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DESC"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
@@ -24,9 +25,19 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CURRENT_TIMESTAMP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ADD"
   ]
 }
-overrides ::= type_name | column_constraint | bind_parameter | table_constraint | default_constraint | table_option | default_constraint | alter_table_rules
+overrides ::= type_name
+  | column_constraint
+  | bind_parameter
+  | table_constraint
+  | default_constraint
+  | table_option
+  | default_constraint
+  | alter_table_rules
+  | alter_table_add_column
+
 type_name ::= (
   bit_data_type |
   tiny_int_data_type |
@@ -127,7 +138,7 @@ table_option ::= 'ENGINE' ['='] {identifier} |
 }
 
 alter_table_rules ::= (
-  {alter_table_add_column}
+  alter_table_add_column
   | {alter_table_rename_table}
   | alter_table_change_column
   | alter_table_modify_column
@@ -137,12 +148,22 @@ alter_table_rules ::= (
   override = true
 }
 
-alter_table_change_column ::= 'CHANGE' [ COLUMN ] {column_name} {column_def} {
+alter_table_add_column ::= ADD [ COLUMN ] {column_def} [ placement_clause ] {
+  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableAddColumnMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableAddColumn"
+  override = true
+}
+
+alter_table_change_column ::= 'CHANGE' [ COLUMN ] {column_name} {column_def} [ placement_clause ] {
   mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableChangeColumnMixin"
   pin = 1
 }
 
-alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} {
+alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} [ placement_clause ] {
   mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableModifyColumnMixin"
   pin = 1
+}
+
+placement_clause ::= 'FIRST' | ( AFTER {column_name} ) {
+  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.PlacementClauseMixin"
 }
