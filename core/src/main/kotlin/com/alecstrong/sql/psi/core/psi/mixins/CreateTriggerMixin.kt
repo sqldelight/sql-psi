@@ -16,7 +16,7 @@ internal abstract class CreateTriggerMixin(
 ) : SqlCompositeElementImpl(node),
     SqlCreateTriggerStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    if (child is MutatorMixin || child is SqlExpr) {
+    if (child is MutatorMixin || child is SqlExpr || child is CompoundSelectStmtMixin) {
       val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
       if (hasElement(SqlTypes.INSERT)) {
         return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns, synthesizedColumns = table.synthesizedColumns))
