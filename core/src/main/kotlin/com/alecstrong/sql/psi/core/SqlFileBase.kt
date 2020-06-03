@@ -101,6 +101,32 @@ abstract class SqlFileBase(
     }
   }
 
+  /**
+   * @return Views this file exposes as CreateViewStmt.
+   *
+   * @param includeAll If true, also return tables that other files expose.
+   */
+  fun views(includeAll: Boolean): Collection<SqlCreateViewStmt> {
+    symbolTable.checkInitialized()
+    var views: MutableMap<String, SqlCreateViewStmt> = symbolTable.views
+
+    if (order != null) {
+      views = views.toMutableMap()
+      sqlStmtList!!.stmtList.forEach { statement ->
+        statement.createViewStmt?.let { views[it.viewName.text] = it }
+        statement.dropViewStmt?.viewName?.let { views.remove(it.text) }
+      }
+    }
+
+    return if (includeAll) {
+      views.values
+    } else {
+      views.filterKeys { viewName ->
+        viewName in sqlStmtList!!.stmtList.mapNotNull { it.createViewStmt?.viewName?.text }
+      }.values
+    }
+  }
+
   internal fun viewForName(name: String): SqlCreateViewStmt? {
     symbolTable.checkInitialized()
     return symbolTable.views[name]
