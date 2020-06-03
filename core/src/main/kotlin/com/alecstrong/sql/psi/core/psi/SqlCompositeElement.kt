@@ -1,6 +1,5 @@
 package com.alecstrong.sql.psi.core.psi
 
-import com.alecstrong.sql.psi.core.AnnotationException
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
@@ -53,24 +52,4 @@ class LazyQuery(
   query: () -> QueryResult
 ) {
   val query by lazy(query)
-
-  internal fun withAlterStatement(alter: SqlAlterTableStmt): LazyQuery {
-    if (alter.newTableName != null) {
-      return LazyQuery(
-          tableName = alter.newTableName!!,
-          query = {
-            query.copy(table = alter.newTableName)
-          }
-      )
-    }
-    if (alter.columnDef != null) {
-      return LazyQuery(
-          tableName = tableName,
-          query = {
-            query.copy(columns = query.columns + QueryElement.QueryColumn(alter.columnDef!!.columnName))
-          }
-      )
-    }
-    throw AnnotationException("Unhandled alter statement", alter)
-  }
 }

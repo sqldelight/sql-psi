@@ -7,6 +7,7 @@ import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.TableElement
+import com.alecstrong.sql.psi.core.psi.withAlterStatement
 import com.intellij.lang.ASTNode
 
 internal abstract class AlterTableMixin(
@@ -14,7 +15,9 @@ internal abstract class AlterTableMixin(
 ) : SqlCompositeElementImpl(node),
     SqlAlterTableStmt,
     TableElement {
-  override fun name(): NamedElement = newTableName ?: tableName!!
+  override fun name(): NamedElement = alterTableRulesList
+      .mapNotNull { it.alterTableRenameTable?.newTableName }
+      .lastOrNull() ?: tableName!!
 
   override fun tableExposed(): LazyQuery {
     return LazyQuery(
