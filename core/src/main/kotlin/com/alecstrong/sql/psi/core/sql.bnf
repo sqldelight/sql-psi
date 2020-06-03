@@ -60,11 +60,14 @@ stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_s
   pin = 2
 }
 private sql_stmt_recovery ::= !( ';' | ALTER | ANALYZE | ATTACH | BEGIN | COMMIT | END | ROLLBACK | SAVEPOINT | RELEASE | CREATE | DROP | INSERT | WITH | UPDATE | DELETE | SELECT | PRAGMA | REINDEX )
-alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name ( RENAME TO new_table_name | ADD [ COLUMN ] column_def ) {
+alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_rules ( ',' alter_table_rules )* {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 1
 }
+alter_table_rules ::= ( alter_table_add_column | alter_table_rename_table )
+alter_table_add_column ::= ADD [ COLUMN ] column_def
+alter_table_rename_table ::= RENAME TO new_table_name
 analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
   pin = 1
 }
