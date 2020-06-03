@@ -126,7 +126,12 @@ table_option ::= 'ENGINE' ['='] {identifier} |
   override = true
 }
 
-alter_table_rules ::= ( {alter_table_add_column} | {alter_table_rename_table} | alter_table_change_column ) {
+alter_table_rules ::= (
+  {alter_table_add_column}
+  | {alter_table_rename_table}
+  | alter_table_change_column
+  | alter_table_modify_column
+) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
   override = true
@@ -134,5 +139,10 @@ alter_table_rules ::= ( {alter_table_add_column} | {alter_table_rename_table} | 
 
 alter_table_change_column ::= 'CHANGE' [ COLUMN ] {column_name} {column_def} {
   mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableChangeColumnMixin"
+  pin = 1
+}
+
+alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} {
+  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableModifyColumnMixin"
   pin = 1
 }
