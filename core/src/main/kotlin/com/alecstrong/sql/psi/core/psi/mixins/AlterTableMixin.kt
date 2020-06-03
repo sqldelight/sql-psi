@@ -36,7 +36,7 @@ internal abstract class AlterTableMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     when (tableName?.reference?.resolve()?.parent) {
-      is AlterTableMixin, is CreateTableMixin -> return
+      is AlterTableMixin, is CreateTableMixin -> {}
       else -> annotationHolder.createErrorAnnotation(
           tableName ?: this,
           "Attempting to alter something that is not a table."
