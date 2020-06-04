@@ -142,6 +142,8 @@ alter_table_rules ::= (
   | {alter_table_rename_table}
   | alter_table_change_column
   | alter_table_modify_column
+  | alter_table_add_index
+  | alter_table_drop_index
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
@@ -163,5 +165,9 @@ alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} [ placement_claus
   mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.AlterTableModifyColumnMixin"
   pin = 1
 }
+
+alter_table_add_index ::= 'ADD' [ UNIQUE ] ( INDEX | KEY ) [ {index_name} ] '(' {indexed_column} ( ',' {indexed_column} ) * ')'
+
+alter_table_drop_index ::= 'DROP' ( INDEX | KEY ) {index_name}
 
 placement_clause ::= 'FIRST' | ( AFTER {column_name} )
