@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Execute a build
-      run: ./gradlew build
+      run: ./gradlew build --stacktrace
 
     - name: Verify plugin on IntelliJ Platforms
       id: verify

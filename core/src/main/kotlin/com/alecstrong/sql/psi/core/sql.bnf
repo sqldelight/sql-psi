@@ -66,7 +66,9 @@ alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_ru
   pin = 1
 }
 alter_table_rules ::= ( alter_table_add_column | alter_table_rename_table )
-alter_table_add_column ::= ADD [ COLUMN ] column_def
+alter_table_add_column ::= ADD [ COLUMN ] column_def {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableAddColumnMixin"
+}
 alter_table_rename_table ::= RENAME TO new_table_name
 analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
   pin = 1
