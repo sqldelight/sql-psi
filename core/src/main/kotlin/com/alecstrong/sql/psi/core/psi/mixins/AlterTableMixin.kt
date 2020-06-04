@@ -5,6 +5,7 @@ import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.QueryElement
+import com.alecstrong.sql.psi.core.psi.SqlAlterTableRules
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.TableElement
@@ -23,9 +24,10 @@ internal abstract class AlterTableMixin(
 
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
     if (child in alterTableRulesList) {
+      check(child is SqlAlterTableRules)
       return tablesAvailable(this)
           .filter { it.tableName.text == tableName!!.text }
-          .map { it.query }
+          .map { it.withAlterStatement(this, until = child).query }
     }
     return super.queryAvailable(child)
   }
