@@ -1,29 +1,9 @@
 package com.alecstrong.sql.psi.core.mysql.psi.mixins
 
 import com.alecstrong.sql.psi.core.mysql.psi.MySqlPlacementClause
-import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryColumn
-import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
-import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
-import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-
-internal abstract class PlacementClauseMixin(
-  node: ASTNode
-) : SqlCompositeElementImpl(node),
-    MySqlPlacementClause {
-  override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
-    if (child == columnName) {
-      val alterStmt = PsiTreeUtil.getParentOfType(this, SqlAlterTableStmt::class.java)!!
-      return tablesAvailable(this)
-          .filter { it.tableName.text == alterStmt.tableName?.text }
-          .map { it.query }
-    }
-    return super.queryAvailable(child)
-  }
-}
 
 internal fun MySqlPlacementClause?.placeInQuery(
   columns: List<QueryColumn>,

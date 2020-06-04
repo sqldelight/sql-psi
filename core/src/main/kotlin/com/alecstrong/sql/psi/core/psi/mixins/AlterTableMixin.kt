@@ -10,6 +10,7 @@ import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.alecstrong.sql.psi.core.psi.withAlterStatement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiElement
 
 internal abstract class AlterTableMixin(
   node: ASTNode
@@ -19,6 +20,15 @@ internal abstract class AlterTableMixin(
   override fun name(): NamedElement = alterTableRulesList
       .mapNotNull { it.alterTableRenameTable?.newTableName }
       .lastOrNull() ?: tableName!!
+
+  override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
+    if (child in alterTableRulesList) {
+      return tablesAvailable(this)
+          .filter { it.tableName.text == tableName!!.text }
+          .map { it.query }
+    }
+    return super.queryAvailable(child)
+  }
 
   override fun tableExposed(): LazyQuery {
     return LazyQuery(

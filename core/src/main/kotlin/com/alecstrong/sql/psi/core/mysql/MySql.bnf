@@ -164,6 +164,4 @@ alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} [ placement_claus
   pin = 1
 }
 
-placement_clause ::= 'FIRST' | ( AFTER {column_name} ) {
-  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.PlacementClauseMixin"
-}
+placement_clause ::= 'FIRST' | ( AFTER {column_name} )

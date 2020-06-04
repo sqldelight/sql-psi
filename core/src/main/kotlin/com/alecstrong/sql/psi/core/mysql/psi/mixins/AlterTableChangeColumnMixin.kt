@@ -7,9 +7,7 @@ import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
-import com.alecstrong.sql.psi.core.psi.alterStmt
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 
 internal abstract class AlterTableChangeColumnMixin(
   node: ASTNode
@@ -34,14 +32,5 @@ internal abstract class AlterTableChangeColumnMixin(
           lazyQuery.query.copy(columns = columns)
         }
     )
-  }
-
-  override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
-    if (child == columnName) {
-      return tablesAvailable(this)
-          .filter { it.tableName.text == alterStmt.tableName?.text }
-          .map { it.query }
-    }
-    return super.queryAvailable(child)
   }
 }
