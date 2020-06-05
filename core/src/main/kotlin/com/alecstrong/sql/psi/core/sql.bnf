@@ -185,8 +185,11 @@ expr ::= ( raise_expr
          | unary_expr
          | literal_expr
          | column_expr
-         | bind_expr )
+         | bind_expr
+         | other_expr )
 
+other_expr ::= extension_expr
+extension_expr ::=
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
