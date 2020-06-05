@@ -252,7 +252,8 @@ abstract class SqlFileBase(
         if (initialized) return
 
         iteratePreviousStatements { statement ->
-          if (order != null && statement.containingFile == this@SqlFileBase) {
+          if (statement.containingFile == this@SqlFileBase &&
+              (order != null || statement.alterTableStmt != null)) {
             return@iteratePreviousStatements
           }
           tables.applyStatement(statement)

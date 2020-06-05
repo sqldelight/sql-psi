@@ -49,6 +49,10 @@ internal abstract class AlterTableMixin(
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
+    if (containingFile.order == null) {
+      annotationHolder.createErrorAnnotation(this, "Alter table statements are forbidden outside of migration files.")
+      return
+    }
     when (tableName?.reference?.resolve()?.parent) {
       is AlterTableMixin, is CreateTableMixin -> {}
       else -> {
