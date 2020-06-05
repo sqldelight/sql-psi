@@ -15,7 +15,6 @@ import com.alecstrong.sql.psi.core.psi.TableElement
 import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CreateTableMixin(
@@ -35,8 +34,7 @@ internal abstract class CreateTableMixin(
     val containsWithoutId = tableOptions
         ?.tableOptionList
         ?.any {
-          (it.firstChild as LeafPsiElement).elementType == SqlTypes.WITHOUT &&
-              (it.lastChild as LeafPsiElement).elementType == SqlTypes.ROWID
+          (it.node.findChildByType(SqlTypes.WITHOUT) != null)
         } ?: false
     val synthesizedColumns = if (!containsWithoutId) {
       val columnNames = columnDefList.mapNotNull { it.columnName.name }
