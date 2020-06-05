@@ -29,5 +29,6 @@ CREATE TABLE all_types(
   some_varbinary VARBINARY(8),
   some_blob BLOB(8, 8),
   some_binary BINARY,
-  some_json JSON
+  some_json JSON,
+  some_boolean BOOLEAN
 );
