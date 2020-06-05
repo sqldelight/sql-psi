@@ -7,7 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.intellij.lang.ASTNode
 
 internal abstract class AlterTableDropColumnMixin(
-    node: ASTNode
+  node: ASTNode
 ) : SqlCompositeElementImpl(node),
     MySqlAlterTableDropColumn,
     AlterTableApplier {
