@@ -99,7 +99,7 @@ default_constraint ::= [ NOT NULL | NULL ] DEFAULT (
 }
 
 bit_data_type ::= 'BIT'
-tiny_int_data_type ::= 'TINYINT'
+tiny_int_data_type ::= 'TINYINT' | 'BOOLEAN'
 small_int_data_type ::= 'SMALLINT'
 medium_int_data_type ::= 'MEDIUMINT'
 int_data_type ::= 'INTEGER' | 'INT'
