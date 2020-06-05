@@ -121,7 +121,7 @@ enum_set_type ::= ( 'ENUM' | 'SET' )
   [ '(' {string_literal} ( ',' {string_literal} ) * ')' ]
   [ 'CHARACTER' 'SET' {identifier} ]
 
-binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY'
+binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY' | 'BIT'
 
 json_data_type ::= 'JSON'
 
