@@ -15,8 +15,11 @@ internal val AlterTableApplier.alterStmt
       SqlAlterTableStmt::class.java
   )!!
 
-internal fun LazyQuery.withAlterStatement(alter: SqlAlterTableStmt): LazyQuery {
-  return alter.alterTableRulesList.fold(this, { lazyQuery, alterTableRules ->
+internal fun LazyQuery.withAlterStatement(
+  alter: SqlAlterTableStmt,
+  until: SqlAlterTableRules? = null
+): LazyQuery {
+  return alter.alterTableRulesList.takeWhile { it != until }.fold(this, { lazyQuery, alterTableRules ->
     // Rename table.
     alterTableRules.alterTableRenameTable?.let { renameTable ->
       return@fold LazyQuery(
