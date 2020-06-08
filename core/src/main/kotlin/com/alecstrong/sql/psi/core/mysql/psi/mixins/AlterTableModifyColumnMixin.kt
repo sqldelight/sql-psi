@@ -26,7 +26,7 @@ internal abstract class AlterTableModifyColumnMixin(
           val columns = placementClause.placeInQuery(
               columns = lazyQuery.query.columns,
               column = QueryElement.QueryColumn(columnDef.columnName),
-              replace = lazyQuery.query.columns.single { (it.element as SqlColumnName).text == columnDef.columnName.text }
+              replace = lazyQuery.query.columns.singleOrNull { (it.element as SqlColumnName).text == columnDef.columnName.text }
           )
           lazyQuery.query.copy(columns = columns)
         }

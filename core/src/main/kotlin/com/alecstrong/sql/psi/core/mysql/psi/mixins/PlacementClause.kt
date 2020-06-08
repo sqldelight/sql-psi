@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.core.mysql.psi.mixins
 
+import com.alecstrong.sql.psi.core.AnnotationException
 import com.alecstrong.sql.psi.core.mysql.psi.MySqlPlacementClause
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryColumn
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
@@ -21,7 +22,10 @@ internal fun MySqlPlacementClause?.placeInQuery(
       if (replace != null) remove(replace)
 
       val index = indexOfFirst { (it.element as SqlColumnName).text == columnName!!.text }
-      if (index == -1) throw IllegalStateException("Unable to replace $replace with $column in $columns")
+      if (index == -1) throw AnnotationException(
+          msg = "Unable to replace $replace with $column after $columnName in $columns",
+          element = this@placeInQuery
+      )
       add(index + 1, column)
     }
   } else {
