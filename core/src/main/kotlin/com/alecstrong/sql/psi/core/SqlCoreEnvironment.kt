@@ -93,7 +93,11 @@ open class SqlCoreEnvironment(
   }
 
   private fun PsiElement.annotateRecursively(annotationHolder: SqlAnnotationHolder) {
-    if (this is SqlAnnotatedElement) annotate(annotationHolder)
+    if (this is SqlAnnotatedElement) try {
+      annotate(annotationHolder)
+    } catch (e: AnnotationException) {
+      annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
+    }
     children.forEach { it.annotateRecursively(annotationHolder) }
   }
 }
