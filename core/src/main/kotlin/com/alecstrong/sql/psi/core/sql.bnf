@@ -42,7 +42,7 @@
     comment='regexp:--.*'
     javadoc='regexp:/\*\*(.|\n)*\*/'
     digit='regexp:\d+(\.\d*)?'
-    id='regexp:([a-zA-Z0-9_\`\[\]])*'
+    id='regexp:([a-zA-Z_][a-zA-Z_0-9]*)|(`[^`]+`)|(\[[^\]]+\])'
     string="regexp:('([^'])*'|\"([^\"])*\")"
   ]
   extends(".*expr")=expr
@@ -335,7 +335,7 @@ update_stmt_subsequent_setter ::= ',' column_name '=' setter_expression {
 setter_expression ::= expr
 qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
 vacuum_stmt ::= VACUUM
-table_name ::= id {
+table_name ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableNameMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";
@@ -351,7 +351,7 @@ column_name ::= id | string {
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-column_alias ::= id {
+column_alias ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ColumnAliasMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.AliasElement";
@@ -359,7 +359,7 @@ column_alias ::= id {
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-table_alias ::= id {
+table_alias ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableAliasMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";
@@ -367,7 +367,7 @@ table_alias ::= id {
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-foreign_table ::= id {
+foreign_table ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableNameMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";
@@ -379,7 +379,7 @@ pragma_name ::= id
 function_name ::= id
 string_literal ::= string
 table_or_index_name ::= id
-new_table_name ::= id {
+new_table_name ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableNameMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";
@@ -391,7 +391,7 @@ trigger_name ::= id
 blob_literal ::= '0x' digit
 collation_name ::= id
 error_message ::= string
-view_name ::= id {
+view_name ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableNameMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";

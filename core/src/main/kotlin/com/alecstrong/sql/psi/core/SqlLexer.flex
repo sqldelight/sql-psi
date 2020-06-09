@@ -29,7 +29,7 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
 JAVADOC="/"\*\*(.|\n)*\*"/"
 DIGIT=[0-9]+(\.[0-9]*)?
-ID=([a-zA-Z0-9_\`\[\]])*
+ID=([a-zA-Z_][a-zA-Z_0-9]*)|(`[^`]+`)|(\[[^\]]+\])
 STRING=('([^'])*'|\"([^\"])*\")
 
 %%
@@ -60,6 +60,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "&"                    { return BITWISE_AND; }
   "|"                    { return BITWISE_OR; }
   "||"                   { return CONCAT; }
+  "DO"                   { return DO; }
+  "NOTHING"              { return NOTHING; }
   "EXPLAIN"              { return EXPLAIN; }
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }
@@ -82,10 +84,10 @@ STRING=('([^'])*'|\"([^\"])*\")
   "PRAGMA"               { return PRAGMA; }
   "REINDEX"              { return REINDEX; }
   "TABLE"                { return TABLE; }
-  "RENAME"               { return RENAME; }
-  "TO"                   { return TO; }
   "ADD"                  { return ADD; }
   "COLUMN"               { return COLUMN; }
+  "RENAME"               { return RENAME; }
+  "TO"                   { return TO; }
   "DATABASE"             { return DATABASE; }
   "AS"                   { return AS; }
   "DEFERRED"             { return DEFERRED; }
@@ -104,8 +106,6 @@ STRING=('([^'])*'|\"([^\"])*\")
   "DESC"                 { return DESC; }
   "TEMP"                 { return TEMP; }
   "TEMPORARY"            { return TEMPORARY; }
-  "WITHOUT"              { return WITHOUT; }
-  "ROWID"                { return ROWID; }
   "CONSTRAINT"           { return CONSTRAINT; }
   "PRIMARY"              { return PRIMARY; }
   "KEY"                  { return KEY; }
@@ -167,6 +167,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "CURRENT_TIME"         { return CURRENT_TIME; }
   "CURRENT_DATE"         { return CURRENT_DATE; }
   "CURRENT_TIMESTAMP"    { return CURRENT_TIMESTAMP; }
+  "TRUE"                 { return TRUE; }
+  "FALSE"                { return FALSE; }
   "E"                    { return E; }
   "INTO"                 { return INTO; }
   "VALUES"               { return VALUES; }
@@ -184,10 +186,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "INTERSECT"            { return INTERSECT; }
   "EXCEPT"               { return EXCEPT; }
   "VACUUM"               { return VACUUM; }
-  "DO"                   { return DO; }
-  "NOTHING"              { return NOTHING; }
-  "TRUE"                 { return TRUE; }
-  "FALSE"                { return FALSE; }
+  "WITHOUT"              { return WITHOUT; }
+  "ROWID"                { return ROWID; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }

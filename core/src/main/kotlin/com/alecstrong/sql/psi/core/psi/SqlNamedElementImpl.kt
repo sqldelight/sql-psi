@@ -18,6 +18,11 @@ internal abstract class SqlNamedElementImpl(
     PsiNameIdentifierOwner {
   abstract val parseRule: (builder: PsiBuilder, level: Int) -> Boolean
 
+  override fun getText(): String {
+    return (node.findChildByType(SqlTypes.ID)?.text
+        ?: node.findChildByType(SqlTypes.STRING)!!.text).trim('\'', '"', '`', '[', ']')
+  }
+
   override fun getName() = text
 
   override fun setName(name: String): PsiElement {
@@ -45,7 +50,6 @@ internal abstract class SqlNamedElementImpl(
   }
 
   override fun getNameIdentifier(): PsiElement? {
-    return findChildByType<PsiElement>(
-        SqlTypes.ID)
+    return findChildByType(SqlTypes.ID)
   }
 }
