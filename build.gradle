@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   ext {
-    kotlinVersion = '1.3.61'
-    ideaVersion = '2019.2'
+    kotlinVersion = '1.3.72'
+    ideaVersion = '2020.1.2'
 
     dep = [
         kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
@@ -11,9 +11,9 @@ buildscript {
         intellij: "IC-$ideaVersion",
         intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: [
             'idea.jar', 'openapi.jar', 'util.jar', 'trove4j.jar', 'extensions.jar',
-            'picocontainer-1.2.jar', 'asm-all-7.0.1.jar', 'automaton-1.12-1.jar',
+            'asm-all-7.0.1.jar', 'automaton-1.12-1.jar',
             'platform-api.jar', 'platform-impl.jar', 'platform-util-ui.jar', 'java-api.jar',
-            'guava-25.1-jre.jar', 'jdom.jar',
+            'guava-28.2-jre.jar', 'jdom.jar', 'platform-concurrency.jar'
         ]),
         junit: 'junit:junit:4.12',
         truth: 'com.google.truth:truth:0.30',
@@ -29,8 +29,8 @@ buildscript {
   dependencies {
     classpath dep.kotlinGradlePlugin
     classpath 'de.undercouch:gradle-download-task:3.1.2'
-    classpath "com.github.hurricup:gradle-grammar-kit-plugin:$ideaVersion"
-    classpath "com.alecstrong:grammar-kit-composer:0.1.3"
+    classpath "com.github.hurricup:gradle-grammar-kit-plugin:2020.1.4"
+    classpath "com.alecstrong:grammar-kit-composer:0.1.4"
     classpath "com.diffplug.spotless:spotless-plugin-gradle:3.29.0"
   }
 }
