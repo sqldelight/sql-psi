@@ -23,12 +23,15 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INDEX"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DEFAULT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ON"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CURRENT_TIMESTAMP"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ADD"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.SET"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DROP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TABLE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.EXISTS"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
   ]
 }
 overrides ::= type_name
@@ -40,6 +43,7 @@ overrides ::= type_name
   | alter_table_rules
   | alter_table_add_column
   | extension_expr
+  | drop_table_stmt
 
 type_name ::= (
   bit_data_type |
@@ -64,7 +68,7 @@ enum_set_type
 column_constraint ::= [ CONSTRAINT {identifier} ] (
   'AUTO_INCREMENT' |
   PRIMARY KEY [ ASC | DESC ] {conflict_clause} |
-  NOT NULL {conflict_clause} |
+  [ NOT ] NULL {conflict_clause} |
   UNIQUE {conflict_clause} |
   {check_constraint} |
   default_constraint |
@@ -82,7 +86,7 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
   override = true
 }
 table_constraint ::= [ CONSTRAINT {identifier} ] (
-  ( PRIMARY KEY | [ UNIQUE | 'FULLTEXT' ] KEY | [ UNIQUE | 'FULLTEXT' ] INDEX ) [{index_name}] '(' {indexed_column} [ '(' {signed_number} ')' ] ( ',' {indexed_column} [ '(' {signed_number} ')' ] ) * ')' {conflict_clause} [comment_type] |
+  ( PRIMARY KEY | [ UNIQUE | 'FULLTEXT' ] KEY | [ UNIQUE | 'FULLTEXT' ] [ INDEX ] ) [{index_name}] '(' {indexed_column} [ '(' {signed_number} ')' ] ( ',' {indexed_column} [ '(' {signed_number} ')' ] ) * ')' {conflict_clause} [comment_type] |
   CHECK '(' expr ')' |
   FOREIGN KEY '(' {column_name} ( ',' {column_name} ) * ')' {foreign_key_clause}
 ) {
@@ -100,6 +104,7 @@ default_constraint ::= [ NOT NULL | NULL ] DEFAULT (
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDefaultConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlDefaultConstraint"
   override = true
+  pin = 2
 }
 
 bit_data_type ::= 'BIT'
@@ -123,7 +128,7 @@ enum_set_type ::= ( 'ENUM' | 'SET' )
   [ '(' {string_literal} ( ',' {string_literal} ) * ')' ]
   [ 'CHARACTER' 'SET' {identifier} ]
 
-binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY' | 'BIT'
+binary_data_type ::= 'VARBINARY' | 'BLOB' | 'BINARY' | 'BIT' | 'LONGBLOB'
 
 json_data_type ::= 'JSON'
 
@@ -152,6 +157,7 @@ alter_table_rules ::= (
   | alter_table_drop_column
   | alter_table_convert_character_set
   | row_format_clause
+  | alter_table_add_constraint
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
@@ -179,9 +185,11 @@ alter_table_modify_column ::= 'MODIFY' [ COLUMN ] {column_def} [ placement_claus
   pin = 1
 }
 
-alter_table_add_index ::= 'ADD' [ UNIQUE ] ( INDEX | KEY ) [ {index_name} ] '(' {indexed_column} ( ',' {indexed_column} ) * ')'
+alter_table_add_constraint ::= ADD table_constraint
 
-alter_table_drop_index ::= 'DROP' ( INDEX | KEY ) {index_name}
+alter_table_add_index ::= ADD [ UNIQUE ] [ INDEX | KEY ] [ {index_name} ] '(' {indexed_column} ( ',' {indexed_column} ) * ')'
+
+alter_table_drop_index ::= DROP ( INDEX | KEY ) {index_name}
 
 placement_clause ::= 'FIRST' | ( AFTER {column_name} )
 
@@ -194,3 +202,10 @@ extension_expr ::= if_expr {
 }
 
 if_expr ::= 'IF' '(' <<expr '-1'>> ',' <<expr '-1'>> ',' <<expr '-1'>> ')'
+
+drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ {database_name} '.' ] {table_name} ( ',' [ {database_name} '.' ] {table_name} ) * {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDropTableStmtImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlDropTableStmt"
+  override = true
+  pin = 2
+}

@@ -48,6 +48,7 @@ open class SqlCoreEnvironment(
         MetaLanguage.EP_NAME, MetaLanguage::class.java)
     projectEnvironment.registerProjectComponent(ProjectRootManager::class.java,
         ProjectRootManagerImpl(projectEnvironment.project))
+    projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
     with(applicationEnvironment) {
       val fileRegistry = FileTypeRegistry.ourInstanceGetter

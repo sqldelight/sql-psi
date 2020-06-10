@@ -10,6 +10,7 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmtList
+import com.alecstrong.sql.psi.core.psi.SqlTableName
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
@@ -143,7 +144,9 @@ abstract class SqlFileBase(
     }
 
     statement.dropViewStmt?.viewName?.let(::removeTableForName)
-    statement.dropTableStmt?.tableName?.let(::removeTableForName)
+    statement.dropTableStmt?.let {
+      PsiTreeUtil.findChildrenOfType(it, SqlTableName::class.java).forEach(::removeTableForName)
+    }
     statement.alterTableStmt?.let { alter ->
       val tableName = alter.tableName ?: return@let
       removeTableForName(tableName)
