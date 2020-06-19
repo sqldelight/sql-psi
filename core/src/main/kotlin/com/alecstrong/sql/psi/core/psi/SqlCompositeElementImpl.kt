@@ -7,7 +7,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-internal open class SqlCompositeElementImpl(
+open class SqlCompositeElementImpl(
   node: ASTNode
 ) : ASTWrapperPsiElement(node),
     SqlCompositeElement {
