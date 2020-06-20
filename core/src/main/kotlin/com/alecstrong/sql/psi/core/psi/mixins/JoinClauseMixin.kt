@@ -16,7 +16,7 @@ internal abstract class JoinClauseMixin(
     SqlJoinClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqlJoinConstraint) {
-      var queryAvailable = tableOrSubqueryList[0].queryExposed()
+      var queryAvailable = tableOrSubqueryList[0].queryExposed() + super.queryAvailable(child)
       tableOrSubqueryList.drop(1).zip(joinConstraintList)
           .forEach { (subquery, constraint) ->
             if (child == constraint) {
