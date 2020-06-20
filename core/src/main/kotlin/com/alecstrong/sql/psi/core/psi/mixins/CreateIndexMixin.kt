@@ -13,7 +13,9 @@ internal abstract class CreateIndexMixin(
     SqlCreateIndexStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in indexedColumnList || child == expr) {
-      return listOf(tablesAvailable(child).first { it.tableName.name == tableName?.name }.query)
+      return listOfNotNull(
+          tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query
+      )
     }
     return super.queryAvailable(child)
   }
