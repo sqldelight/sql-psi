@@ -230,7 +230,7 @@ binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] 
 }
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
 is_expr ::= expr IS [ NOT ] expr
-between_expr ::= expr [ NOT ] BETWEEN expr AND expr
+between_expr ::= expr [ NOT ] BETWEEN expr AND <<expr '6'>>
 in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name | bind_expr ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.InExprMixin"
   pin = 3
