@@ -1,0 +1,2 @@
+SELECT testName
+FROM (SELECT IFNULL(?1, NULL) AS testName);
