@@ -55,7 +55,7 @@ binary_large_object_string_data_type ::= { ('BINARY' 'LARGE' 'OBJECT') | 'BLOB' 
 
 bit_string_data_type ::= ('BIT' 'VARYING') '(' digit ')' | 'BIT' [ '(' digit ')' ]
 
-date_data_type ::= 'DATE' | ( 'TIME' | 'TIMESTAMP' ) [ '(' digit ')' ] [ ( WITH | WITHOUT ) 'TIME ZONE' ]
+date_data_type ::= 'DATE' | ( 'TIME' | 'TIMESTAMP' ) [ '(' digit ')' ] [ ( WITH | WITHOUT ) 'TIME' 'ZONE' ]
 
 interval_data_type ::= 'INTERVAL' interval_qualifier
 interval_qualifier ::= start_field TO end_field | single_datetime_field
