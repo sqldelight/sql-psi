@@ -5,6 +5,7 @@ import com.alecstrong.sql.psi.core.mysql.MySqlParserUtil
 import com.alecstrong.sql.psi.core.postgresql.PostgreSqlParserUtil
 import com.alecstrong.sql.psi.core.sqlite_3_18.SqliteParserUtil as Sqlite_3_18Util
 import com.alecstrong.sql.psi.core.sqlite_3_24.SqliteParserUtil as Sqlite_3_24Util
+import com.alecstrong.sql.psi.core.sqlite_3_25.SqliteParserUtil as Sqlite_3_25Util
 
 enum class DialectPreset {
   SQLITE_3_18, SQLITE_3_24, SQLITE_3_25, MYSQL, POSTGRESQL, HSQL;

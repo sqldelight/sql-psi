@@ -5,24 +5,12 @@
 
   implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "Sqlite"
 
   parserImports=[
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.INSERT"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.OR"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.REPLACE"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ROLLBACK"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ABORT"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.FAIL"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.IGNORE"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.INTO"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.AS"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ON"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONFLICT"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DO"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOTHING"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.SET"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.WHERE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RENAME"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
   ]
 }
 alter_table_rules ::= (
@@ -33,4 +21,9 @@ alter_table_rules ::= (
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
   override = true
+}
+
+alter_table_rename_column ::= RENAME [ COLUMN ] {column_name} TO {column_alias} {
+  mixin = "com.alecstrong.sql.psi.core.sqlite_3_25.psi.mixins.AlterTableRenameColumnMixin"
+  pin = 1
 }
