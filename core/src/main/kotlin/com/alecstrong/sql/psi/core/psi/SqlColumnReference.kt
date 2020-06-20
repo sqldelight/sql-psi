@@ -17,7 +17,7 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
-  private val resolved: PsiElement? by ModifiableFileLazy(element.containingFile) {
+  private val resolved: QueryColumn? by ModifiableFileLazy(element.containingFile) {
     try {
       unsafeResolve()
     } catch (e: AnnotationException) {
@@ -25,31 +25,12 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     }
   }
 
-  override fun resolve() = resolved
+  override fun resolve() = resolved?.element
 
-  internal fun resolveToQuery(): QueryColumn? {
-    if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return null
+  internal fun resolveToQuery() = resolved
 
-    val tableName = tableName()
-    val tables: List<QueryResult>
-    if (tableName != null) {
-      tables = availableQuery().filter { it.table?.name == tableName.name }
-      if (tables.isEmpty()) return null
-    } else {
-      tables = availableQuery().filterNot { it.table is SingleRow }
-    }
-
-    val columns = tables.flatMap { it.columns }
-        .filter { it.element is PsiNamedElement && it.element.name == element.name }
-    val synthesizedColumns = tables.flatMap { it.synthesizedColumns }
-        .filter { element.name in it.acceptableValues }
-        .map { QueryColumn(it.table, it.nullable) }
-
-    return (columns + synthesizedColumns).firstOrNull()
-  }
-
-  internal fun unsafeResolve(): PsiElement? {
-    if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return element
+  internal fun unsafeResolve(): QueryColumn? {
+    if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return QueryColumn(element)
 
     val tableName = tableName()
     val tables: List<QueryResult>
@@ -63,19 +44,19 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
       tables = availableQuery().filterNot { it.table is SingleRow }
     }
 
-    val columns = tables.flatMap { it.columns }
-        .filter { it.element is PsiNamedElement && it.element.name == element.name }
-        .map { it.element as PsiNamedElement }
-    val synthesizedColumns = tables.flatMap { it.synthesizedColumns }
-        .filter { element.name in it.acceptableValues }
-        .map { it.table }
-    val elements = columns + synthesizedColumns
+    fun List<QueryResult>.matchingColumns(): List<QueryColumn> {
+      val columns = flatMap { it.columns }
+          .filter { it.element is PsiNamedElement && it.element.name == element.name }
+      val synthesizedColumns = flatMap { it.synthesizedColumns }
+          .filter { element.name in it.acceptableValues }
+          .map { QueryColumn(it.table, it.nullable) }
+      return columns + synthesizedColumns
+    }
+
+    val elements = tables.matchingColumns()
 
     if (elements.size > 1) {
-      val adjacentColumns = tables.filter { it.adjacent }
-          .flatMap { it.columns }
-          .filter { it.element is PsiNamedElement && it.element.name == element.name }
-          .map { it.element as PsiNamedElement }
+      val adjacentColumns = tables.filter { it.adjacent }.matchingColumns()
       if (adjacentColumns.size != 1) {
         throw AnnotationException("Multiple columns found with name ${element.name}")
       }
