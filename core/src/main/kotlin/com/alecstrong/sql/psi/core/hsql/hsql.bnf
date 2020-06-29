@@ -8,12 +8,22 @@
   psiClassPrefix = "Hsql"
   
   parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONSTRAINT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.PRIMARY"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ASC"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DESC"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.NULL"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.UNIQUE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DIGIT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITH"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITHOUT"
   ]
 }
+overrides ::= type_name | column_constraint
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -30,6 +40,20 @@ type_name ::= (
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
+  override = true
+}
+column_constraint ::= [ CONSTRAINT {identifier} ] (
+  'AUTO_INCREMENT' |
+  PRIMARY KEY [ ASC | DESC ] {conflict_clause} |
+  NOT NULL {conflict_clause} |
+  UNIQUE {conflict_clause} |
+  {check_constraint} |
+  {default_constraint} |
+  COLLATE {collation_name} |
+  {foreign_key_clause}
+) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlColumnConstraintImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlColumnConstraint"
   override = true
 }
 
