@@ -13,7 +13,6 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ASC"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DESC"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.AUTOINCREMENT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NULL"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UNIQUE"
@@ -25,7 +24,7 @@ overrides ::= type_name
   | bind_parameter
 
 column_constraint ::= [ CONSTRAINT {identifier} ] (
-  PRIMARY KEY [ ASC | DESC ] {conflict_clause} [ AUTOINCREMENT ] |
+  PRIMARY KEY [ ASC | DESC ] {conflict_clause} |
   [ NOT ] NULL {conflict_clause} |
   UNIQUE {conflict_clause} |
   {check_constraint} |
@@ -44,6 +43,9 @@ type_name ::= (
   big_int_data_type |
   numeric_data_type |
   approximate_numeric_data_type |
+  small_serial_data_type |
+  serial_data_type |
+  big_serial_data_type |
   string_data_type |
   date_data_type |
   json_data_type
@@ -64,6 +66,10 @@ big_int_data_type ::= 'BIGINT' | 'INT8'
 numeric_data_type ::= ('NUMERIC' | 'DECIMAL') [ '(' {signed_number} ')' | '(' {signed_number} ',' {signed_number} ')' ]
 
 approximate_numeric_data_type ::= ('REAL' | 'FLOAT4' | ( 'DOUBLE' 'PRECISION' ) | 'FLOAT8') | ('FLOAT' [ '(' {signed_number} ')' ])
+
+small_serial_data_type ::= 'SMALLSERIAL' | 'SERIAL2'
+serial_data_type ::= 'SERIAL' | 'SERIAL4'
+big_serial_data_type ::= 'BIGSERIAL' | 'SERIAL8'
 
 string_data_type ::= ((( 'CHARACTER' 'VARYING' ) | 'VARCHAR' | 'CHARACTER' | 'CHAR') [ '(' {signed_number} ')' ]) | 'TEXT'
 
