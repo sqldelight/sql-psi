@@ -19,6 +19,7 @@ class NullabilityTest {
   }
 
   @Test fun outerJoin() {
+    DialectPreset.SQLITE_3_18.setup()
     val file = compileFile("""
       |CREATE TABLE car (
       |  _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -48,6 +49,7 @@ class NullabilityTest {
   }
 
   @Test fun leftJoinGroupBy() {
+    DialectPreset.SQLITE_3_18.setup()
     val file = compileFile("""
       |CREATE TABLE target (
       |  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
