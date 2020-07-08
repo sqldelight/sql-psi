@@ -48,6 +48,7 @@ type_name ::= (
   big_serial_data_type |
   string_data_type |
   date_data_type |
+  boolean_data_type |
   json_data_type
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
@@ -74,5 +75,7 @@ big_serial_data_type ::= 'BIGSERIAL' | 'SERIAL8'
 string_data_type ::= ((( 'CHARACTER' 'VARYING' ) | 'VARCHAR' | 'CHARACTER' | 'CHAR') [ '(' {signed_number} ')' ]) | 'TEXT'
 
 date_data_type ::= 'DATE' | (('TIME' | 'TIMESTAMP') [ '(' {signed_number} ')' ])
+
+boolean_data_type ::= 'BOOLEAN' | 'BOOL'
 
 json_data_type ::= 'JSON'
