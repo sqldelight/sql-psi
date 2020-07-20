@@ -23,6 +23,7 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiManager
@@ -39,10 +40,13 @@ open class SqlCoreEnvironment(
 
   protected val applicationEnvironment = CoreApplicationEnvironment(disposable)
   protected val projectEnvironment = CoreProjectEnvironment(disposable, applicationEnvironment)
+  protected val localFileSystem: VirtualFileSystem
 
   init {
+    localFileSystem = VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
+
     val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
-    fileIndex = CoreFileIndex(sourceFolders, projectEnvironment.project,
+    fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project,
             directoryIndex, FileTypeRegistry.getInstance())
     CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
         MetaLanguage.EP_NAME, MetaLanguage::class.java)
@@ -105,13 +109,12 @@ open class SqlCoreEnvironment(
 
 private class CoreFileIndex(
   val sourceFolders: List<File>,
+  private val localFileSystem: VirtualFileSystem,
   project: Project,
   directoryIndex: DirectoryIndex,
   fileTypeRegistry: FileTypeRegistry
 ) : ProjectFileIndexImpl(project, directoryIndex, fileTypeRegistry) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
-    val localFileSystem =
-        VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
     return sourceFolders.all {
       val file = localFileSystem.findFileByPath(it.absolutePath)
       if (file == null) throw NullPointerException("File ${it.absolutePath} not found")
