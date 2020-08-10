@@ -8,5 +8,5 @@ CREATE TABLE [identifier with whitespace](id INTEGER PRIMARY KEY);
 
 CREATE TABLE "To be, or not to be. That is the question?"(id INTEGER PRIMARY KEY);
 
--- error[col 19]: <column name real> expected, got '5'
+-- error[col 19]: <column def real> expected, got '5'
 CREATE TABLE test1(5a INTEGER PRIMARY KEY);

@@ -101,7 +101,7 @@ create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ data
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
 }
-column_def ::= column_name type_name ( column_constraint ) *
+column_def ::= [ javadoc ] column_name type_name ( column_constraint ) *
 type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | check_constraint | default_constraint | COLLATE collation_name | foreign_key_clause )
 check_constraint ::= CHECK '(' expr ')'
@@ -121,7 +121,7 @@ create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ databa
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
 }
-module_column_def ::= column_name [ type_name ] ( column_constraint ) * {
+module_column_def ::= [ javadoc ] column_name [ type_name ] ( column_constraint ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ModuleColumnDefMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
 }
