@@ -165,7 +165,7 @@ abstract class SqlFileBase(
   }
 
   private inline fun iteratePreviousStatements(block: (SqlStmt) -> Unit) {
-    val files = mutableMapOf<Int, SqlFileBase>()
+    val files = sortedMapOf<Int, SqlFileBase>()
     val topFiles = LinkedHashSet<SqlFileBase>()
     iterateSqlFiles { file ->
       if (file == this) return@iterateSqlFiles true
@@ -176,7 +176,7 @@ abstract class SqlFileBase(
       return@iterateSqlFiles true
     }
 
-    files.toSortedMap().forEach { (_, file) ->
+    files.forEach { (_, file) ->
       file.sqlStmtList?.stmtList?.forEach(block)
     }
     topFiles.forEach { it.sqlStmtList?.stmtList?.forEach(block) }
