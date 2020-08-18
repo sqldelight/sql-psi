@@ -176,7 +176,7 @@ abstract class SqlFileBase(
       return@iterateSqlFiles true
     }
 
-    files.forEach { (_, file) ->
+    files.toSortedMap().forEach { (_, file) ->
       file.sqlStmtList?.stmtList?.forEach(block)
     }
     topFiles.forEach { it.sqlStmtList?.stmtList?.forEach(block) }
