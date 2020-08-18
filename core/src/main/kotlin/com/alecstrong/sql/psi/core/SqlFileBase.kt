@@ -1,7 +1,5 @@
 package com.alecstrong.sql.psi.core
 
-import androidx.collection.SparseArrayCompat
-import androidx.collection.forEach
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
@@ -167,18 +165,18 @@ abstract class SqlFileBase(
   }
 
   private inline fun iteratePreviousStatements(block: (SqlStmt) -> Unit) {
-    val files = SparseArrayCompat<SqlFileBase>()
+    val files = mutableMapOf<Int, SqlFileBase>()
     val topFiles = LinkedHashSet<SqlFileBase>()
     iterateSqlFiles { file ->
       if (file == this) return@iterateSqlFiles true
       else if (order != null && file.order == null) return@iterateSqlFiles true
       else if (order == null && file.order == null) topFiles.add(file)
-      else if (order == null || (file.order != null && file.order!! < order!!)) files.put(file.order!!, file)
+      else if (order == null || (file.order != null && file.order!! < order!!)) files[file.order!!] = file
 
       return@iterateSqlFiles true
     }
 
-    files.forEach { _, file ->
+    files.forEach { (_, file) ->
       file.sqlStmtList?.stmtList?.forEach(block)
     }
     topFiles.forEach { it.sqlStmtList?.stmtList?.forEach(block) }
