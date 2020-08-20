@@ -59,7 +59,7 @@ stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_s
   recoverWhile=sql_stmt_recovery
   pin = 2
 }
-private sql_stmt_recovery ::= !( ';' | ALTER | ANALYZE | ATTACH | BEGIN | COMMIT | END | ROLLBACK | SAVEPOINT | RELEASE | CREATE | DROP | INSERT | WITH | UPDATE | DELETE | SELECT | PRAGMA | REINDEX )
+private sql_stmt_recovery ::= !( ';' )
 alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_rules ( ',' alter_table_rules )* {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
