@@ -12,12 +12,11 @@ internal abstract class ResultColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlResultColumn {
-  override fun getParent(): SelectStmtMixin? = super.getParent() as SelectStmtMixin?
-
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
+    val parent = parent as? SelectStmtMixin ?: return@lazy emptyList<QueryResult>()
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return@lazy parent!!.fromQuery().filter { it.table?.name == tableNameElement.name }
+      return@lazy parent.fromQuery().filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
       var column: QueryElement.QueryColumn
@@ -38,7 +37,7 @@ internal abstract class ResultColumnMixin(
     }
 
     // *
-    val queryAvailable = parent!!.fromQuery()
+    val queryAvailable = parent.fromQuery()
     if (queryAvailable.size <= 1) {
       return@lazy queryAvailable
     }
