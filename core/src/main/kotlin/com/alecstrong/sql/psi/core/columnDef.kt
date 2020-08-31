@@ -1,8 +1,6 @@
 package com.alecstrong.sql.psi.core
 
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlBigSerialDataType
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlSerialDataType
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlSmallSerialDataType
+import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlTypeName
 import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 
@@ -24,7 +22,6 @@ fun SqlColumnDef.hasDefaultValue(): Boolean {
 }
 
 private fun SqlColumnDef.isSerial(): Boolean {
-  return (this.typeName is PostgreSqlSmallSerialDataType ||
-    this.typeName is PostgreSqlSerialDataType ||
-    this.typeName is PostgreSqlBigSerialDataType)
+  val typeName = typeName as? PostgreSqlTypeName ?: return false
+  return typeName.smallSerialDataType != null || typeName.serialDataType != null || typeName.bigSerialDataType != null
 }
