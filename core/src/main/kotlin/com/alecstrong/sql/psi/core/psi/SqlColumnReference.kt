@@ -83,6 +83,7 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
 
   private fun List<PsiElement?>.toLookupArray(): Array<Any> = filterIsInstance<PsiNamedElement>()
       .distinctBy { it.name }
+      .filter { it.isValid }
       .map { LookupElementBuilder.create(it) }
       .toTypedArray()
 
