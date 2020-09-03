@@ -7,7 +7,9 @@ import com.alecstrong.sql.psi.core.psi.SqlTypes
 fun SqlColumnDef.hasDefaultValue(): Boolean {
   return columnConstraintList.any {
     it.defaultConstraint != null ||
-        it.node.findChildByType(SqlTypes.AUTOINCREMENT) != null || isSerial()
+        it.node.findChildByType(SqlTypes.AUTOINCREMENT) != null ||
+        isSerial() ||
+        it.node.text == "AUTO_INCREMENT"
   } || columnConstraintList.none {
     it.node.findChildByType(SqlTypes.NOT) != null
   } || (
