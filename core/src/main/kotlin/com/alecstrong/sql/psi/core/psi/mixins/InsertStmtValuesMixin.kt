@@ -14,11 +14,12 @@ internal abstract class InsertStmtValuesMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlInsertStmtValues {
-  override fun getParent(): SqlInsertStmt {
-    return super.getParent() as SqlInsertStmt
+  override fun getParent(): SqlInsertStmt? {
+    return super.getParent() as SqlInsertStmt?
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
+    val parent = parent ?: return
     val table = tableAvailable(this, parent.tableName.name).firstOrNull() ?: return
     val columns = table.columns.map { (it.element as SqlColumnName).name }
     // DEFAULT VALUES clause
