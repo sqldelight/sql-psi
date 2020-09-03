@@ -28,10 +28,13 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
     if (element.parent.isDefinition()) return emptyArray()
     if (selectFromCurrentQuery()) {
       return (element.parent as SqlCompositeElement).queryAvailable(element)
-          .mapNotNull { it.table?.let(LookupElementBuilder::create) }
+          .mapNotNull { it.table }
+          .filter { it.isValid }
+          .map(LookupElementBuilder::create)
           .toTypedArray()
     }
     return (element.parent as SqlCompositeElement).tablesAvailable(element)
+        .filter { it.tableName.isValid }
         .map { LookupElementBuilder.create(it.tableName) }
         .toTypedArray()
   }
