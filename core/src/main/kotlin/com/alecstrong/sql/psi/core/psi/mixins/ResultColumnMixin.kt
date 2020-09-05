@@ -1,6 +1,7 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
+import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
 import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
@@ -13,10 +14,14 @@ internal abstract class ResultColumnMixin(
 ) : SqlCompositeElementImpl(node),
     SqlResultColumn {
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
-    val parent = parent as? SelectStmtMixin ?: return@lazy emptyList<QueryResult>()
+    val fromQuery = when (val parent = parent) {
+      is SelectStmtMixin -> parent.fromQuery()
+      is PostgreSqlReturningClause -> emptyList()
+      else -> return@lazy emptyList<QueryResult>()
+    }
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
-      return@lazy parent.fromQuery().filter { it.table?.name == tableNameElement.name }
+      return@lazy fromQuery.filter { it.table?.name == tableNameElement.name }
     }
     expr?.let {
       var column: QueryElement.QueryColumn
@@ -37,7 +42,7 @@ internal abstract class ResultColumnMixin(
     }
 
     // *
-    val queryAvailable = parent.fromQuery()
+    val queryAvailable = fromQuery
     if (queryAvailable.size <= 1) {
       return@lazy queryAvailable
     }

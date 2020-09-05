@@ -2,6 +2,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
@@ -10,6 +11,7 @@ import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlOrderingTerm
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlWithClause
+import com.alecstrong.sql.psi.core.psi.SqlWithClauseAuxiliaryStmt
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -22,7 +24,7 @@ internal abstract class CompoundSelectStmtMixin(
     if (detectRecursion() != null) {
       return@ModifiableFileLazy emptyList<QueryResult>()
     }
-    if (parent is SqlWithClause) {
+    if (parent is SqlWithClauseAuxiliaryStmt) {
       // Compound information not needed.
       return@ModifiableFileLazy selectStmtList.first().queryExposed()
     }
@@ -41,17 +43,21 @@ internal abstract class CompoundSelectStmtMixin(
 
   override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
     val tablesAvailable = super.tablesAvailable(child)
-    val parent = parent
-    if (parent is SqlWithClause) {
-      if (parent.node.findChildByType(
-              SqlTypes.RECURSIVE) != null &&
-          child != selectStmtList.first()) {
-        return tablesAvailable + parent.tablesExposed()
-      }
-      val myIndex = parent.compoundSelectStmtList.indexOf(this)
-      return tablesAvailable + parent.tablesExposed().filterIndexed { index, _ -> index != myIndex }
+    val withClauseAuxiliaryStmts = parent as? SqlWithClauseAuxiliaryStmt ?: return tablesAvailable
+    val withClause = withClauseAuxiliaryStmts.parent as SqlWithClause
+    if (withClause.node.findChildByType(SqlTypes.RECURSIVE) != null && child != selectStmtList.first()) {
+      return tablesAvailable + withClause.tablesExposed()
     }
-    return tablesAvailable
+    val myIndex = withClause.withClauseAuxiliaryStmtList
+      .mapNotNull { withClauseAuxiliaryStmt ->
+        PsiTreeUtil.findChildOfAnyType(
+          withClauseAuxiliaryStmt,
+          SqlCompoundSelectStmt::class.java,
+          PostgreSqlReturningClause::class.java
+        )
+      }
+      .indexOf(this)
+    return tablesAvailable + withClause.tablesExposed().filterIndexed { index, _ -> index != myIndex }
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

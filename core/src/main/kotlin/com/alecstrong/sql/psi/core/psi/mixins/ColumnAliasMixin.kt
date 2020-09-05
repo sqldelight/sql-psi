@@ -33,6 +33,6 @@ internal abstract class ColumnAliasMixin(
 
   private fun SqlCteTableName.selectStatement(): SqlCompoundSelectStmt {
     val withClause = parent as SqlWithClause
-    return withClause.compoundSelectStmtList[withClause.cteTableNameList.indexOf(this)]
+    return withClause.withClauseAuxiliaryStmtList[withClause.cteTableNameList.indexOf(this)].compoundSelectStmt
   }
 }

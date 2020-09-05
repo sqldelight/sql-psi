@@ -1,12 +1,15 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
+import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
+import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
 import com.alecstrong.sql.psi.core.psi.SqlWithClause
 import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class WithClauseContainer(
   node: ASTNode
@@ -21,17 +24,18 @@ internal abstract class WithClauseContainer(
   }
 
   protected fun SqlWithClause.tablesExposed(): List<LazyQuery> {
-    return cteTableNameList.zip(compoundSelectStmtList)
-        .map { (name, selectStmt) ->
-          LazyQuery(name.tableName) {
-            val query = QueryResult(name.tableName,
-                selectStmt.queryExposed().flatMap { it.columns })
-            return@LazyQuery if (name.columnAliasList.isNotEmpty()) {
-              QueryResult(name.tableName, name.columnAliasList.asColumns())
-            } else {
-              query
-            }
-          }
+    return cteTableNameList.zip(withClauseAuxiliaryStmtList)
+      .mapNotNull { (name, withClauseAuxiliaryStmt) ->
+        PsiTreeUtil.findChildOfAnyType(withClauseAuxiliaryStmt, SqlCompoundSelectStmt::class.java, PostgreSqlReturningClause::class.java)
+          ?.let { name to it }
+      }
+      .map { (name, queryElement) ->
+        LazyQuery(name.tableName) {
+          QueryResult(
+            name.tableName,
+            name.columnAliasList.asColumns().ifEmpty { queryElement.queryExposed().flatMap(QueryResult::columns) }
+          )
         }
+      }
   }
 }
