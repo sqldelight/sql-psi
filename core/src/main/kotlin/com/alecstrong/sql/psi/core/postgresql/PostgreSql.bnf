@@ -42,7 +42,6 @@
 overrides ::= type_name
   | column_constraint
   | bind_parameter
-  | with_clause
   | with_clause_auxiliary_stmt
   | delete_stmt_limited
   | insert_stmt
@@ -104,12 +103,6 @@ date_data_type ::= 'DATE' | (('TIME' | 'TIMESTAMP') [ '(' {signed_number} ')' ])
 boolean_data_type ::= 'BOOLEAN' | 'BOOL'
 
 json_data_type ::= 'JSON'
-
-with_clause ::= WITH [ RECURSIVE ] {cte_table_name} AS '(' {with_clause_auxiliary_stmt} ')' ( ',' {cte_table_name} AS '(' {with_clause_auxiliary_stmt} ')' ) * {
-  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlWithClauseImpl"
-  implements = "com.alecstrong.sql.psi.core.psi.SqlWithClause"
-  override = true
-}
 
 with_clause_auxiliary_stmt ::= {compound_select_stmt} | delete_stmt_limited | insert_stmt | update_stmt_limited {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlWithClauseAuxiliaryStmtImpl"
