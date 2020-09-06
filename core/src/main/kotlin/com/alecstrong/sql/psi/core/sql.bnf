@@ -132,10 +132,11 @@ create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_
   pin = 6
 }
 module_argument ::= [ module_argument_def ]
-with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' compound_select_stmt ')' ( ',' cte_table_name AS '(' compound_select_stmt ')' ) * {
+with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' with_clause_auxiliary_stmt ')' ( ',' cte_table_name AS '(' with_clause_auxiliary_stmt ')' ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.WithClauseMixin"
   pin = 1
 }
+with_clause_auxiliary_stmt ::= compound_select_stmt
 cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
