@@ -1,10 +1,9 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
 import com.alecstrong.sql.psi.core.psi.LazyQuery
+import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
-import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
 import com.alecstrong.sql.psi.core.psi.SqlWithClause
 import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
@@ -26,8 +25,7 @@ internal abstract class WithClauseContainer(
   protected fun SqlWithClause.tablesExposed(): List<LazyQuery> {
     return cteTableNameList.zip(withClauseAuxiliaryStmtList)
       .mapNotNull { (name, withClauseAuxiliaryStmt) ->
-        PsiTreeUtil.findChildOfAnyType(withClauseAuxiliaryStmt, SqlCompoundSelectStmt::class.java, PostgreSqlReturningClause::class.java)
-          ?.let { name to it }
+        PsiTreeUtil.findChildOfType(withClauseAuxiliaryStmt, QueryElement::class.java)?.let { name to it }
       }
       .map { (name, queryElement) ->
         LazyQuery(name.tableName) {

@@ -2,8 +2,8 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
 import com.alecstrong.sql.psi.core.psi.LazyQuery
+import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
@@ -50,11 +50,7 @@ internal abstract class CompoundSelectStmtMixin(
     }
     val myIndex = withClause.withClauseAuxiliaryStmtList
       .mapNotNull { withClauseAuxiliaryStmt ->
-        PsiTreeUtil.findChildOfAnyType(
-          withClauseAuxiliaryStmt,
-          SqlCompoundSelectStmt::class.java,
-          PostgreSqlReturningClause::class.java
-        )
+        PsiTreeUtil.findChildOfAnyType(withClauseAuxiliaryStmt, QueryElement::class.java)
       }
       .indexOf(this)
     return tablesAvailable + withClause.tablesExposed().filterIndexed { index, _ -> index != myIndex }
