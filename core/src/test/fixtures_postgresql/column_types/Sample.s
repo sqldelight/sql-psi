@@ -1,4 +1,5 @@
 CREATE TABLE all_types(
+  some_uuid UUID,
   some_smallint SMALLINT,
   some_int2 INT2,
   some_integer INTEGER,
