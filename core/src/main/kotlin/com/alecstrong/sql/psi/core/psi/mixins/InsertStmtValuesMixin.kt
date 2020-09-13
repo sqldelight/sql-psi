@@ -1,8 +1,6 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
-import com.alecstrong.sql.psi.core.hasDefaultValue
-import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlInsertStmt
@@ -50,7 +48,7 @@ internal abstract class InsertStmtValuesMixin(
     val needsDefaultValue = table.columns
         .filterNot { (element, _) -> element is SqlColumnName && element.name in setColumns }
         .map { it.element as SqlColumnName }
-        .filterNot { (it.parent as SqlColumnDef).hasDefaultValue() }
+        .filterNot { (it.parent as ColumnDefMixin).hasDefaultValue() }
     if (needsDefaultValue.size == 1) {
       annotationHolder.createErrorAnnotation(parent, "Cannot populate default value for column " +
           "${needsDefaultValue.first().name}, it must be specified in insert statement.")

@@ -33,9 +33,11 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.EXISTS"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DIGIT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.JAVADOC"
   ]
 }
 overrides ::= type_name
+  | column_def
   | column_constraint
   | bind_parameter
   | table_constraint
@@ -67,6 +69,13 @@ enum_set_type
   implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
   override = true
 }
+
+column_def ::= [ javadoc ] {column_name} {type_name} ( {column_constraint} ) * {
+  mixin = "com.alecstrong.sql.psi.core.mysql.psi.mixins.ColumnDefMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
+  override = true
+}
+
 column_constraint ::= [ CONSTRAINT {identifier} ] (
   'AUTO_INCREMENT' |
   PRIMARY KEY [ ASC | DESC ] {conflict_clause} |

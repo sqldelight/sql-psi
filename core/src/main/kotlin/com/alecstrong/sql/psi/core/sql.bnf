@@ -101,7 +101,9 @@ create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ data
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   pin = 6
 }
-column_def ::= [ javadoc ] column_name type_name ( column_constraint ) *
+column_def ::= [ javadoc ] column_name type_name ( column_constraint ) * {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.ColumnDefMixin"
+}
 type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | check_constraint | default_constraint | COLLATE collation_name | foreign_key_clause )
 check_constraint ::= CHECK '(' expr ')'
