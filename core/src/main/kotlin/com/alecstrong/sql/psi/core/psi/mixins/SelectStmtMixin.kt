@@ -2,6 +2,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.psi.FromQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlSelectStmt
@@ -12,7 +13,8 @@ import com.intellij.psi.PsiElement
 internal abstract class SelectStmtMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlSelectStmt {
+    SqlSelectStmt,
+    FromQuery {
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
     if (valuesExpressionList.isNotEmpty()) {
       return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
@@ -34,7 +36,7 @@ internal abstract class SelectStmtMixin(
 
   override fun queryExposed() = queryExposed
 
-  internal fun fromQuery(): Collection<QueryResult> {
+  override fun fromQuery(): Collection<QueryResult> {
     joinClause?.let {
       return it.queryExposed()
     }
