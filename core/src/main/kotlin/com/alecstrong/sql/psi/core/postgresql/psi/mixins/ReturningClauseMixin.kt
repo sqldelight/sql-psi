@@ -2,13 +2,15 @@ package com.alecstrong.sql.psi.core.postgresql.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
 import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlReturningClause
+import com.alecstrong.sql.psi.core.psi.FromQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlResultColumn
 import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
-internal abstract class ReturningClauseMixin(node: ASTNode) : SqlCompositeElementImpl(node), PostgreSqlReturningClause {
+internal abstract class ReturningClauseMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), PostgreSqlReturningClause, FromQuery {
 
   private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
     listOf(
@@ -21,4 +23,6 @@ internal abstract class ReturningClauseMixin(node: ASTNode) : SqlCompositeElemen
   }
 
   override fun queryExposed() = queryExposed
+
+  override fun fromQuery(): Collection<QueryResult> = emptyList()
 }
