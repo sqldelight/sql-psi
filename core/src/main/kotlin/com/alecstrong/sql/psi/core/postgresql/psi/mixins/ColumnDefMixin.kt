@@ -8,7 +8,7 @@ import com.intellij.lang.ASTNode
 internal class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node), SqlColumnDef {
 
   override fun hasDefaultValue(): Boolean {
-    return columnConstraintList.any { isSerial() } || super.hasDefaultValue()
+    return isSerial() || super.hasDefaultValue()
   }
 }
 
