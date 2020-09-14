@@ -1,18 +1,18 @@
 package com.alecstrong.sql.psi.core.postgresql.psi.mixins
 
-import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlColumnDef
 import com.alecstrong.sql.psi.core.postgresql.psi.PostgreSqlTypeName
+import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.impl.SqlColumnDefImpl
 import com.intellij.lang.ASTNode
 
-internal abstract class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node), PostgreSqlColumnDef {
+internal class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node), SqlColumnDef {
 
   override fun hasDefaultValue(): Boolean {
     return columnConstraintList.any { isSerial() } || super.hasDefaultValue()
   }
 }
 
-private fun PostgreSqlColumnDef.isSerial(): Boolean {
+private fun SqlColumnDef.isSerial(): Boolean {
   val typeName = typeName as PostgreSqlTypeName
   return typeName.smallSerialDataType != null || typeName.serialDataType != null || typeName.bigSerialDataType != null
 }

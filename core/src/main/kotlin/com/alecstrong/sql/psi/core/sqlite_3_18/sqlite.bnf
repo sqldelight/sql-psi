@@ -12,16 +12,11 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.TABLE"
   ]
 }
-overrides ::= type_name | column_def | bind_parameter | alter_table_stmt
+overrides ::= type_name | bind_parameter | alter_table_stmt
 
 type_name ::= 'TEXT' | 'BLOB' | 'INTEGER' | 'REAL' {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
-  override = true
-}
-column_def ::= [ javadoc ] {column_name} {type_name} ( {column_constraint} ) * {
-  mixin = "com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.ColumnDefMixin"
-  implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
   override = true
 }
 bind_parameter ::= ( '?' [digit] | ':' {identifier} ) {

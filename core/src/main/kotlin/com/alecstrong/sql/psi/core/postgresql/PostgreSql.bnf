@@ -21,7 +21,6 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.IGNORE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INSERT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.INTO"
-    "static com.alecstrong.sql.psi.core.psi.SqlTypes.JAVADOC"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.LIMIT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
@@ -41,7 +40,6 @@
   ]
 }
 overrides ::= type_name
-  | column_def
   | column_constraint
   | bind_parameter
   | with_clause_auxiliary_stmt
@@ -60,12 +58,6 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlColumnConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnConstraint"
-  override = true
-}
-
-column_def ::= [ javadoc ] {column_name} {type_name} ( {column_constraint} ) * {
-  mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.ColumnDefMixin"
-  implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
   override = true
 }
 

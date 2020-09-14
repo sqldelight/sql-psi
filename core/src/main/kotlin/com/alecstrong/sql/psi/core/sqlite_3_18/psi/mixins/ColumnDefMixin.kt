@@ -4,7 +4,7 @@ import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.impl.SqlColumnDefImpl
 import com.intellij.lang.ASTNode
 
-internal abstract class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node) {
+internal class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node) {
 
   override fun hasDefaultValue(): Boolean {
     return columnConstraintList.any { it.node.findChildByType(SqlTypes.AUTOINCREMENT) != null } ||
