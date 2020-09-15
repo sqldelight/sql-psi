@@ -96,7 +96,7 @@ table_constraint ::= [ CONSTRAINT {identifier} ] (
   implements = "com.alecstrong.sql.psi.core.psi.SqlTableConstraint"
   override = true
 }
-current_timestamp_with_optional_number ::= ( CURRENT_TIMESTAMP | 'NOW' ) [ '(' {signed_number} ')' ]
+current_timestamp_with_optional_number ::= ( CURRENT_TIMESTAMP | 'NOW' ) [ '(' [ {signed_number} ] ')' ]
 default_constraint ::= [ NOT NULL | NULL ] DEFAULT (
   current_timestamp_with_optional_number [ ON UPDATE current_timestamp_with_optional_number ] |
   {signed_number} |
