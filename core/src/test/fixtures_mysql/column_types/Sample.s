@@ -31,5 +31,6 @@ CREATE TABLE all_types(
   some_binary BINARY,
   some_json JSON,
   some_boolean BOOLEAN,
-  some_bit BIT(1)
+  some_bit BIT(1),
+  some_mediumblob MEDIUMBLOB
 );
