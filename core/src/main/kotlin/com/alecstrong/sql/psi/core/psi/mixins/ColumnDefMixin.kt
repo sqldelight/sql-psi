@@ -5,7 +5,7 @@ import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.intellij.lang.ASTNode
 
-internal abstract class ColumnDefMixin(node: ASTNode) : SqlCompositeElementImpl(node), SqlColumnDef {
+abstract class ColumnDefMixin(node: ASTNode) : SqlCompositeElementImpl(node), SqlColumnDef {
 
   open fun hasDefaultValue(): Boolean {
     return columnConstraintList.any { it.defaultConstraint != null } ||

@@ -13,6 +13,6 @@ internal class ColumnDefMixin(node: ASTNode) : SqlColumnDefImpl(node), SqlColumn
 }
 
 private fun SqlColumnDef.isSerial(): Boolean {
-  val typeName = typeName as PostgreSqlTypeName
+  val typeName = columnType.typeName as PostgreSqlTypeName
   return typeName.smallSerialDataType != null || typeName.serialDataType != null || typeName.bigSerialDataType != null
 }
