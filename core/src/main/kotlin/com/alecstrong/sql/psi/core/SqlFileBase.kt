@@ -5,7 +5,6 @@ import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SchemaContributor
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
-import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmtList
@@ -18,7 +17,6 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.containers.MultiMap
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
@@ -65,18 +63,6 @@ abstract class SqlFileBase(
       }
     }
     return schema.forType<T>().values()
-  }
-
-  fun triggers(sqlStmtElement: PsiElement? = null): Collection<SqlCreateTriggerStmt> {
-    val result = MultiMap<String, SqlCreateTriggerStmt>()
-    iteratePreviousStatements { statement ->
-      if (order != null && sqlStmtElement?.parent == statement) {
-        return@triggers result.values()
-      }
-      statement.createTriggerStmt?.let { result.putValue(it.triggerName.text, it) }
-      statement.dropTriggerStmt?.let { result.remove(it.triggerName?.text) }
-    }
-    return result.values()
   }
 
   /**
