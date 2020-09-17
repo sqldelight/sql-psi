@@ -8,6 +8,7 @@ import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElement
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
+import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlForeignKeyClause
 import com.alecstrong.sql.psi.core.psi.SqlTypes
@@ -84,7 +85,7 @@ internal abstract class CreateTableMixin(
         }
 
     // Check if there is an externally created unique index that matches the given columns.
-    containingFile.indexes(this)
+    containingFile.schema<SqlCreateIndexStmt>(this)
         .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
         .forEach {
           val indexedColumns = it.indexedColumnList.map { it.columnName.name }
