@@ -10,14 +10,7 @@ internal interface SchemaContributor {
 internal class Schema {
   private val map = mutableMapOf<KClass<*>, MultiMap<String, *>>()
 
-  inline fun <reified T> forType(): MultiMap<String, T> {
-    var value = map[T::class]
-    if (value == null) {
-      value = MultiMap<String, T>()
-      map[T::class] = value
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    return value as MultiMap<String, T>
-  }
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified T> forType() =
+      map.getOrPut(T::class, { MultiMap<String, T>() }) as MultiMap<String, T>
 }
