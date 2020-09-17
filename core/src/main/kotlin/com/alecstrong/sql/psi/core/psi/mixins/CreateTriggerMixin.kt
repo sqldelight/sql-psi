@@ -2,6 +2,8 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sql.psi.core.psi.Schema
+import com.alecstrong.sql.psi.core.psi.SchemaContributor
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
@@ -14,7 +16,13 @@ import com.intellij.psi.tree.IElementType
 internal abstract class CreateTriggerMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlCreateTriggerStmt {
+    SqlCreateTriggerStmt,
+    SchemaContributor {
+  override fun modifySchema(schema: Schema) {
+    val triggers = schema.forType<SqlCreateTriggerStmt>()
+    triggers.putValue(triggerName.text, this)
+  }
+
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is MutatorMixin || child is SqlExpr || child is CompoundSelectStmtMixin) {
       val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
@@ -36,7 +44,7 @@ internal abstract class CreateTriggerMixin(
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (containingFile.triggers(this).any { it != this && it.triggerName.text == triggerName.text }) {
+    if (containingFile.schema<SqlCreateTriggerStmt>(this).any { it != this && it.triggerName.text == triggerName.text }) {
       annotationHolder.createErrorAnnotation(triggerName,
           "Duplicate trigger name ${triggerName.text}")
     }
