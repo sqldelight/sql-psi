@@ -13,7 +13,7 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
-  private val resolved: PsiElement? by ModifiableFileLazy(element.containingFile) lazy@{
+  private val resolved = ModifiableFileLazy lazy@{
     if (element is SqlNewTableName) return@lazy element
     if (element.parent.isDefinition()) return@lazy element
     return@lazy variants.mapNotNull { it.psiElement }
@@ -21,7 +21,7 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
         .firstOrNull { it.name == element.name }
   }
 
-  override fun resolve() = resolved
+  override fun resolve() = resolved.forFile(element.containingFile)
 
   override fun getVariants(): Array<LookupElement> {
     if (element is SqlNewTableName) return emptyArray()

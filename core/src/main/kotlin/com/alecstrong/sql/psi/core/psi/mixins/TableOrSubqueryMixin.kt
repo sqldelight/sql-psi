@@ -10,7 +10,7 @@ internal abstract class TableOrSubqueryMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlTableOrSubquery {
-  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
+  private val queryExposed = ModifiableFileLazy lazy@{
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)
       if (result.isEmpty()) {
@@ -32,5 +32,5 @@ internal abstract class TableOrSubqueryMixin(
     return@lazy tableOrSubqueryList.flatMap { it.queryExposed() }
   }
 
-  override fun queryExposed() = queryExposed
+  override fun queryExposed() = queryExposed.forFile(containingFile)
 }

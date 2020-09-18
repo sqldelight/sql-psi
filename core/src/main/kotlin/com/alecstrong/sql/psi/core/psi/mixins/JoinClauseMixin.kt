@@ -16,9 +16,10 @@ internal abstract class JoinClauseMixin(
     SqlJoinClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqlJoinConstraint) {
-      var queryAvailable = tableOrSubqueryList[0].queryExposed()
+      val queryAvailable = tableOrSubqueryList[0].queryExposed()
           .map { it.copy(adjacent = true) }
           .plus(super.queryAvailable(child))
+          .toMutableList()
       tableOrSubqueryList.drop(1).zip(joinConstraintList)
           .forEach { (subquery, constraint) ->
             if (child == constraint) {
@@ -40,7 +41,7 @@ internal abstract class JoinClauseMixin(
     return super.queryAvailable(child)
   }
 
-  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed = ModifiableFileLazy {
     var queryAvailable = tableOrSubqueryList[0].queryExposed()
     tableOrSubqueryList.drop(1)
         .zip(joinConstraintList)
@@ -76,5 +77,5 @@ internal abstract class JoinClauseMixin(
     return@ModifiableFileLazy queryAvailable
   }
 
-  override fun queryExposed() = queryExposed
+  override fun queryExposed() = queryExposed.forFile(containingFile)
 }

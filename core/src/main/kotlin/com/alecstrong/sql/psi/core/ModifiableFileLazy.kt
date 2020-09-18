@@ -1,29 +1,27 @@
 package com.alecstrong.sql.psi.core
 
 import com.intellij.psi.PsiFile
-import kotlin.reflect.KProperty
+import java.util.concurrent.atomic.AtomicReference
 
 internal class ModifiableFileLazy<out T>(
-  private val file: PsiFile,
   private val initializer: () -> T
 ) {
-  private var modifiedStamp = file.modificationStamp
-  private var state: T? = null
+  private var modifiedStamp = -1L
+  private var state = AtomicReference<T>()
 
-  operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+  fun forFile(file: PsiFile): T {
     if (file.modificationStamp == modifiedStamp) {
-      state?.let { return it }
+      return state.get()
     }
 
     synchronized(this) {
       if (file.modificationStamp == modifiedStamp) {
-        state?.let { return it }
+        return state.get()
       }
 
-      val _state = initializer()
-      state = _state
+      state.set(initializer())
       modifiedStamp = file.modificationStamp
-      return _state
+      return state.get()
     }
   }
 }

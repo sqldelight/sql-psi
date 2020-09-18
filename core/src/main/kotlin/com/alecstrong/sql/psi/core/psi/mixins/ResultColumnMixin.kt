@@ -13,7 +13,7 @@ internal abstract class ResultColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
     SqlResultColumn {
-  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) lazy@{
+  private val queryExposed = ModifiableFileLazy lazy@{
     val fromQuery = (parent as? FromQuery)?.fromQuery() ?: return@lazy emptyList<QueryResult>()
     tableName?.let { tableNameElement ->
       // table_name '.' '*'
@@ -48,5 +48,5 @@ internal abstract class ResultColumnMixin(
     }
   }
 
-  override fun queryExposed() = queryExposed
+  override fun queryExposed() = queryExposed.forFile(containingFile)
 }
