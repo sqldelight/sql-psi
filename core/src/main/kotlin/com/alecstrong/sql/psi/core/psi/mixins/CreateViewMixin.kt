@@ -3,6 +3,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
 import com.alecstrong.sql.psi.core.psi.TableElement
@@ -15,6 +16,11 @@ internal abstract class CreateViewMixin(
     SqlCreateViewStmt,
     TableElement {
   override fun name() = viewName
+
+  override fun modifySchema(schema: Schema) {
+    schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+    schema.forType<String, SqlCreateViewStmt>().putValue(name().text, this)
+  }
 
   override fun tableExposed() = LazyQuery(viewName) {
     val columns =

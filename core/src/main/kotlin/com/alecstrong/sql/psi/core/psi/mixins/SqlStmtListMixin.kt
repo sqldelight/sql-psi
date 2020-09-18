@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
 
 internal abstract class SqlStmtListMixin(node: ASTNode) : SqlCompositeElementImpl(node) {
   override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
-    return (parent as SqlFileBase).tablesAvailable(child)
+    return (parent as SqlFileBase).schema(child)
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

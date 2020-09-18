@@ -3,6 +3,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.QueryElement.SynthesizedColumn
+import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlModuleArgument
@@ -16,6 +17,10 @@ internal abstract class CreateVirtualTableMixin(
     SqlCreateVirtualTableStmt,
     TableElement {
   override fun name() = tableName
+
+  override fun modifySchema(schema: Schema) {
+    schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+  }
 
   override fun tableExposed(): LazyQuery {
     val columnNameElements = findChildrenByClass(

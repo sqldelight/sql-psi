@@ -8,9 +8,17 @@ internal interface SchemaContributor {
 }
 
 internal class Schema {
-  private val map = mutableMapOf<KClass<*>, MultiMap<String, *>>()
+  private val map = mutableMapOf<KClass<*>, MultiMap<*, *>>()
 
   @Suppress("UNCHECKED_CAST")
-  inline fun <reified T> forType() =
-      map.getOrPut(T::class, { MultiMap<String, T>() }) as MultiMap<String, T>
+  inline fun <Key, reified Value> forType() =
+      map.getOrPut(Value::class, { MultiMap<Key, Value>() }) as MultiMap<Key, Value>
+
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified Value> values() =
+      map[Value::class]?.values() as Collection<Value>? ?: emptyList()
+}
+
+internal fun MultiMap<TableElement, LazyQuery>.removeTableForName(name: NamedElement) {
+  keySet().filter { it.name().text == name.text }.forEach { remove(it) }
 }

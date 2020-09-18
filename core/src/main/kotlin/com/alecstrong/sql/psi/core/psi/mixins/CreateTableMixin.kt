@@ -4,6 +4,7 @@ import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.QueryElement.SynthesizedColumn
+import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElement
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
@@ -24,6 +25,10 @@ internal abstract class CreateTableMixin(
     SqlCreateTableStmt,
     TableElement {
   override fun name() = tableName
+
+  override fun modifySchema(schema: Schema) {
+    schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+  }
 
   override fun tableExposed() = LazyQuery(tableName) {
     compoundSelectStmt?.let {

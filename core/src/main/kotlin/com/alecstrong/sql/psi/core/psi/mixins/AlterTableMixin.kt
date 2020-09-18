@@ -5,10 +5,12 @@ import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.NamedElement
 import com.alecstrong.sql.psi.core.psi.QueryElement
+import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableRules
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.TableElement
+import com.alecstrong.sql.psi.core.psi.removeTableForName
 import com.alecstrong.sql.psi.core.psi.withAlterStatement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -21,6 +23,13 @@ internal abstract class AlterTableMixin(
   override fun name(): NamedElement = alterTableRulesList
       .mapNotNull { it.alterTableRenameTable?.newTableName }
       .lastOrNull() ?: tableName!!
+
+  override fun modifySchema(schema: Schema) {
+    tableName?.let { tableName ->
+      schema.forType<TableElement, LazyQuery>().removeTableForName(tableName)
+      schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+    }
+  }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
     if (child in alterTableRulesList) {

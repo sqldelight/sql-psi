@@ -156,7 +156,8 @@ drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexMixin"
   pin = 2
 }
-drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ database_name '.' ] table_name {
+drop_table_stmt ::= DROP ( TABLE | VIEW ) [ IF EXISTS ] [ database_name '.' ] table_name {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTableMixin"
   pin = 2
 }
 drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name {
@@ -164,6 +165,7 @@ drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_n
   pin = 2
 }
 drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropViewMixin"
   pin = 2
 }
 expr ::= ( raise_expr
