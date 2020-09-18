@@ -15,7 +15,7 @@ internal abstract class SelectStmtMixin(
 ) : SqlCompositeElementImpl(node),
     SqlSelectStmt,
     FromQuery {
-  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed = ModifiableFileLazy {
     if (valuesExpressionList.isNotEmpty()) {
       return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
     }
@@ -34,7 +34,7 @@ internal abstract class SelectStmtMixin(
     return super.queryAvailable(child)
   }
 
-  override fun queryExposed() = queryExposed
+  override fun queryExposed() = queryExposed.forFile(containingFile)
 
   override fun fromQuery(): Collection<QueryResult> {
     joinClause?.let {

@@ -12,7 +12,7 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class ReturningClauseMixin(node: ASTNode) :
   SqlCompositeElementImpl(node), PostgreSqlReturningClause, FromQuery {
 
-  private val queryExposed: Collection<QueryResult> by ModifiableFileLazy(containingFile) {
+  private val queryExposed = ModifiableFileLazy {
     listOf(
       QueryResult(
         null,
@@ -22,7 +22,7 @@ internal abstract class ReturningClauseMixin(node: ASTNode) :
     )
   }
 
-  override fun queryExposed() = queryExposed
+  override fun queryExposed() = queryExposed.forFile(containingFile)
 
   override fun fromQuery(): Collection<QueryResult> = emptyList()
 }

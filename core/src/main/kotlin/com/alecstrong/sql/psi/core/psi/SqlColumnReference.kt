@@ -17,7 +17,7 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
-  private val resolved: QueryColumn? by ModifiableFileLazy(element.containingFile) {
+  private val resolved = ModifiableFileLazy {
     try {
       unsafeResolve()
     } catch (e: AnnotationException) {
@@ -25,9 +25,9 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     }
   }
 
-  override fun resolve() = resolved?.element
+  override fun resolve() = resolved.forFile(element.containingFile)?.element
 
-  internal fun resolveToQuery() = resolved
+  internal fun resolveToQuery(): QueryColumn? = resolved.forFile(element.containingFile)
 
   internal fun unsafeResolve(): QueryColumn? {
     if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return QueryColumn(element)
