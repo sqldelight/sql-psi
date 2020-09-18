@@ -15,8 +15,7 @@ internal abstract class DropIndexMixin(
     SchemaContributor {
   override fun modifySchema(schema: Schema) {
     indexName?.let { indexName ->
-      val indexes = schema.forType<SqlCreateIndexStmt>()
-      indexes.remove(indexName.text)
+      schema.forType<String, SqlCreateIndexStmt>().remove(indexName.text)
     }
   }
 
