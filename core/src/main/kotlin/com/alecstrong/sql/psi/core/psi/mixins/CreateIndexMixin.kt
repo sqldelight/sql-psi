@@ -15,7 +15,7 @@ internal abstract class CreateIndexMixin(
     SqlCreateIndexStmt,
     SchemaContributor {
   override fun modifySchema(schema: Schema) {
-    val indexes = schema.forType<String, SqlCreateIndexStmt>()
+    val indexes = schema.forType<SqlCreateIndexStmt>()
     indexes.putValue(indexName.text, this)
   }
 

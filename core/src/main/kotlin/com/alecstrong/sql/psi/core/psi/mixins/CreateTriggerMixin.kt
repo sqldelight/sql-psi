@@ -19,7 +19,7 @@ internal abstract class CreateTriggerMixin(
     SqlCreateTriggerStmt,
     SchemaContributor {
   override fun modifySchema(schema: Schema) {
-    val triggers = schema.forType<String, SqlCreateTriggerStmt>()
+    val triggers = schema.forType<SqlCreateTriggerStmt>()
     triggers.putValue(triggerName.text, this)
   }
 

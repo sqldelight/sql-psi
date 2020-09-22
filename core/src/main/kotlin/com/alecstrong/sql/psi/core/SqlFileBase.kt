@@ -29,11 +29,11 @@ abstract class SqlFileBase(
   val sqlStmtList
     get() = findChildByClass(SqlStmtList::class.java)
 
-  fun tablesAvailable(child: PsiElement) = schema<LazyQuery>(child)
+  fun tablesAvailable(child: PsiElement) = schema<TableElement>(child).map { it.tableExposed() }
 
   fun triggers(sqlStmtElement: PsiElement?): Collection<SqlCreateTriggerStmt> = schema(sqlStmtElement)
 
-  internal inline fun <reified T> schema(
+  internal inline fun <reified T : SchemaContributor> schema(
     sqlStmtElement: PsiElement? = null,
     includeAll: Boolean = true
   ): Collection<T> {
@@ -64,7 +64,7 @@ abstract class SqlFileBase(
    * @param includeAll If true, also return tables that other files expose.
    */
   fun tables(includeAll: Boolean): Collection<LazyQuery> {
-    val tables = schema<LazyQuery>()
+    val tables = schema<TableElement>().map { it.tableExposed() }
     return if (includeAll) tables else tables.filter { it.tableName.containingFile == this }
   }
 

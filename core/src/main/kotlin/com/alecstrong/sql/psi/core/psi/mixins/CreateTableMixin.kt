@@ -27,7 +27,7 @@ internal abstract class CreateTableMixin(
   override fun name() = tableName
 
   override fun modifySchema(schema: Schema) {
-    schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+    schema.forType<TableElement>().putValue(name().name, this)
   }
 
   override fun tableExposed() = LazyQuery(tableName) {

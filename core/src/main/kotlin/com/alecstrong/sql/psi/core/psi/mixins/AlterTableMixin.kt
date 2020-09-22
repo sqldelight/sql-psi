@@ -10,7 +10,6 @@ import com.alecstrong.sql.psi.core.psi.SqlAlterTableRules
 import com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.TableElement
-import com.alecstrong.sql.psi.core.psi.removeTableForName
 import com.alecstrong.sql.psi.core.psi.withAlterStatement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
@@ -26,8 +25,8 @@ internal abstract class AlterTableMixin(
 
   override fun modifySchema(schema: Schema) {
     tableName?.let { tableName ->
-      schema.forType<TableElement, LazyQuery>().removeTableForName(tableName)
-      schema.forType<TableElement, LazyQuery>().putValue(this, tableExposed())
+      schema.forType<TableElement>().remove(tableName.name)
+      schema.forType<TableElement>().putValue(tableName.name, this)
     }
   }
 
