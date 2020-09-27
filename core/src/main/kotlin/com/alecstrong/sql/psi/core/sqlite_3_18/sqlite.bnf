@@ -14,11 +14,16 @@
 }
 overrides ::= type_name | bind_parameter | alter_table_stmt
 
-type_name ::= 'TEXT' | 'BLOB' | 'INTEGER' | 'REAL' {
+type_name ::= text_data_type | blob_data_type | int_data_type | real_data_type {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlTypeNameImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlTypeName"
   override = true
 }
+text_data_type ::= 'TEXT'
+blob_data_type ::= 'BLOB'
+int_data_type ::= 'INTEGER'
+real_data_type ::= 'REAL'
+
 bind_parameter ::= ( '?' [digit] | ':' {identifier} ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlBindParameterImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBindParameter"
