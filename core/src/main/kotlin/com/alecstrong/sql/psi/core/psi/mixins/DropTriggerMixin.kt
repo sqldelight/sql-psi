@@ -15,7 +15,7 @@ internal abstract class DropTriggerMixin(
     SchemaContributor {
   override fun modifySchema(schema: Schema) {
     triggerName?.let { triggerName ->
-      schema.forType<String, SqlCreateTriggerStmt>().remove(triggerName.text)
+      schema.forType<SqlCreateTriggerStmt>().remove(triggerName.text)
     }
   }
 

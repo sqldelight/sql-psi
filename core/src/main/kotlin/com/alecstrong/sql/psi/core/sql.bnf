@@ -93,6 +93,7 @@ release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name {
 }
 create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   pin = 6
 }
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
@@ -117,6 +118,7 @@ foreign_key_clause ::= REFERENCES foreign_table [ '(' column_name ( ',' column_n
 conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
 create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   pin = 6
 }
 create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name[ '(' column_alias ( ',' column_alias ) * ')' ] AS compound_select_stmt {
