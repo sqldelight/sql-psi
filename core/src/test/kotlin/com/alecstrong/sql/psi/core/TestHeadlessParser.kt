@@ -11,7 +11,14 @@ internal class TestHeadlessParser {
   private val parserDefinition = TestParserDefinition()
 
   fun build(root: String, annotator: SqlAnnotationHolder): SqlCoreEnvironment {
-    val environment = SqlCoreEnvironment(parserDefinition, TestFileType, listOf(File(root)))
+    val environment = object : SqlCoreEnvironment(listOf(File(root)), emptyList()) {
+      init {
+        initializeApplication {
+          registerFileType(TestFileType, TestFileType.defaultExtension)
+          registerParserDefinition(parserDefinition)
+        }
+      }
+    }
     environment.annotate(annotator)
     return environment
   }
