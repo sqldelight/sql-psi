@@ -9,10 +9,8 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.fileTypes.FileTypeRegistry
-import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -30,64 +28,71 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
+
+private object ApplicationEnvironment {
+  var initialized = AtomicBoolean(false)
+
+  val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+    CoreApplicationEnvironment(Disposer.newDisposable()).apply {
+      CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
+          MetaLanguage.EP_NAME, MetaLanguage::class.java)
+
+      val fileRegistry = FileTypeRegistry.ourInstanceGetter
+      FileTypeRegistry.ourInstanceGetter = fileRegistry
+    }
+  }
+}
 
 open class SqlCoreEnvironment(
-  parserDefinition: SqlParserDefinition,
-  private val fileType: LanguageFileType,
   sourceFolders: List<File>,
-  disposable: Disposable = Disposer.newDisposable()
+  dependencies: List<File>
 ) {
   private val fileIndex: CoreFileIndex
 
-  protected val applicationEnvironment = CoreApplicationEnvironment(disposable)
-  protected val projectEnvironment = CoreProjectEnvironment(disposable, applicationEnvironment)
+  protected val projectEnvironment = CoreProjectEnvironment(
+      ApplicationEnvironment.coreApplicationEnvironment.parentDisposable,
+      ApplicationEnvironment.coreApplicationEnvironment
+  )
+
   protected val localFileSystem: VirtualFileSystem
 
   init {
     localFileSystem = VirtualFileManager.getInstance().getFileSystem(
         StandardFileSystems.FILE_PROTOCOL)
 
-    CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
-        MetaLanguage.EP_NAME, MetaLanguage::class.java)
-
-    val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
-    fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project,
-        directoryIndex, FileTypeRegistry.getInstance())
     projectEnvironment.registerProjectComponent(ProjectRootManager::class.java,
         ProjectRootManagerImpl(projectEnvironment.project))
+
+    projectEnvironment.project.registerService(DirectoryIndex::class.java,
+        DirectoryIndexImpl(projectEnvironment.project))
+
+    fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
-    with(applicationEnvironment) {
-      val fileRegistry = FileTypeRegistry.ourInstanceGetter
-      FileTypeRegistry.ourInstanceGetter = fileRegistry
+    val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
+    projectEnvironment.project.picoContainer
+        .registerComponentInstance(SchemaContributorIndex::class.java.name, object : SchemaContributorIndex {
+          override fun getKey() = SchemaContributorIndex.KEY
 
-      registerApplicationService(ProjectFileIndex::class.java, fileIndex)
-      registerFileType(fileType, fileType.defaultExtension)
-      registerParserDefinition(parserDefinition)
-    }
-
-    SchemaContributorIndex.instance = object : StringStubIndexExtension<SchemaContributor>() {
-      private val contributors: Collection<SchemaContributor> by lazy {
-        val contributors = mutableListOf<SchemaContributor>()
-        forSourceFiles {
-          it.sqlStmtList?.stmtList
-              ?.mapNotNull { it.firstChild as? SchemaContributor }
-              ?.let(contributors::addAll)
-        }
-        return@lazy contributors
-      }
-
-      override fun getKey() = SchemaContributorIndex.KEY
-
-      override fun get(
-        key: String,
-        project: Project,
-        scope: GlobalSearchScope
-      ) = contributors
-    }
+          override fun get(
+            key: String,
+            project: Project,
+            scope: GlobalSearchScope
+          ): List<SchemaContributor> {
+            val manager = PsiManager.getInstance(project)
+            val contributors = mutableListOf<SchemaContributor>()
+            contributorIndex.iterateContent { file ->
+              (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
+                  ?.mapNotNull { it.firstChild as? SchemaContributor }
+                  ?.let(contributors::addAll)
+              return@iterateContent true
+            }
+            return contributors
+          }
+        })
   }
 
   fun annotate(annotationHolder: SqlAnnotationHolder) {
@@ -131,19 +136,23 @@ open class SqlCoreEnvironment(
     }
     children.forEach { it.annotateRecursively(annotationHolder) }
   }
+
+  protected fun initializeApplication(block: CoreApplicationEnvironment.() -> Unit) {
+    if (!ApplicationEnvironment.initialized.getAndSet(true)) {
+      ApplicationEnvironment.coreApplicationEnvironment.block()
+    }
+  }
 }
 
 private class CoreFileIndex(
   val sourceFolders: List<File>,
   private val localFileSystem: VirtualFileSystem,
-  project: Project,
-  directoryIndex: DirectoryIndex,
-  fileTypeRegistry: FileTypeRegistry
-) : ProjectFileIndexImpl(project, directoryIndex, fileTypeRegistry) {
+  private val project: Project
+) : ProjectFileIndexImpl(project) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
     return sourceFolders.all {
       val file = localFileSystem.findFileByPath(it.absolutePath)
-      if (file == null) throw NullPointerException("File ${it.absolutePath} not found")
+          ?: throw NullPointerException("File ${it.absolutePath} not found")
       iterateContentUnderDirectory(file, iterator)
     }
   }

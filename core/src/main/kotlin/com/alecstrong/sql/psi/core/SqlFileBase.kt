@@ -85,8 +85,9 @@ abstract class SqlFileBase(
     if (includeAll) {
       val orderedContributors = sortedMapOf<Int, LinkedHashSet<SchemaContributor>>()
       val topContributors = LinkedHashSet<SchemaContributor>()
+      val index = SchemaContributorIndex.getInstance(project)
 
-      SchemaContributorIndex.instance.get(T::class.java.name, project, searchScope()).forEach {
+      index.get(T::class.java.name, project, searchScope()).forEach {
         val file = it.containingFile
 
         if (file == this) return@forEach
