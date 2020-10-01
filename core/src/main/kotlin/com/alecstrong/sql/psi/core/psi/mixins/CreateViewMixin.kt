@@ -1,25 +1,42 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.SqlSchemaContributorElementType
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.Schema
-import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
+import com.alecstrong.sql.psi.core.psi.SchemaContributorStub
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
+import com.alecstrong.sql.psi.core.psi.SqlSchemaContributorImpl
+import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.alecstrong.sql.psi.core.psi.asColumns
+import com.alecstrong.sql.psi.core.psi.impl.SqlCreateViewStmtImpl
 import com.intellij.lang.ASTNode
+import com.intellij.psi.tree.IElementType
 
 internal abstract class CreateViewMixin(
-  node: ASTNode
-) : SqlCompositeElementImpl(node),
+  stub: SchemaContributorStub?,
+  nodeType: IElementType?,
+  node: ASTNode?
+) : SqlSchemaContributorImpl<TableElement, CreateViewElementType>(stub, nodeType, node),
     SqlCreateViewStmt,
     TableElement {
-  override fun name() = viewName
+  constructor(node: ASTNode) : this(null, null, node)
+
+  constructor(
+    stub: SchemaContributorStub,
+    nodeType: IElementType
+  ) : this(stub, nodeType, null)
+
+  override fun name(): String {
+    stub?.let { return it.name() }
+    return viewName.name
+  }
 
   override fun modifySchema(schema: Schema) {
-    schema.forType<TableElement>().putValue(name().text, this)
-    schema.forType<SqlCreateViewStmt>().putValue(name().text, this)
+    schema.forType<TableElement>().putValue(name(), this)
+    schema.forType<SqlCreateViewStmt>().putValue(name(), this)
   }
 
   override fun tableExposed() = LazyQuery(viewName) {
@@ -40,4 +57,10 @@ internal abstract class CreateViewMixin(
             "number of aliases is different from the number of columns")
     }
   }
+}
+
+internal class CreateViewElementType(name: String) :
+    SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+  override fun nameType() = SqlTypes.VIEW_NAME
+  override fun createPsi(stub: SchemaContributorStub) = SqlCreateViewStmtImpl(stub, this)
 }

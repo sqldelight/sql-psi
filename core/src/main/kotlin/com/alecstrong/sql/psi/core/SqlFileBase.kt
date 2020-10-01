@@ -3,27 +3,23 @@ package com.alecstrong.sql.psi.core
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.Schema
 import com.alecstrong.sql.psi.core.psi.SchemaContributor
+import com.alecstrong.sql.psi.core.psi.SchemaContributorIndex
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
-import com.alecstrong.sql.psi.core.psi.SqlStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmtList
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiManager
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
   language: Language
 ) : PsiFileBase(viewProvider, language) {
-  private val psiManager: PsiManager
-    get() = PsiManager.getInstance(project)
-
   abstract val order: Int?
 
   val sqlStmtList
@@ -38,10 +34,9 @@ abstract class SqlFileBase(
     includeAll: Boolean = true
   ): Collection<T> {
     val schema = Schema()
-    iteratePreviousStatements(includeAll) { statement ->
-      val sqlStatement = statement.firstChild
-      if (sqlStmtElement != null && PsiTreeUtil.isAncestor(statement, sqlStmtElement, false)) {
-        if (order == null && (sqlStatement is TableElement && sqlStatement !is SqlCreateTableStmt)) {
+    (originalFile as SqlFileBase).iteratePreviousStatements<T>(sqlStmtElement, includeAll) { statement ->
+      if (sqlStmtElement != null && PsiTreeUtil.isAncestor(sqlStmtElement, statement, false)) {
+        if (order == null && (statement is TableElement && statement !is SqlCreateTableStmt)) {
           // If we're in a queries file, the table is not available to itself (unless its a create).
           return@iteratePreviousStatements
         }
@@ -51,9 +46,7 @@ abstract class SqlFileBase(
         }
       }
 
-      if (sqlStatement is SchemaContributor) {
-        sqlStatement.modifySchema(schema)
-      }
+      statement.modifySchema(schema)
     }
     return schema.values()
   }
@@ -68,18 +61,8 @@ abstract class SqlFileBase(
     return if (includeAll) tables else tables.filter { it.tableName.containingFile == this }
   }
 
-  /**
-   * @return Views this file exposes as CreateViewStmt.
-   *
-   * @param includeAll If true, also return tables that other files expose.
-   */
-  fun views(includeAll: Boolean): Collection<SqlCreateViewStmt> {
-    val views = schema<SqlCreateViewStmt>()
-    return if (includeAll) views else views.filter { it.containingFile == this }
-  }
-
   internal fun viewForName(name: String): SqlCreateViewStmt? {
-    return schema<SqlCreateViewStmt>().singleOrNull { it.name().text == name }
+    return schema<TableElement>().filterIsInstance<SqlCreateViewStmt>().singleOrNull { it.name() == name }
   }
 
   private fun views(): List<SqlCreateViewStmt> {
@@ -90,44 +73,44 @@ abstract class SqlFileBase(
 
   private fun tables(): List<TableElement> {
     return sqlStmtList?.stmtList?.mapNotNull {
-      it.createViewStmt ?: it.createTableStmt ?: it.createVirtualTableStmt
+      (it.createViewStmt as TableElement?) ?: it.createTableStmt ?: it.createVirtualTableStmt
     }.orEmpty()
   }
 
-  private inline fun iteratePreviousStatements(
+  private inline fun <reified T : SchemaContributor> iteratePreviousStatements(
+    until: PsiElement?,
     includeAll: Boolean = true,
-    block: (SqlStmt) -> Unit
+    block: (SchemaContributor) -> Unit
   ) {
-    if (!includeAll) {
-      sqlStmtList?.stmtList?.forEach(block)
-      return
+    if (includeAll) {
+      val orderedContributors = sortedMapOf<Int, LinkedHashSet<SchemaContributor>>()
+      val topContributors = LinkedHashSet<SchemaContributor>()
+
+      SchemaContributorIndex.instance.get(T::class.java.name, project, searchScope()).forEach {
+        val file = it.containingFile
+
+        if (file == this) return@forEach
+        else if (order != null && file.order == null) return@forEach
+        else if (order == null && file.order == null) topContributors.add(it)
+        else if (order == null || (file.order != null && file.order!! < order!!)) {
+          orderedContributors.getOrPut(file.order!!, { linkedSetOf() }).add(it)
+        }
+      }
+
+      orderedContributors.forEach { (_, contributors) ->
+        contributors.sortedBy { it.textOffset }.forEach(block)
+      }
+      topContributors.forEach(block)
     }
 
-    val files = sortedMapOf<Int, SqlFileBase>()
-    val topFiles = LinkedHashSet<SqlFileBase>()
-    iterateSqlFiles { file ->
-      if (file == this) return@iterateSqlFiles true
-      else if (order != null && file.order == null) return@iterateSqlFiles true
-      else if (order == null && file.order == null) topFiles.add(file)
-      else if (order == null || (file.order != null && file.order!! < order!!)) files[file.order!!] = file
-
-      return@iterateSqlFiles true
-    }
-
-    files.forEach { (_, file) ->
-      file.sqlStmtList?.stmtList?.forEach(block)
-    }
-    topFiles.forEach { it.sqlStmtList?.stmtList?.forEach(block) }
-    sqlStmtList?.stmtList?.forEach(block)
+    sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
+        ?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
+        ?.forEach {
+          block(it)
+        }
   }
 
-  protected open fun iterateSqlFiles(iterator: (SqlFileBase) -> Boolean) {
-    ProjectRootManager.getInstance(project).fileIndex.iterateContent { file ->
-      if (file.fileType != fileType) return@iterateContent true
-      psiManager.findFile(file)?.let { psiFile ->
-        return@iterateContent iterator(psiFile as SqlFileBase)
-      }
-      true
-    }
+  protected open fun searchScope(): GlobalSearchScope {
+    return GlobalSearchScope.everythingScope(project)
   }
 }

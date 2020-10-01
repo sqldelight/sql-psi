@@ -2,7 +2,8 @@ package com.alecstrong.sql.psi.sample.core
 
 import com.alecstrong.sql.psi.core.SqlParserDefinition
 import com.intellij.psi.FileViewProvider
-import com.intellij.psi.tree.IFileElementType
+import com.intellij.psi.stubs.PsiFileStub
+import com.intellij.psi.tree.ILightStubFileElementType
 
 class SampleParserDefinition : SqlParserDefinition() {
   init {
@@ -14,6 +15,6 @@ class SampleParserDefinition : SqlParserDefinition() {
   override fun getLanguage() = SampleLanguage
 
   companion object {
-    val FILE = IFileElementType(SampleLanguage)
+    val FILE = ILightStubFileElementType<PsiFileStub<SampleFile>>(SampleLanguage)
   }
 }

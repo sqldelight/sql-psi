@@ -1,33 +1,49 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.SqlSchemaContributorElementType
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.QueryElement.SynthesizedColumn
 import com.alecstrong.sql.psi.core.psi.Schema
+import com.alecstrong.sql.psi.core.psi.SchemaContributorStub
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElement
-import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlCompoundSelectStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateIndexStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlForeignKeyClause
+import com.alecstrong.sql.psi.core.psi.SqlSchemaContributorImpl
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.alecstrong.sql.psi.core.psi.asColumns
+import com.alecstrong.sql.psi.core.psi.impl.SqlCreateTableStmtImpl
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 
-internal abstract class CreateTableMixin(
-  node: ASTNode
-) : SqlCompositeElementImpl(node),
+internal abstract class CreateTableMixin private constructor(
+  stub: SchemaContributorStub?,
+  nodeType: IElementType?,
+  node: ASTNode?
+) : SqlSchemaContributorImpl<TableElement, CreateTableElementType>(stub, nodeType, node),
     SqlCreateTableStmt,
     TableElement {
-  override fun name() = tableName
+  constructor(node: ASTNode) : this(null, null, node)
+
+  constructor(
+    stub: SchemaContributorStub,
+    nodeType: IElementType
+  ) : this(stub, nodeType, null)
+
+  override fun name(): String {
+    stub?.let { return it.name() }
+    return tableName.name
+  }
 
   override fun modifySchema(schema: Schema) {
-    schema.forType<TableElement>().putValue(name().name, this)
+    schema.forType<TableElement>().putValue(name(), this)
   }
 
   override fun tableExposed() = LazyQuery(tableName) {
@@ -207,9 +223,14 @@ internal abstract class CreateTableMixin(
   }
 
   companion object {
-    private fun SqlCompositeElement.hasPrimaryKey() = node.findChildByType(
-        com.alecstrong.sql.psi.core.psi.SqlTypes.PRIMARY) != null
-    private fun SqlCompositeElement.isUnique() = node.findChildByType(
-        com.alecstrong.sql.psi.core.psi.SqlTypes.UNIQUE) != null
+    private fun SqlCompositeElement.hasPrimaryKey() = node.findChildByType(SqlTypes.PRIMARY) != null
+    private fun SqlCompositeElement.isUnique() = node.findChildByType(SqlTypes.UNIQUE) != null
   }
+}
+
+internal class CreateTableElementType(
+  name: String
+) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+  override fun nameType() = SqlTypes.TABLE_NAME
+  override fun createPsi(stub: SchemaContributorStub) = SqlCreateTableStmtImpl(stub, this)
 }
