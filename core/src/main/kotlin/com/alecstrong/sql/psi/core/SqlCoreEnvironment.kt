@@ -1,5 +1,7 @@
 package com.alecstrong.sql.psi.core
 
+import com.alecstrong.sql.psi.core.psi.SchemaContributor
+import com.alecstrong.sql.psi.core.psi.SchemaContributorIndex
 import com.alecstrong.sql.psi.core.psi.SqlAnnotatedElement
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
@@ -27,6 +29,8 @@ import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.stubs.StringStubIndexExtension
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
 
@@ -43,13 +47,15 @@ open class SqlCoreEnvironment(
   protected val localFileSystem: VirtualFileSystem
 
   init {
-    localFileSystem = VirtualFileManager.getInstance().getFileSystem(StandardFileSystems.FILE_PROTOCOL)
+    localFileSystem = VirtualFileManager.getInstance().getFileSystem(
+        StandardFileSystems.FILE_PROTOCOL)
+
+    CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
+        MetaLanguage.EP_NAME, MetaLanguage::class.java)
 
     val directoryIndex = DirectoryIndexImpl(projectEnvironment.project)
     fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project,
-            directoryIndex, FileTypeRegistry.getInstance())
-    CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
-        MetaLanguage.EP_NAME, MetaLanguage::class.java)
+        directoryIndex, FileTypeRegistry.getInstance())
     projectEnvironment.registerProjectComponent(ProjectRootManager::class.java,
         ProjectRootManagerImpl(projectEnvironment.project))
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
@@ -61,6 +67,26 @@ open class SqlCoreEnvironment(
       registerApplicationService(ProjectFileIndex::class.java, fileIndex)
       registerFileType(fileType, fileType.defaultExtension)
       registerParserDefinition(parserDefinition)
+    }
+
+    SchemaContributorIndex.instance = object : StringStubIndexExtension<SchemaContributor>() {
+      private val contributors: Collection<SchemaContributor> by lazy {
+        val contributors = mutableListOf<SchemaContributor>()
+        forSourceFiles {
+          it.sqlStmtList?.stmtList
+              ?.mapNotNull { it.firstChild as? SchemaContributor }
+              ?.let(contributors::addAll)
+        }
+        return@lazy contributors
+      }
+
+      override fun getKey() = SchemaContributorIndex.KEY
+
+      override fun get(
+        key: String,
+        project: Project,
+        scope: GlobalSearchScope
+      ) = contributors
     }
   }
 

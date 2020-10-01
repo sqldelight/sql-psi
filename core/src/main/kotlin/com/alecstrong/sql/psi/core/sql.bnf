@@ -63,6 +63,8 @@ private sql_stmt_recovery ::= !( ';' )
 alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_rules ( ',' alter_table_rules )* {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 1
 }
 alter_table_rules ::= ( alter_table_add_column | alter_table_rename_table )
@@ -94,12 +96,16 @@ release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name {
 create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
 indexed_column ::= column_name [ COLLATE collation_name ] [ ASC | DESC ]
 create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ table_options ] | AS compound_select_stmt ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateTableElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
 column_def ::= [ javadoc ] column_name column_type ( column_constraint ) * {
@@ -119,11 +125,15 @@ conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE )
 create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
 create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name[ '(' column_alias ( ',' column_alias ) * ')' ] AS compound_select_stmt {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateViewMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateViewElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
 module_column_def ::= [ javadoc ] column_name [ column_type ] ( column_constraint ) * {
@@ -134,6 +144,8 @@ module_argument_def ::= ( module_argument_name '=' (string_literal | identifier)
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument module_argument_def>> ( ',' <<custom_module_argument module_argument_def>> ) * ')' ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
 module_argument ::= [ module_argument_def ]
@@ -156,18 +168,30 @@ detach_stmt ::= DETACH [ DATABASE ] database_name {
 }
 drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
 drop_table_stmt ::= DROP ( TABLE | VIEW ) [ IF EXISTS ] [ database_name '.' ] table_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTableMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropTableElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
 drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTriggerMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropTriggerElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
 drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropViewMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropViewElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
 expr ::= ( raise_expr
