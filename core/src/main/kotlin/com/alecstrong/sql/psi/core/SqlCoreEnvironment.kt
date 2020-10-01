@@ -85,6 +85,8 @@ open class SqlCoreEnvironment(
             val manager = PsiManager.getInstance(project)
             val contributors = mutableListOf<SchemaContributor>()
             contributorIndex.iterateContent { file ->
+              if (!scope.contains(file)) return@iterateContent true
+
               (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
                   ?.mapNotNull { it.firstChild as? SchemaContributor }
                   ?.let(contributors::addAll)
