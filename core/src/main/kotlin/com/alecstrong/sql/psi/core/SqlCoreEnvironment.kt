@@ -75,24 +75,25 @@ open class SqlCoreEnvironment(
     val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.picoContainer
         .registerComponentInstance(SchemaContributorIndex::class.java.name, object : SchemaContributorIndex {
+          private val contributors by lazy {
+            val manager = PsiManager.getInstance(projectEnvironment.project)
+            val map = linkedMapOf<VirtualFile, Collection<SchemaContributor>>()
+            contributorIndex.iterateContent { file ->
+              map[file] = (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
+                  ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
+              return@iterateContent true
+            }
+            map
+          }
+
           override fun getKey() = SchemaContributorIndex.KEY
 
           override fun get(
             key: String,
             project: Project,
             scope: GlobalSearchScope
-          ): List<SchemaContributor> {
-            val manager = PsiManager.getInstance(project)
-            val contributors = mutableListOf<SchemaContributor>()
-            contributorIndex.iterateContent { file ->
-              if (!scope.contains(file)) return@iterateContent true
-
-              (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
-                  ?.mapNotNull { it.firstChild as? SchemaContributor }
-                  ?.let(contributors::addAll)
-              return@iterateContent true
-            }
-            return contributors
+          ): Collection<SchemaContributor> {
+            return contributors.filterKeys { scope.contains(it) }.flatMap { (_, values) -> values }
           }
         })
   }
