@@ -3,13 +3,13 @@ package com.alecstrong.sql.psi.core.sqlite_3_24.psi.mixins
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.impl.SqlInsertStmtImpl
-import com.alecstrong.sql.psi.core.sqlite_3_24.psi.InsertStmt
+import com.alecstrong.sql.psi.core.sqlite_3_24.psi.SqliteInsertStmt
 import com.intellij.lang.ASTNode
 
 internal abstract class InsertStmtMixin(
   node: ASTNode
 ) : SqlInsertStmtImpl(node),
-    InsertStmt {
+    SqliteInsertStmt {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
     val insertDefaultValues = insertStmtValues?.node?.findChildByType(
