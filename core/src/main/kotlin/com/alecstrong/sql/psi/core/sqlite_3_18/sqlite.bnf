@@ -5,6 +5,7 @@
 
   implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "Sqlite"
 
   parserImports=[
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DIGIT"
