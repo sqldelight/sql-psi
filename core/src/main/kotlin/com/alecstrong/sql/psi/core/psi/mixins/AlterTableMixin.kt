@@ -44,7 +44,7 @@ internal abstract class AlterTableMixin private constructor(
 
   override fun modifySchema(schema: Schema) {
     schema.forType<TableElement>().remove(name())
-    schema.forType<TableElement>().putValue(tableName().name, this)
+    schema.put<TableElement>(this)
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {

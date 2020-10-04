@@ -38,7 +38,7 @@ internal abstract class TableNameMixin(
     val matches by lazy { tableAvailable(this, name) }
     val references = reference.resolve()
     if (references == this) {
-      if (matches.any { it.table != this }) {
+      if (parent.node.findChildByType(SqlTypes.EXISTS) == null && matches.any { it.table != this }) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (references == null) {

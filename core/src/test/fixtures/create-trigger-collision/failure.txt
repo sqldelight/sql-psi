@@ -1,2 +1,1 @@
-Test.s line 5:15 - Duplicate trigger name trigger_1
 Test.s line 11:15 - Duplicate trigger name trigger_1

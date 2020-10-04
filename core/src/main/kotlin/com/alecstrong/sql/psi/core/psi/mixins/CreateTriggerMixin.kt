@@ -28,35 +28,44 @@ internal abstract class CreateTriggerMixin(
     nodeType: IElementType
   ) : this(stub, nodeType, null)
 
-  override fun name() = triggerName.text
+  override fun name(): String {
+    stub?.let { return it.name() }
+    return triggerName.text
+  }
 
   override fun modifySchema(schema: Schema) {
-    val triggers = schema.forType<SqlCreateTriggerStmt>()
-    triggers.putValue(triggerName.text, this)
+    schema.put<SqlCreateTriggerStmt>(this)
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is MutatorMixin || child is SqlExpr || child is CompoundSelectStmtMixin) {
       val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
       if (hasElement(SqlTypes.INSERT)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns, synthesizedColumns = table.synthesizedColumns))
+        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns,
+            synthesizedColumns = table.synthesizedColumns))
       }
       if (hasElement(SqlTypes.UPDATE)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns, synthesizedColumns = table.synthesizedColumns),
-            QueryResult(SingleRow(tableName!!, "old"), table.columns, synthesizedColumns = table.synthesizedColumns))
+        return listOf(QueryResult(SingleRow(tableName!!, "new"), table.columns,
+            synthesizedColumns = table.synthesizedColumns),
+            QueryResult(SingleRow(tableName!!, "old"), table.columns,
+                synthesizedColumns = table.synthesizedColumns))
       }
       if (hasElement(SqlTypes.DELETE)) {
-        return listOf(QueryResult(SingleRow(tableName!!, "old"), table.columns, synthesizedColumns = table.synthesizedColumns))
+        return listOf(QueryResult(SingleRow(tableName!!, "old"), table.columns,
+            synthesizedColumns = table.synthesizedColumns))
       }
     }
     if (child is SqlColumnName) {
-      return listOfNotNull(tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query)
+      return listOfNotNull(
+          tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query)
     }
     return super.queryAvailable(child)
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (containingFile.schema<SqlCreateTriggerStmt>(this).any { it != this && it.triggerName.text == triggerName.text }) {
+    if (node.findChildByType(SqlTypes.EXISTS) == null &&
+        containingFile.schema<SqlCreateTriggerStmt>(this)
+            .any { it != this && it.triggerName.text == triggerName.text }) {
       annotationHolder.createErrorAnnotation(triggerName,
           "Duplicate trigger name ${triggerName.text}")
     }
