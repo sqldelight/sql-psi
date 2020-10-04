@@ -33,6 +33,8 @@ bind_parameter ::= ( '?' [digit] | ':' {identifier} ) {
 alter_table_stmt ::= ALTER TABLE [ {database_name} '.' ] {table_name} {alter_table_rules} {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableStmtImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableStmt"
+  elementTypeClass = "com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.AlterTableElementType"
+  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 1
   override = true
 }
