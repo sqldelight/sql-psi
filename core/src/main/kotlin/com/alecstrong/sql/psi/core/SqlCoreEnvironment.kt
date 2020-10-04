@@ -136,6 +136,11 @@ open class SqlCoreEnvironment(
       annotate(annotationHolder)
     } catch (e: AnnotationException) {
       annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
+    } catch (e: Throwable) {
+      throw IllegalStateException("""
+        |Failed to compile ${this.containingFile.virtualFile.path}:${this.node.startOffset}:
+        |  ${this.text}
+        |""".trimMargin(), e)
     }
     children.forEach { it.annotateRecursively(annotationHolder) }
   }
