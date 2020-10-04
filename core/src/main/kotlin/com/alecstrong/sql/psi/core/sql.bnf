@@ -64,8 +64,8 @@ alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_ru
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableElementType"
-  stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
-  pin = 1
+  stubClass = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableStmtStub"
+  pin = 4
 }
 alter_table_rules ::= ( alter_table_add_column | alter_table_rename_table )
 alter_table_add_column ::= ADD [ COLUMN ] column_def {

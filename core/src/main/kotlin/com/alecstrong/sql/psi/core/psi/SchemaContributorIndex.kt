@@ -24,6 +24,8 @@ internal interface SchemaContributorIndex {
 }
 
 internal class SchemaContributorIndexImpl : SchemaContributorIndex, StringStubIndexExtension<SchemaContributor>() {
+  override fun getVersion() = 3
+
   override fun getKey(): StubIndexKey<String, SchemaContributor> {
     return SchemaContributorIndex.KEY
   }
