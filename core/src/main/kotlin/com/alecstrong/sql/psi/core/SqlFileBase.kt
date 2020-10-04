@@ -42,6 +42,7 @@ abstract class SqlFileBase(
         }
         if (order != null) {
           // If we're in a migration file, only return the tables up to this point.
+          if (statement is SqlCreateTableStmt) statement.modifySchema(schema)
           return@schema schema.values()
         }
       }
