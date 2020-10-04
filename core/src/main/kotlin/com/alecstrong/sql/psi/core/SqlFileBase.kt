@@ -98,18 +98,28 @@ abstract class SqlFileBase(
         }
       }
 
+      baseContributorFile()?.contributors()?.let { contributors ->
+        orderedContributors[0] = linkedSetOf(*contributors.toTypedArray())
+      }
+
       orderedContributors.forEach { (_, contributors) ->
         contributors.sortedBy { it.textOffset }.forEach(block)
       }
       topContributors.forEach(block)
     }
 
-    sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
-        ?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
+    contributors()?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
         ?.forEach {
           block(it)
         }
   }
+
+  private fun contributors() = sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
+
+  /**
+   * An optional file which can be used for extra Schema Contributors that are unindexed.
+   */
+  protected open fun baseContributorFile(): SqlFileBase? = null
 
   protected open fun searchScope(): GlobalSearchScope {
     return GlobalSearchScope.everythingScope(project)
