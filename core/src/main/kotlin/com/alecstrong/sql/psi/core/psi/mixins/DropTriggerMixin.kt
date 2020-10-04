@@ -35,8 +35,11 @@ internal abstract class DropTriggerMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     triggerName?.let { triggerName ->
-      if (containingFile.schema<SqlCreateTriggerStmt>(this).none { it != this && it.triggerName.text == triggerName.text }) {
-        annotationHolder.createErrorAnnotation(triggerName, "No trigger found with name ${triggerName.text}")
+      if (node.findChildByType(SqlTypes.EXISTS) == null &&
+          containingFile.schema<SqlCreateTriggerStmt>(this)
+              .none { it != this && it.triggerName.text == triggerName.text }) {
+        annotationHolder.createErrorAnnotation(triggerName,
+            "No trigger found with name ${triggerName.text}")
       }
     }
 
