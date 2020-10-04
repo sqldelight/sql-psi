@@ -15,7 +15,7 @@ internal interface SchemaContributorStub : StubElement<SchemaContributor> {
   fun getTextOffset(): Int
 }
 
-internal class SchemaContributorStubImpl<T : SchemaContributor>(
+internal open class SchemaContributorStubImpl<T : SchemaContributor>(
   parent: StubElement<*>?,
   type: SqlSchemaContributorElementType<T>,
   private val name: String,
