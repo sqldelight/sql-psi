@@ -35,8 +35,8 @@ internal abstract class CreateViewMixin(
   }
 
   override fun modifySchema(schema: Schema) {
-    schema.forType<TableElement>().putValue(name(), this)
-    schema.forType<SqlCreateViewStmt>().putValue(name(), this)
+    schema.put<TableElement>(this)
+    schema.put<SqlCreateViewStmt>(this)
   }
 
   override fun tableExposed() = LazyQuery(viewName) {

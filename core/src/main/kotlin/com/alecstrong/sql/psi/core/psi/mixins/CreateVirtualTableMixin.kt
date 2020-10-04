@@ -30,10 +30,13 @@ internal abstract class CreateVirtualTableMixin(
     nodeType: IElementType
   ) : this(stub, nodeType, null)
 
-  override fun name() = tableName.name
+  override fun name(): String {
+    stub?.let { return it.name() }
+    return tableName.name
+  }
 
   override fun modifySchema(schema: Schema) {
-    schema.forType<TableElement>().putValue(name(), this)
+    schema.put<TableElement>(this)
   }
 
   override fun tableExposed(): LazyQuery {

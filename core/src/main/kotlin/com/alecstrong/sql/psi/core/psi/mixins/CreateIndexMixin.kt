@@ -32,8 +32,7 @@ internal abstract class CreateIndexMixin(
   }
 
   override fun modifySchema(schema: Schema) {
-    val indexes = schema.forType<SqlCreateIndexStmt>()
-    indexes.putValue(name(), this)
+    schema.put<SqlCreateIndexStmt>(this)
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
@@ -46,7 +45,9 @@ internal abstract class CreateIndexMixin(
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (containingFile.schema<SqlCreateIndexStmt>(this).any { it != this && it.indexName.text == indexName.text }) {
+    if (node.findChildByType(SqlTypes.EXISTS) == null &&
+        containingFile.schema<SqlCreateIndexStmt>(this)
+            .any { it != this && it.indexName.text == indexName.text }) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
     super.annotate(annotationHolder)

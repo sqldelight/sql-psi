@@ -3,7 +3,6 @@ package com.alecstrong.sql.psi.core.psi
 import com.alecstrong.sql.psi.core.SqlSchemaContributorElementType
 import com.intellij.psi.stubs.StubBase
 import com.intellij.psi.stubs.StubElement
-import com.intellij.util.containers.MultiMap
 import kotlin.reflect.KClass
 
 internal interface SchemaContributor : SqlCompositeElement {
@@ -28,13 +27,19 @@ internal class SchemaContributorStubImpl<T : SchemaContributor>(
 }
 
 internal class Schema {
-  private val map = mutableMapOf<KClass<out SchemaContributor>, MultiMap<String, out SchemaContributor>>()
+  private val map = mutableMapOf<KClass<out SchemaContributor>, MutableMap<String, out SchemaContributor>>()
 
   @Suppress("UNCHECKED_CAST")
-  inline fun <reified Value : SchemaContributor> forType(): MultiMap<String, Value> =
-      map.getOrPut(Value::class, { MultiMap<String, Value>() }) as MultiMap<String, Value>
+  inline fun <reified Value : SchemaContributor> forType(): MutableMap<String, Value> =
+      map.getOrPut(Value::class, { linkedMapOf<String, Value>() }) as MutableMap<String, Value>
+
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified Value : SchemaContributor> put(value: SchemaContributor) {
+    val map = map.getOrPut(Value::class, { linkedMapOf<String, Value>() }) as MutableMap<String, SchemaContributor>
+    map.putIfAbsent(value.name(), value)
+  }
 
   @Suppress("UNCHECKED_CAST")
   inline fun <reified Value : SchemaContributor> values() =
-      map[Value::class]?.values() as Collection<Value>? ?: emptyList()
+      map[Value::class]?.values as Collection<Value>? ?: emptyList()
 }
