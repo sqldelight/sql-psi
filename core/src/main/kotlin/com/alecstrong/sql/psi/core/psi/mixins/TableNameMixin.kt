@@ -3,11 +3,13 @@ package com.alecstrong.sql.psi.core.psi.mixins
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlParser
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
+import com.alecstrong.sql.psi.core.psi.SqlDropTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlForeignTable
 import com.alecstrong.sql.psi.core.psi.SqlNamedElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlNewTableName
 import com.alecstrong.sql.psi.core.psi.SqlTableName
 import com.alecstrong.sql.psi.core.psi.SqlTableReference
+import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlViewName
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
@@ -40,6 +42,7 @@ internal abstract class TableNameMixin(
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (references == null) {
+      if (parent is SqlDropTableStmt && parent.node.findChildByType(SqlTypes.EXISTS) != null) return
       annotationHolder.createErrorAnnotation(this, "No table found with name $name")
     }
     super.annotate(annotationHolder)

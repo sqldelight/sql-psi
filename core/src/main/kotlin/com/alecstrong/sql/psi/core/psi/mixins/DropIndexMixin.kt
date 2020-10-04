@@ -36,8 +36,11 @@ internal abstract class DropIndexMixin private constructor(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     indexName?.let { indexName ->
-      if (containingFile.schema<SqlCreateIndexStmt>(this).none { it != this && it.indexName.text == indexName.text }) {
-        annotationHolder.createErrorAnnotation(indexName, "No index found with name ${indexName.text}")
+      if (node.findChildByType(SqlTypes.EXISTS) == null &&
+          containingFile.schema<SqlCreateIndexStmt>(this)
+              .none { it != this && it.indexName.text == indexName.text }) {
+        annotationHolder.createErrorAnnotation(indexName,
+            "No index found with name ${indexName.text}")
       }
     }
 
