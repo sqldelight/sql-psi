@@ -9,6 +9,8 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
+import com.intellij.openapi.diagnostic.DefaultLogger
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
@@ -37,6 +39,11 @@ private object ApplicationEnvironment {
 
   val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
+      Logger.setFactory { object : DefaultLogger("") {
+        override fun warn(message: String?, t: Throwable?) = Unit
+        override fun error(message: Any?) = Unit
+      } }
+
       CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
           MetaLanguage.EP_NAME, MetaLanguage::class.java)
 
