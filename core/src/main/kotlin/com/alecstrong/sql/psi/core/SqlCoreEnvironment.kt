@@ -39,7 +39,7 @@ private object ApplicationEnvironment {
 
   val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
-      Logger.setFactory { object : DefaultLogger(it) {
+      Logger.setFactory { object : DefaultLogger(“”) {
         override fun warn(message: String?, t: Throwable?) = Unit
         override fun error(message: Any?) = Unit
       } }
