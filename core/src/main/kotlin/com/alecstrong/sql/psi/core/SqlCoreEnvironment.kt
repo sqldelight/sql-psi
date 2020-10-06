@@ -35,14 +35,15 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 private object ApplicationEnvironment {
+  private val logger = object : DefaultLogger("") {
+    override fun warn(message: String?, t: Throwable?) = Unit
+    override fun error(message: Any?) = Unit
+  }
   var initialized = AtomicBoolean(false)
 
   val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
-      Logger.setFactory { object : DefaultLogger("") {
-        override fun warn(message: String?, t: Throwable?) = Unit
-        override fun error(message: Any?) = Unit
-      } }
+      Logger.setFactory { logger }
 
       CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
           MetaLanguage.EP_NAME, MetaLanguage::class.java)
@@ -162,7 +163,7 @@ open class SqlCoreEnvironment(
 private class CoreFileIndex(
   val sourceFolders: List<File>,
   private val localFileSystem: VirtualFileSystem,
-  private val project: Project
+  project: Project
 ) : ProjectFileIndexImpl(project) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
     return sourceFolders.all {
