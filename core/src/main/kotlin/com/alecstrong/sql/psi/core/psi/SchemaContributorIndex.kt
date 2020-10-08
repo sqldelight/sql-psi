@@ -1,6 +1,7 @@
 package com.alecstrong.sql.psi.core.psi
 
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
@@ -35,6 +36,7 @@ internal class SchemaContributorIndexImpl : SchemaContributorIndex, StringStubIn
     project: Project,
     scope: GlobalSearchScope
   ): Collection<SchemaContributor> {
+    if (DumbService.isDumb(project)) return emptyList()
     return StubIndex.getElements<String, SchemaContributor>(getKey(), key,
         project, scope,
         SchemaContributor::class.java
