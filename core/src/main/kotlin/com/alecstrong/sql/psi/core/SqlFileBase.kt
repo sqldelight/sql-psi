@@ -34,7 +34,7 @@ abstract class SqlFileBase(
     includeAll: Boolean = true
   ): Collection<T> {
     val schema = Schema()
-    (originalFile as SqlFileBase).iteratePreviousStatements<T>(sqlStmtElement, includeAll) { statement ->
+    iteratePreviousStatements<T>(sqlStmtElement, includeAll) { statement ->
       if (sqlStmtElement != null && PsiTreeUtil.isAncestor(sqlStmtElement, statement, false)) {
         if (order == null && (statement is TableElement && statement !is SqlCreateTableStmt)) {
           // If we're in a queries file, the table is not available to itself (unless its a create).
@@ -91,7 +91,7 @@ abstract class SqlFileBase(
       index.get(T::class.java.name, project, searchScope()).forEach {
         val file = it.containingFile
 
-        if (file == this) return@forEach
+        if (file == originalFile) return@forEach
         else if (order != null && file.order == null) return@forEach
         else if (order == null && file.order == null) topContributors.add(it)
         else if (order == null || (file.order != null && file.order!! < order!!)) {
