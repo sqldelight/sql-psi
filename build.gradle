@@ -31,7 +31,6 @@ buildscript {
     classpath "com.github.hurricup:gradle-grammar-kit-plugin:2020.1.4"
     classpath "com.alecstrong:grammar-kit-composer:0.1.4"
     classpath "com.diffplug.spotless:spotless-plugin-gradle:3.29.0"
-    classpath "com.vanniktech:gradle-maven-publish-plugin:0.11.1"
   }
 }
 
