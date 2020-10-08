@@ -2,6 +2,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.SqlBinaryLikeExpr
+import com.alecstrong.sql.psi.core.psi.SqlBindExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
@@ -20,8 +21,12 @@ internal abstract class BinaryLikeExprMixin(
         SqlTypes.MATCH) != null
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (hasMatchOperator) {
-      checkForMatchUsageError(annotationHolder)
+    if (firstChild is SqlBindExpr && lastChild is SqlBindExpr) {
+      annotationHolder.createErrorAnnotation(this, "Cannot bind both sides of a ${operatorName()} expression")
+    } else {
+      if (hasMatchOperator) {
+        checkForMatchUsageError(annotationHolder)
+      }
     }
   }
 
@@ -80,5 +85,12 @@ internal abstract class BinaryLikeExprMixin(
     } else {
       true
     }
+  }
+
+  private fun operatorName() = when {
+    binaryLikeOperator.node.findChildByType(SqlTypes.MATCH) != null -> "MATCH"
+    binaryLikeOperator.node.findChildByType(SqlTypes.REGEXP) != null -> "REGEXP"
+    binaryLikeOperator.node.findChildByType(SqlTypes.GLOB) != null -> "GLOB"
+    else -> "LIKE"
   }
 }

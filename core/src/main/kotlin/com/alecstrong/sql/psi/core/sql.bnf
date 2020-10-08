@@ -239,9 +239,11 @@ binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
 binary_boolean_expr ::= expr (  '<' | '<=' | '>' | '>=' ) expr {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
 binary_equality_expr ::= expr ( '=' | '==' | '!=' | '<>' ) expr {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
 binary_and_expr ::= expr AND expr {
@@ -261,8 +263,12 @@ binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] 
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryLikeExprMixin"
 }
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
-is_expr ::= expr IS [ NOT ] expr
-between_expr ::= expr [ NOT ] BETWEEN expr AND <<expr '6'>>
+is_expr ::= expr IS [ NOT ] expr {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
+}
+between_expr ::= expr [ NOT ] BETWEEN expr AND <<expr '6'>> {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
+}
 in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name | bind_expr ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.InExprMixin"
   pin = 3
@@ -348,7 +354,9 @@ result_column ::= ( '*'
 join_operator ::= ( ','
                   | [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN )
 join_constraint ::= [ ON expr | USING '(' column_name ( ',' column_name ) * ')' ]
-ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ]
+ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ] {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.OrderByMixin"
+}
 compound_operator ::= ( UNION ALL
                       | UNION
                       | INTERSECT

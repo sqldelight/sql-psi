@@ -4,11 +4,14 @@ import com.alecstrong.sql.psi.core.ModifiableFileLazy
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.FromQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sql.psi.core.psi.SqlBindExpr
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlSelectStmt
+import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SelectStmtMixin(
   node: ASTNode
@@ -45,6 +48,17 @@ internal abstract class SelectStmtMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
+
+    val invalidGroupByBindExpression = exprList.find { child ->
+      child is SqlBindExpr &&
+          PsiTreeUtil.findSiblingBackward(child, SqlTypes.HAVING, null) == null &&
+          PsiTreeUtil.findSiblingBackward(child, SqlTypes.BY, null) != null &&
+          PsiTreeUtil.findSiblingBackward(child, SqlTypes.GROUP, null) != null
+    }
+    if (invalidGroupByBindExpression != null) {
+      annotationHolder.createErrorAnnotation(invalidGroupByBindExpression,
+          "Cannot bind the name of a column in a GROUP BY clause")
+    }
 
     if (valuesExpressionList.isNotEmpty()) {
       val size = valuesExpressionList[0].exprList.size
