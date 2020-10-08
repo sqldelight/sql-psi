@@ -5,3 +5,6 @@ CREATE TABLE test (
 SELECT *
 FROM test
 ORDER BY ?1;
+
+SELECT ?
+FROM test;

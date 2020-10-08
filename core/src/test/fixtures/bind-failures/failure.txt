@@ -1,1 +1,2 @@
 Test.s line 7:9 - Cannot bind the name of a column in an ORDER BY clause
+Test.s line 9:7 - Cannot bind the name of a column in a SELECT result-column
