@@ -3,6 +3,6 @@ Test.s line 14:25 - Unable to use function MATCH in the requested context
 Test.s line 37:6 - Unable to use function MATCH in the requested context
 Test.s line 43:6 - Unable to use function MATCH in the requested context
 Test.s line 49:6 - Unable to use function MATCH in the requested context
-Test.s line 60:6 - Cannot bind both sides of a MATCH expression
+Test.s line 60:6 - Unable to use function MATCH in the requested context
 Test.s line 66:6 - Unable to use function MATCH in the requested context
 Test.s line 72:6 - Unable to use function MATCH in the requested context

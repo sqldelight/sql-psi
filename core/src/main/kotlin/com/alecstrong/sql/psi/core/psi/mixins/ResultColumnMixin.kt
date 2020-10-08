@@ -1,11 +1,9 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.ModifiableFileLazy
-import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.FromQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
-import com.alecstrong.sql.psi.core.psi.SqlBindExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlResultColumn
@@ -51,13 +49,4 @@ internal abstract class ResultColumnMixin(
   }
 
   override fun queryExposed() = queryExposed.forFile(containingFile)
-
-  override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    super.annotate(annotationHolder)
-
-    val bindExpr = expr as? SqlBindExpr
-    if (bindExpr != null) {
-      annotationHolder.createErrorAnnotation(bindExpr, "Cannot bind the name of a column in a SELECT result-column")
-    }
-  }
 }
