@@ -74,7 +74,7 @@ SELECT _id
 FROM hockey_player
 WHERE ? = ?
 GROUP BY ? HAVING ?
-ORDER BY ? ASC
+ORDER BY first_name ASC
 LIMIT ?;
 
 SELECT count(*)
