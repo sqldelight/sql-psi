@@ -53,7 +53,7 @@ FROM book_fts
 JOIN book ON docid = book.id
 WHERE book_fts MATCH title;
 
--- Expected failure: MATCH can't be used on a bind expression
+-- Expected failure: Cannot bind both sides of a MATCH expression
 SELECT book.*
 FROM book_fts
 JOIN book ON docid = book.id

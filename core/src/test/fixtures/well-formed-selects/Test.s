@@ -72,8 +72,8 @@ ORDER BY age;
 
 SELECT _id
 FROM hockey_player
-WHERE ? = ?
-GROUP BY ? HAVING ?
+WHERE first_name = ? OR ? = first_name
+GROUP BY first_name HAVING ?
 ORDER BY first_name ASC
 LIMIT ?;
 

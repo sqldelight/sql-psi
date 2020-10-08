@@ -1,2 +1,20 @@
 Test.s line 7:9 - Cannot bind the name of a column in an ORDER BY clause
 Test.s line 9:7 - Cannot bind the name of a column in a SELECT result-column
+Test.s line 14:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 18:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 22:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 26:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 30:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 34:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 38:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 42:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 46:6 - Cannot bind both sides of an IN expression
+Test.s line 50:6 - Cannot bind both sides of an IN expression
+Test.s line 54:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 58:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 62:6 - Cannot bind both sides of a binary comparison expression
+Test.s line 66:6 - Cannot bind both sides of a LIKE expression
+Test.s line 70:6 - Cannot bind both sides of a MATCH expression
+Test.s line 74:6 - Cannot bind both sides of a REGEXP expression
+Test.s line 78:6 - Cannot bind both sides of a GLOB expression
+Test.s line 82:9 - Cannot bind the name of a column in a GROUP BY clause

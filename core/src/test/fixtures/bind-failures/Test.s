@@ -8,3 +8,75 @@ ORDER BY ?1;
 
 SELECT ?
 FROM test;
+
+SELECT *
+FROM test
+WHERE ? = ?;
+
+SELECT *
+FROM test
+WHERE ? == ?;
+
+SELECT *
+FROM test
+WHERE ? <> ?;
+
+SELECT *
+FROM test
+WHERE ? != ?;
+
+SELECT *
+FROM test
+WHERE ? > ?;
+
+SELECT *
+FROM test
+WHERE ? >= ?;
+
+SELECT *
+FROM test
+WHERE ? < ?;
+
+SELECT *
+FROM test
+WHERE ? <= ?;
+
+SELECT *
+FROM test
+WHERE ? IN ?;
+
+SELECT *
+FROM test
+WHERE ? NOT IN ?;
+
+SELECT *
+FROM test
+WHERE ? BETWEEN ? AND ?;
+
+SELECT *
+FROM test
+WHERE ? IS ?;
+
+SELECT *
+FROM test
+WHERE ? IS NOT ?;
+
+SELECT *
+FROM test
+WHERE ? LIKE ?;
+
+SELECT *
+FROM test
+WHERE ? MATCH ?;
+
+SELECT *
+FROM test
+WHERE ? REGEXP ?;
+
+SELECT *
+FROM test
+WHERE ? GLOB ?;
+
+SELECT *
+FROM test
+GROUP BY ? HAVING ?;
