@@ -229,7 +229,7 @@ insert_stmt ::= [ {with_clause} ] INSERT [ 'LOW_PRIORITY' | 'DELAYED' | 'HIGH_PR
   pin = 7
 }
 
-assignment_value ::= VALUES '(' {column_name} ')' | { expr | DEFAULT}
+assignment_value ::= VALUES '(' {column_name} ')' | { <<expr '-1'>> | DEFAULT}
 
 assignment ::= {column_name} '=' assignment_value
 
