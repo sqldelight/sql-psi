@@ -24,7 +24,7 @@ abstract class SqlParserDefinition : ParserDefinition {
   override fun getWhitespaceTokens() = WHITE_SPACES
   override fun getCommentTokens() = COMMENTS
   override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
-  override fun spaceExistanceTypeBetweenTokens(p0: ASTNode, p1: ASTNode) = MAY
+  override fun spaceExistenceTypeBetweenTokens(p0: ASTNode, p1: ASTNode) = MAY
   override fun createElement(node: ASTNode): PsiElement = SqlParserUtil.createElement(node)
 
   override fun createParser(project: Project) = SqlParser()
