@@ -29,7 +29,7 @@ internal abstract class AlterTableChangeColumnMixin(
           val columns = placementClause.placeInQuery(
               columns = lazyQuery.query.columns,
               column = QueryElement.QueryColumn(columnDef.columnName),
-              replace = lazyQuery.query.columns.singleOrNull { (it.element as SqlColumnName).text == columnName.text }
+              replace = lazyQuery.query.columns.singleOrNull { (it.element as SqlColumnName).textMatches(columnName) }
           )
           lazyQuery.query.copy(columns = columns)
         }
@@ -40,9 +40,9 @@ internal abstract class AlterTableChangeColumnMixin(
     super.annotate(annotationHolder)
 
     if (tablesAvailable(this)
-            .filter { it.tableName.text == alterStmt.tableName?.text }
+            .filter { it.tableName.textMatches(alterStmt.tableName) }
             .flatMap { it.query.columns }
-            .none { (it.element as? SqlColumnName)?.text == columnName.text }) {
+            .none { (it.element as? SqlColumnName)?.textMatches(columnName) == true }) {
       annotationHolder.createErrorAnnotation(
           element = columnDef.columnName,
           s = "No column found to modify with name ${columnDef.columnName.text}"

@@ -65,7 +65,7 @@ internal abstract class CreateTriggerMixin(
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (node.findChildByType(SqlTypes.EXISTS) == null &&
         containingFile.schema<SqlCreateTriggerStmt>(this)
-            .any { it != this && it.triggerName.text == triggerName.text }) {
+            .any { it != this && it.triggerName.textMatches(triggerName) }) {
       annotationHolder.createErrorAnnotation(triggerName,
           "Duplicate trigger name ${triggerName.text}")
     }

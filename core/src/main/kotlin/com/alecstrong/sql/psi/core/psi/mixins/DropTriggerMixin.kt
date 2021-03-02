@@ -37,7 +37,7 @@ internal abstract class DropTriggerMixin(
     triggerName?.let { triggerName ->
       if (node.findChildByType(SqlTypes.EXISTS) == null &&
           containingFile.schema<SqlCreateTriggerStmt>(this)
-              .none { it != this && it.triggerName.text == triggerName.text }) {
+              .none { it != this && it.triggerName.textMatches(triggerName) }) {
         annotationHolder.createErrorAnnotation(triggerName,
             "No trigger found with name ${triggerName.text}")
       }
