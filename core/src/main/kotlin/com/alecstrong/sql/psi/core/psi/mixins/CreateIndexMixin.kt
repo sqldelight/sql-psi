@@ -47,7 +47,7 @@ internal abstract class CreateIndexMixin(
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (node.findChildByType(SqlTypes.EXISTS) == null &&
         containingFile.schema<SqlCreateIndexStmt>(this)
-            .any { it != this && it.indexName.text == indexName.text }) {
+            .any { it != this && it.indexName.textMatches(indexName) }) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
     super.annotate(annotationHolder)

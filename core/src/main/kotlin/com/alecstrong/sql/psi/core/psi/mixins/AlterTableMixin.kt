@@ -77,7 +77,7 @@ internal abstract class AlterTableMixin private constructor(
     if (child in alterTableRulesList) {
       check(child is SqlAlterTableRules)
       return tablesAvailable(this)
-          .filter { it.tableName.text == tableName.text }
+          .filter { it.tableName.textMatches(tableName) }
           .map { it.withAlterStatement(this, until = child).query }
     }
     return super.queryAvailable(child)
