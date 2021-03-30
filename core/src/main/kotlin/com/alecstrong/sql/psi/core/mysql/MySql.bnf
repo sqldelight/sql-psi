@@ -17,6 +17,8 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NULL"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.IF"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.INSERT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.INTO"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UNIQUE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FOREIGN"
@@ -33,6 +35,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.EXISTS"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DIGIT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.VALUES"
   ]
 }
 overrides ::= type_name
@@ -46,6 +49,7 @@ overrides ::= type_name
   | extension_expr
   | drop_table_stmt
   | blob_literal
+  | insert_stmt
 
 type_name ::= (
   bit_data_type |
@@ -217,3 +221,16 @@ drop_table_stmt ::= DROP TABLE [ IF EXISTS ] [ {database_name} '.' ] {table_name
   override = true
   pin = 2
 }
+
+insert_stmt ::= [ {with_clause} ] INSERT [ 'LOW_PRIORITY' | 'DELAYED' | 'HIGH_PRIORITY' ] [ 'IGNORE' ] [ INTO ] [ {database_name} '.' ] {table_name} [ AS {table_alias} ] [ '(' {column_name} ( ',' {column_name} ) * ')' ] {insert_stmt_values} [ ON 'DUPLICATE' KEY UPDATE assignment_list ] {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlInsertStmtImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlInsertStmt"
+  override = true
+  pin = 7
+}
+
+assignment_value ::= VALUES '(' {column_name} ')' | { <<expr '-1'>> | DEFAULT}
+
+assignment ::= {column_name} '=' assignment_value
+
+assignment_list ::= assignment ( ',' assignment ) *
