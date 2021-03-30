@@ -1,14 +1,13 @@
 apply plugin: 'kotlin'
 apply plugin: 'com.alecstrong.grammar.kit.composer'
 
-import org.jetbrains.grammarkit.tasks.GenerateParser
-
 sourceSets {
   main.java.srcDir "gen"
 }
 
 dependencies {
   compileOnly dep.intellijCore
+  compileOnly dep.intellijLang
 
   implementation dep.kotlinStdLib
   implementation project(':core')

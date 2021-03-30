@@ -1,20 +1,19 @@
+import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   ext {
     kotlinVersion = '1.4.20'
-    ideaVersion = '2020.1.2'
+    ideaVersion = '201.8743.12'
 
     dep = [
         kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
         kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
         intellij: "IC-$ideaVersion",
-        intellijCore: fileTree(dir: 'lib/intellij-core/lib', include: [
-            'idea.jar', 'openapi.jar', 'util.jar', 'trove4j.jar', 'extensions.jar',
-            'asm-all-7.0.1.jar', 'automaton-1.12-1.jar',
-            'platform-api.jar', 'platform-impl.jar', 'platform-util-ui.jar', 'java-api.jar',
-            'guava-28.2-jre.jar', 'jdom.jar', 'platform-concurrency.jar'
-        ]),
+        intellijCore: "com.jetbrains.intellij.platform:core-impl:$ideaVersion",
+        intellijLang: "com.jetbrains.intellij.platform:lang-impl:$ideaVersion",
+        intellijAnalysis: "com.jetbrains.intellij.platform:analysis-impl:$ideaVersion",
+        intellijIndexing: "com.jetbrains.intellij.platform:indexing-impl:$ideaVersion",
         junit: 'junit:junit:4.12',
         truth: 'com.google.truth:truth:0.30',
     ]
@@ -38,8 +37,6 @@ buildscript {
 
 apply plugin: "com.diffplug.gradle.spotless"
 
-apply from: 'updateDependencies.gradle'
-
 spotless {
   kotlin {
     target "**/*.kt"
@@ -55,6 +52,7 @@ allprojects {
     mavenCentral()
     jcenter()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
+    maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
   }
 
   group = GROUP
@@ -76,5 +74,23 @@ allprojects {
       events = ["failed", "skipped", "passed"]
       exceptionFormat "full"
     }
+  }
+
+  configurations {
+    grammar
+  }
+
+  dependencies {
+    grammar dep.intellijIndexing
+    grammar dep.intellijAnalysis
+    grammar "org.jetbrains.intellij.deps:asm-all:7.0.1"
+  }
+
+  tasks.withType(GenerateParser).configureEach {
+    classpath = configurations.grammar + configurations.compileOnly
+  }
+
+  configurations.all {
+    exclude group: 'com.jetbrains.rd'
   }
 }

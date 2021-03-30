@@ -11,10 +11,12 @@ sourceSets {
 }
 
 dependencies {
+  compileOnly dep.intellijLang
   compileOnly dep.intellijCore
 
   implementation dep.kotlinStdLib
 
+  testImplementation dep.intellijLang
   testImplementation dep.intellijCore
   testImplementation dep.junit
   testImplementation dep.truth
