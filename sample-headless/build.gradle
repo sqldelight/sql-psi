@@ -6,4 +6,5 @@ dependencies {
 
   implementation dep.kotlinStdLib
   implementation dep.intellijCore
+  implementation dep.intellijLang
 }
