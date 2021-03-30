@@ -32,22 +32,3 @@ task generateSqlLexer(type: GenerateLexer) {
 compileKotlin.dependsOn generateSqlLexer
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
-
-publishing {
-  repositories {
-    maven {
-      name = "GithubPackages"
-      url = "https://maven.pkg.github.com/alecstrong/sql-psi"
-      credentials {
-        username = "alecstrong"
-        password = System.getenv('GITHUB_TOKEN')
-      }
-    }
-  }
-
-  publications {
-    sqlPsi(MavenPublication) {
-      from(components.kotlin)
-    }
-  }
-}
