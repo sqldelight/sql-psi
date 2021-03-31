@@ -208,8 +208,8 @@ placement_clause ::= 'FIRST' | ( AFTER {column_name} )
 alter_table_convert_character_set ::= 'CONVERT' TO 'CHARACTER' SET {identifier} [COLLATE {identifier}]
 
 extension_expr ::= if_expr {
-  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlOtherExprImpl"
-  implements = "com.alecstrong.sql.psi.core.psi.SqlOtherExpr"
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlExtensionExprImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlExtensionExpr"
   override = true
 }
 
