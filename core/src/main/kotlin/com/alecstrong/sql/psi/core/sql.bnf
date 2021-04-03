@@ -221,7 +221,7 @@ expr ::= ( raise_expr
          | other_expr )
 
 other_expr ::= extension_expr
-extension_expr ::=
+extension_expr ::= NULL
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
