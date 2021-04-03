@@ -29,6 +29,6 @@ abstract class SqlParserDefinition : ParserDefinition {
 
   override fun createParser(project: Project) = SqlParser()
 
-  abstract override fun createFile(p0: FileViewProvider): SqlFileBase
+  abstract override fun createFile(viewProvider: FileViewProvider): SqlFileBase
   abstract fun getLanguage(): Language
 }
