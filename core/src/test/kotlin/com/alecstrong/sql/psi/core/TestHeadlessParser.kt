@@ -33,7 +33,7 @@ private object TestFileType : LanguageFileType(TestLanguage) {
 }
 
 private class TestParserDefinition : SqlParserDefinition() {
-  override fun createFile(p0: FileViewProvider) = TestFile(p0)
+  override fun createFile(viewProvider: FileViewProvider) = TestFile(viewProvider)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = TestLanguage
 

@@ -10,7 +10,7 @@ class SampleParserDefinition : SqlParserDefinition() {
     SampleSqliteParserUtil.overrideSqlParser()
   }
 
-  override fun createFile(fileViewProvider: FileViewProvider) = SampleFile(fileViewProvider)
+  override fun createFile(viewProvider: FileViewProvider) = SampleFile(viewProvider)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = SampleLanguage
 
