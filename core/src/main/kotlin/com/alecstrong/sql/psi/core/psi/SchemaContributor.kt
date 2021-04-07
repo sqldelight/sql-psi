@@ -21,7 +21,7 @@ internal open class SchemaContributorStubImpl<T : SchemaContributor>(
   private val name: String,
   private val textOffset: Int
 ) : StubBase<SchemaContributor>(parent, type),
-    SchemaContributorStub {
+  SchemaContributorStub {
   override fun name() = name
   override fun getTextOffset() = textOffset
 }
@@ -31,7 +31,7 @@ internal class Schema {
 
   @Suppress("UNCHECKED_CAST")
   inline fun <reified Value : SchemaContributor> forType(): MutableMap<String, Value> =
-      map.getOrPut(Value::class, { linkedMapOf<String, Value>() }) as MutableMap<String, Value>
+    map.getOrPut(Value::class, { linkedMapOf<String, Value>() }) as MutableMap<String, Value>
 
   @Suppress("UNCHECKED_CAST")
   inline fun <reified Value : SchemaContributor> put(value: SchemaContributor) {
@@ -41,5 +41,5 @@ internal class Schema {
 
   @Suppress("UNCHECKED_CAST")
   inline fun <reified Value : SchemaContributor> values() =
-      map[Value::class]?.values as Collection<Value>? ?: emptyList()
+    map[Value::class]?.values as Collection<Value>? ?: emptyList()
 }

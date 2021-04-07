@@ -2,11 +2,11 @@ package com.alecstrong.sql.psi.core
 
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
+import java.io.File
 
 @RunWith(Parameterized::class)
 class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
@@ -14,16 +14,19 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
     dialect.setup()
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
-    val environment = parser.build(fixtureRoot.path, object : SqlAnnotationHolder {
-      override fun createErrorAnnotation(element: PsiElement, s: String) {
-        val documentManager = PsiDocumentManager.getInstance(element.project)
-        val name = element.containingFile.name
-        val document = documentManager.getDocument(element.containingFile)!!
-        val lineNum = document.getLineNumber(element.textOffset)
-        val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
-        errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
+    val environment = parser.build(
+      fixtureRoot.path,
+      object : SqlAnnotationHolder {
+        override fun createErrorAnnotation(element: PsiElement, s: String) {
+          val documentManager = PsiDocumentManager.getInstance(element.project)
+          val name = element.containingFile.name
+          val document = documentManager.getDocument(element.containingFile)!!
+          val lineNum = document.getLineNumber(element.textOffset)
+          val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
+          errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
+        }
       }
-    })
+    )
 
     val sourceFiles = StringBuilder()
     environment.forSourceFiles {
@@ -85,12 +88,12 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
 
   companion object {
     private val dialects = mapOf(
-        DialectPreset.SQLITE_3_18 to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported"),
-        DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24"),
-        DialectPreset.SQLITE_3_25 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25"),
-        DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql"),
-        DialectPreset.HSQL to arrayOf("src/test/fixtures_hsql"),
-        DialectPreset.POSTGRESQL to arrayOf("src/test/fixtures_postgresql")
+      DialectPreset.SQLITE_3_18 to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported"),
+      DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24"),
+      DialectPreset.SQLITE_3_25 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25"),
+      DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql"),
+      DialectPreset.HSQL to arrayOf("src/test/fixtures_hsql"),
+      DialectPreset.POSTGRESQL to arrayOf("src/test/fixtures_postgresql")
     )
 
     @Suppress("unused") // Used by Parameterized JUnit runner reflectively.
@@ -98,8 +101,8 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
     @JvmStatic fun parameters() = dialects.flatMap { (dialect, fixtureFolders) ->
       fixtureFolders.flatMap { fixtureFolder ->
         File(fixtureFolder).listFiles()
-            .filter { it.isDirectory }
-            .map { arrayOf(dialect, it.name, it) }
+          .filter { it.isDirectory }
+          .map { arrayOf(dialect, it.name, it) }
       }
     }
   }

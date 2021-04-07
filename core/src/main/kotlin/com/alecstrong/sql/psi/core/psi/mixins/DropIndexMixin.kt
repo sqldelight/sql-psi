@@ -17,7 +17,7 @@ internal abstract class DropIndexMixin private constructor(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<SqlCreateIndexStmt, DropIndexElementType>(stub, nodeType, node),
-    SqlDropIndexStmt {
+  SqlDropIndexStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -37,10 +37,13 @@ internal abstract class DropIndexMixin private constructor(
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     indexName?.let { indexName ->
       if (node.findChildByType(SqlTypes.EXISTS) == null &&
-          containingFile.schema<SqlCreateIndexStmt>(this)
-              .none { it != this && it.indexName.textMatches(indexName) }) {
-        annotationHolder.createErrorAnnotation(indexName,
-            "No index found with name ${indexName.text}")
+        containingFile.schema<SqlCreateIndexStmt>(this)
+          .none { it != this && it.indexName.textMatches(indexName) }
+      ) {
+        annotationHolder.createErrorAnnotation(
+          indexName,
+          "No index found with name ${indexName.text}"
+        )
       }
     }
 

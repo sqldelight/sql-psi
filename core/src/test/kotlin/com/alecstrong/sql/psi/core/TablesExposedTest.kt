@@ -1,10 +1,10 @@
 package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
-import java.io.File
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 
 class TablesExposedTest {
   @Before
@@ -19,7 +19,8 @@ class TablesExposedTest {
   }
 
   @Test fun `tables works correctly for include all`() {
-    compileFile("""
+    compileFile(
+      """
       |CREATE TABLE test1 (
       |  id TEXT NOT NULL
       |);
@@ -31,8 +32,11 @@ class TablesExposedTest {
       |CREATE TABLE test3 (
       |  id TEXT NOT NULL
       |);
-    """.trimMargin(), "1.s")
-    val file = compileFile("""
+    """.trimMargin(),
+      "1.s"
+    )
+    val file = compileFile(
+      """
       |CREATE TABLE test4 (
       |  id TEXT NOT NULL
       |);
@@ -40,17 +44,20 @@ class TablesExposedTest {
       |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
       |
       |ALTER TABLE test3 RENAME TO test5;
-    """.trimMargin(), "2.s")
+    """.trimMargin(),
+      "2.s"
+    )
 
     assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
-        "test1",
-        "test2",
-        "test4",
-        "test5"
+      "test1",
+      "test2",
+      "test4",
+      "test5"
     )
   }
   @Test fun `tables works correctly for include all=false`() {
-    compileFile("""
+    compileFile(
+      """
       |CREATE TABLE test1 (
       |  id TEXT NOT NULL
       |);
@@ -62,8 +69,11 @@ class TablesExposedTest {
       |CREATE TABLE test3 (
       |  id TEXT NOT NULL
       |);
-    """.trimMargin(), "1.s")
-    val file = compileFile("""
+    """.trimMargin(),
+      "1.s"
+    )
+    val file = compileFile(
+      """
       |CREATE TABLE test4 (
       |  id TEXT NOT NULL
       |);
@@ -71,12 +81,14 @@ class TablesExposedTest {
       |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
       |
       |ALTER TABLE test3 RENAME TO test5;
-    """.trimMargin(), "2.s")
+    """.trimMargin(),
+      "2.s"
+    )
 
     assertThat(file.tables(includeAll = false).map { it.tableName.text }).containsExactly(
-        "test2",
-        "test4",
-        "test5"
+      "test2",
+      "test4",
+      "test5"
     )
   }
 }

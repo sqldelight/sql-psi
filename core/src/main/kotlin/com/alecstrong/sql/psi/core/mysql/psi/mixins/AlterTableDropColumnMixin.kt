@@ -10,18 +10,18 @@ import com.intellij.lang.ASTNode
 internal abstract class AlterTableDropColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    MySqlAlterTableDropColumn,
-    AlterTableApplier {
+  MySqlAlterTableDropColumn,
+  AlterTableApplier {
   private val columnName
     get() = children.filterIsInstance<SqlColumnName>().single()
 
   override fun applyTo(lazyQuery: LazyQuery): LazyQuery {
     return LazyQuery(
-        tableName = lazyQuery.tableName,
-        query = {
-          val columns = lazyQuery.query.columns.filter { it.element.text != columnName.name }
-          lazyQuery.query.copy(columns = columns)
-        }
+      tableName = lazyQuery.tableName,
+      query = {
+        val columns = lazyQuery.query.columns.filter { it.element.text != columnName.name }
+        lazyQuery.query.copy(columns = columns)
+      }
     )
   }
 }

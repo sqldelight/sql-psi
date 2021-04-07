@@ -14,25 +14,25 @@ import com.intellij.lang.ASTNode
 internal abstract class AlterTableChangeColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    MySqlAlterTableChangeColumn,
-    AlterTableApplier {
+  MySqlAlterTableChangeColumn,
+  AlterTableApplier {
   private val columnName
-      get() = children.filterIsInstance<SqlColumnName>().single()
+    get() = children.filterIsInstance<SqlColumnName>().single()
 
   private val columnDef
     get() = children.filterIsInstance<SqlColumnDef>().single()
 
   override fun applyTo(lazyQuery: LazyQuery): LazyQuery {
     return LazyQuery(
-        tableName = lazyQuery.tableName,
-        query = {
-          val columns = placementClause.placeInQuery(
-              columns = lazyQuery.query.columns,
-              column = QueryElement.QueryColumn(columnDef.columnName),
-              replace = lazyQuery.query.columns.singleOrNull { (it.element as SqlColumnName).textMatches(columnName) }
-          )
-          lazyQuery.query.copy(columns = columns)
-        }
+      tableName = lazyQuery.tableName,
+      query = {
+        val columns = placementClause.placeInQuery(
+          columns = lazyQuery.query.columns,
+          column = QueryElement.QueryColumn(columnDef.columnName),
+          replace = lazyQuery.query.columns.singleOrNull { (it.element as SqlColumnName).textMatches(columnName) }
+        )
+        lazyQuery.query.copy(columns = columns)
+      }
     )
   }
 
@@ -40,12 +40,13 @@ internal abstract class AlterTableChangeColumnMixin(
     super.annotate(annotationHolder)
 
     if (tablesAvailable(this)
-            .filter { it.tableName.textMatches(alterStmt.tableName) }
-            .flatMap { it.query.columns }
-            .none { (it.element as? SqlColumnName)?.textMatches(columnName) == true }) {
+      .filter { it.tableName.textMatches(alterStmt.tableName) }
+      .flatMap { it.query.columns }
+      .none { (it.element as? SqlColumnName)?.textMatches(columnName) == true }
+    ) {
       annotationHolder.createErrorAnnotation(
-          element = columnDef.columnName,
-          s = "No column found to modify with name ${columnDef.columnName.text}"
+        element = columnDef.columnName,
+        s = "No column found to modify with name ${columnDef.columnName.text}"
       )
     }
   }

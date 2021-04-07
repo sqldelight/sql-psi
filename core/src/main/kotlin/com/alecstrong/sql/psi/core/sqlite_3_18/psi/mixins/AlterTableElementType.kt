@@ -9,5 +9,6 @@ internal class AlterTableElementType(
   name: String
 ) : AlterTableElementType("sqlite_3_18.$name") {
   override fun createPsi(stub: SchemaContributorStub) = SqliteAlterTableStmtImpl(
-      stub as AlterTableStmtStub, this)
+    stub as AlterTableStmtStub, this
+  )
 }

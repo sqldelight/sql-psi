@@ -46,10 +46,10 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
 
     fun List<QueryResult>.matchingColumns(): List<QueryColumn> {
       val columns = flatMap { it.columns }
-          .filter { it.element is PsiNamedElement && it.element.name == element.name }
+        .filter { it.element is PsiNamedElement && it.element.name == element.name }
       val synthesizedColumns = flatMap { it.synthesizedColumns }
-          .filter { element.name in it.acceptableValues }
-          .map { QueryColumn(it.table, it.nullable) }
+        .filter { element.name in it.acceptableValues }
+        .map { QueryColumn(it.table, it.nullable) }
       return columns + synthesizedColumns
     }
 
@@ -69,9 +69,9 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     tableName()?.let { tableName ->
       // Only include columns for the already specified table.
       return availableQuery().filter { it.table?.name == tableName.name }
-          .flatMap { it.columns }
-          .map { it.element }
-          .toLookupArray()
+        .flatMap { it.columns }
+        .map { it.element }
+        .toLookupArray()
     }
     if (element.parent is SqlColumnExpr) {
       // Also include table names.
@@ -82,10 +82,10 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
   }
 
   private fun List<PsiElement?>.toLookupArray(): Array<Any> = filterIsInstance<PsiNamedElement>()
-      .distinctBy { it.name }
-      .filter { it.isValid }
-      .map { LookupElementBuilder.create(it) }
-      .toTypedArray()
+    .distinctBy { it.name }
+    .filter { it.isValid }
+    .map { LookupElementBuilder.create(it) }
+    .toTypedArray()
 
   /**
    * Return the table that the column element this reference wraps belongs to, or null if no

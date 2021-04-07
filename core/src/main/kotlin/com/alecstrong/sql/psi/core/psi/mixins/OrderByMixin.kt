@@ -9,7 +9,7 @@ import com.intellij.lang.ASTNode
 internal abstract class OrderByMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlOrderingTerm {
+  SqlOrderingTerm {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
 

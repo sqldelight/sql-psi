@@ -110,9 +110,9 @@ abstract class SqlFileBase(
     }
 
     contributors()?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
-        ?.forEach {
-          block(it)
-        }
+      ?.forEach {
+        block(it)
+      }
   }
 
   private fun contributors() = sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }

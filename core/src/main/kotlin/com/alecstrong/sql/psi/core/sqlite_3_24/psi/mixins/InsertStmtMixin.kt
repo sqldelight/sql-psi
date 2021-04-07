@@ -9,11 +9,12 @@ import com.intellij.lang.ASTNode
 internal abstract class InsertStmtMixin(
   node: ASTNode
 ) : SqlInsertStmtImpl(node),
-    SqliteInsertStmt {
+  SqliteInsertStmt {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
     val insertDefaultValues = insertStmtValues?.node?.findChildByType(
-        SqlTypes.DEFAULT) != null
+      SqlTypes.DEFAULT
+    ) != null
 
     upsertClause?.let { upsert ->
       val upsertDoUpdate = upsert.upsertDoUpdate
@@ -22,23 +23,30 @@ internal abstract class InsertStmtMixin(
       }
 
       val insertOr = node.findChildByType(
-          SqlTypes.INSERT)?.treeNext
+        SqlTypes.INSERT
+      )?.treeNext
       val replace = node.findChildByType(
-          SqlTypes.REPLACE)
+        SqlTypes.REPLACE
+      )
       val conflictResolution = when {
         replace != null -> SqlTypes.REPLACE
         insertOr != null && insertOr.elementType == SqlTypes.OR -> {
           val type = insertOr.treeNext.elementType
-          check(type == SqlTypes.ROLLBACK || type == SqlTypes.ABORT ||
-              type == SqlTypes.FAIL || type == SqlTypes.IGNORE)
+          check(
+            type == SqlTypes.ROLLBACK || type == SqlTypes.ABORT ||
+              type == SqlTypes.FAIL || type == SqlTypes.IGNORE
+          )
           type
         }
         else -> null
       }
 
       if (conflictResolution != null && upsertDoUpdate != null) {
-        annotationHolder.createErrorAnnotation(upsertDoUpdate, "Cannot use DO UPDATE while " +
-            "also specifying a conflict resolution algorithm ($conflictResolution)")
+        annotationHolder.createErrorAnnotation(
+          upsertDoUpdate,
+          "Cannot use DO UPDATE while " +
+            "also specifying a conflict resolution algorithm ($conflictResolution)"
+        )
       }
     }
   }

@@ -1,10 +1,10 @@
 package timber.log
 
+import org.jetbrains.annotations.NonNls
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.ArrayList
 import java.util.Collections
-import org.jetbrains.annotations.NonNls
 
 /** Logging for lazy people. */
 class Timber private constructor() {
@@ -256,10 +256,10 @@ class Timber private constructor() {
     /**
      * A view into Timber's planted trees as a tree itself. This can be used for injecting a logger
      * instance rather than using static methods or to facilitate testing.
-    */
+     */
     @Suppress(
-        "NOTHING_TO_INLINE", // Kotlin users should reference `Tree.Forest` directly.
-        "NON_FINAL_MEMBER_IN_OBJECT" // For japicmp check.
+      "NOTHING_TO_INLINE", // Kotlin users should reference `Tree.Forest` directly.
+      "NON_FINAL_MEMBER_IN_OBJECT" // For japicmp check.
     )
     @JvmStatic
     open inline fun asTree(): Tree = this

@@ -15,12 +15,14 @@ import com.intellij.psi.impl.source.tree.TreeElement
 internal abstract class SqlNamedElementImpl(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    PsiNameIdentifierOwner {
+  PsiNameIdentifierOwner {
   abstract val parseRule: (builder: PsiBuilder, level: Int) -> Boolean
 
   override fun getText(): String {
-    return (node.findChildByType(SqlTypes.ID)?.text
-        ?: node.findChildByType(SqlTypes.STRING)!!.text).trim('\'', '"', '`', '[', ']')
+    return (
+      node.findChildByType(SqlTypes.ID)?.text
+        ?: node.findChildByType(SqlTypes.STRING)!!.text
+      ).trim('\'', '"', '`', '[', ']')
   }
 
   override fun getName() = text
@@ -34,11 +36,12 @@ internal abstract class SqlNamedElementImpl(
 
     val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language) as SqlParserDefinition
     var builder = PsiBuilderFactory.getInstance().createBuilder(
-        project, parent.node, parserDefinition.createLexer(project), language, name
+      project, parent.node, parserDefinition.createLexer(project), language, name
     )
-    builder = GeneratedParserUtilBase.adapt_builder_(node.elementType, builder,
-        SqlParser(),
-        SqlParser.EXTENDS_SETS_
+    builder = GeneratedParserUtilBase.adapt_builder_(
+      node.elementType, builder,
+      SqlParser(),
+      SqlParser.EXTENDS_SETS_
     )
     GeneratedParserUtilBase.ErrorState.get(builder).currentFrame = GeneratedParserUtilBase.Frame()
 

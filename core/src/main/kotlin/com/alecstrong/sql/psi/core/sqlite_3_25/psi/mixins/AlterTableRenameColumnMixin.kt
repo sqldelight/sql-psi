@@ -14,27 +14,27 @@ import com.intellij.lang.ASTNode
 internal abstract class AlterTableRenameColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqliteAlterTableRenameColumn,
-    AlterTableApplier {
+  SqliteAlterTableRenameColumn,
+  AlterTableApplier {
   private val columnName
-      get() = children.filterIsInstance<SqlColumnName>().single()
+    get() = children.filterIsInstance<SqlColumnName>().single()
 
   private val columnAlias
     get() = children.filterIsInstance<SqlColumnAlias>().single()
 
   override fun applyTo(lazyQuery: LazyQuery): LazyQuery {
     return LazyQuery(
-        tableName = lazyQuery.tableName,
-        query = {
-          val columns = lazyQuery.query.columns
-          val column = QueryElement.QueryColumn(element = columnAlias)
-          val replace = columns.singleOrNull {
-            (it.element as SqlColumnName).textMatches(columnName)
-          }
-          lazyQuery.query.copy(
-              columns = lazyQuery.query.columns.map { if (it == replace) column else it }
-          )
+      tableName = lazyQuery.tableName,
+      query = {
+        val columns = lazyQuery.query.columns
+        val column = QueryElement.QueryColumn(element = columnAlias)
+        val replace = columns.singleOrNull {
+          (it.element as SqlColumnName).textMatches(columnName)
         }
+        lazyQuery.query.copy(
+          columns = lazyQuery.query.columns.map { if (it == replace) column else it }
+        )
+      }
     )
   }
 
@@ -42,12 +42,13 @@ internal abstract class AlterTableRenameColumnMixin(
     super.annotate(annotationHolder)
 
     if (tablesAvailable(this)
-            .filter { it.tableName.textMatches(alterStmt.tableName) }
-            .flatMap { it.query.columns }
-            .none { (it.element as? SqlColumnName)?.textMatches(columnName) == true }) {
+      .filter { it.tableName.textMatches(alterStmt.tableName) }
+      .flatMap { it.query.columns }
+      .none { (it.element as? SqlColumnName)?.textMatches(columnName) == true }
+    ) {
       annotationHolder.createErrorAnnotation(
-          element = columnName,
-          s = "No column found to modify with name ${columnName.text}"
+        element = columnName,
+        s = "No column found to modify with name ${columnName.text}"
       )
     }
   }

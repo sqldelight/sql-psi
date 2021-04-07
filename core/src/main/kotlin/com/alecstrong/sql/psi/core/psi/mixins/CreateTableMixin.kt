@@ -28,8 +28,8 @@ internal abstract class CreateTableMixin private constructor(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<TableElement, CreateTableElementType>(stub, nodeType, node),
-    SqlCreateTableStmt,
-    TableElement {
+  SqlCreateTableStmt,
+  TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -54,24 +54,28 @@ internal abstract class CreateTableMixin private constructor(
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
     val containsWithoutId = tableOptions
-        ?.tableOptionList
-        ?.any {
-          (it.node.findChildByType(SqlTypes.WITHOUT) != null)
-        } ?: false
+      ?.tableOptionList
+      ?.any {
+        (it.node.findChildByType(SqlTypes.WITHOUT) != null)
+      } ?: false
     val synthesizedColumns = if (!containsWithoutId) {
       val columnNames = columnDefList.mapNotNull { it.columnName.name }
-      listOf(SynthesizedColumn(
+      listOf(
+        SynthesizedColumn(
           table = this,
           acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames }
-      ))
+        )
+      )
     } else {
       emptyList()
     }
-    return listOf(QueryResult(
+    return listOf(
+      QueryResult(
         table = tableName,
         columns = columnDefList.map { it.columnName }.asColumns(),
         synthesizedColumns = synthesizedColumns
-    ))
+      )
+    )
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
@@ -91,43 +95,48 @@ internal abstract class CreateTableMixin private constructor(
     }
 
     return columnDefList.filter { it.columnConstraintList.any { it.hasPrimaryKey() } }
-        .take(1)
-        .map { it.columnName.name }
+      .take(1)
+      .map { it.columnName.name }
   }
 
   private fun isCollectivelyUnique(columns: List<SqlColumnName>): Boolean {
     tableConstraintList.filter { it.hasPrimaryKey() || it.isUnique() }
-        .map { it.indexedColumnList.mapNotNull { it.columnName.name } }
-        .plus(listOf(columnDefList.filter {
-          it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() }
-        }.mapNotNull { it.columnName.name }))
-        .forEach { uniqueKeys ->
-          if (columns.map { it.name }.all { it in uniqueKeys }) return true
-        }
+      .map { it.indexedColumnList.mapNotNull { it.columnName.name } }
+      .plus(
+        listOf(
+          columnDefList.filter {
+            it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() }
+          }.mapNotNull { it.columnName.name }
+        )
+      )
+      .forEach { uniqueKeys ->
+        if (columns.map { it.name }.all { it in uniqueKeys }) return true
+      }
 
     // Check if there is an externally created unique index that matches the given columns.
     containingFile.schema<SqlCreateIndexStmt>(this)
-        .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
-        .forEach {
-          val indexedColumns = it.indexedColumnList.map { it.columnName.name }
-          if (columns.map { it.name }.containsAll(indexedColumns) &&
-              columns.size == indexedColumns.size) {
-            return true
-          }
+      .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
+      .forEach {
+        val indexedColumns = it.indexedColumnList.map { it.columnName.name }
+        if (columns.map { it.name }.containsAll(indexedColumns) &&
+          columns.size == indexedColumns.size
+        ) {
+          return true
         }
+      }
 
     return false
   }
 
   private fun checkForDuplicateColumns(annotationHolder: SqlAnnotationHolder) {
     columnDefList.map { it.columnName }
-        .groupBy { it.name }
-        .map { it.value }
-        .filter { it.size > 1 }
-        .flatMap { it }
-        .forEach {
-          annotationHolder.createErrorAnnotation(it, "Duplicate column name")
-        }
+      .groupBy { it.name }
+      .map { it.value }
+      .filter { it.size > 1 }
+      .flatMap { it }
+      .forEach {
+        annotationHolder.createErrorAnnotation(it, "Duplicate column name")
+      }
   }
 
   private fun checkForeignKeys(annotationHolder: SqlAnnotationHolder) {
@@ -140,23 +149,32 @@ internal abstract class CreateTableMixin private constructor(
       if (columnNameList.isEmpty()) {
         // Must map to the foreign tables primary key which must be exactly one column long.
         if (columns.size == 1 && foreignKey.size != 1) {
-          annotationHolder.createErrorAnnotation(this,
-              "Table ${foreignTable.tableName.name} has a composite primary key")
+          annotationHolder.createErrorAnnotation(
+            this,
+            "Table ${foreignTable.tableName.name} has a composite primary key"
+          )
         } else if (columns.size != foreignKey.size) {
-          annotationHolder.createErrorAnnotation(this, "Foreign key constraint must match the" +
+          annotationHolder.createErrorAnnotation(
+            this,
+            "Foreign key constraint must match the" +
               " primary key of the foreign table exactly. Constraint has ${columns.size} columns" +
-              " and foreign table primary key has ${foreignKey.size} columns")
+              " and foreign table primary key has ${foreignKey.size} columns"
+          )
         }
       } else {
         // The columns specified must be unique.
         if (!foreignTable.isCollectivelyUnique(columnNameList)) {
           if (columnNameList.size == 1) {
-            annotationHolder.createErrorAnnotation(this,
-                "Table ${foreignTable.tableName.name} does not have a unique index on column ${columnNameList.first().name}")
+            annotationHolder.createErrorAnnotation(
+              this,
+              "Table ${foreignTable.tableName.name} does not have a unique index on column ${columnNameList.first().name}"
+            )
           } else {
-            annotationHolder.createErrorAnnotation(this,
-                "Table ${foreignTable.tableName.name} does not have a unique index on columns" +
-                    " ${columnNameList.joinToString(prefix = "[", postfix = "]") { it.name }}")
+            annotationHolder.createErrorAnnotation(
+              this,
+              "Table ${foreignTable.tableName.name} does not have a unique index on columns" +
+                " ${columnNameList.joinToString(prefix = "[", postfix = "]") { it.name }}"
+            )
           }
         }
       }
@@ -164,34 +182,38 @@ internal abstract class CreateTableMixin private constructor(
 
     columnDefList.forEach { column ->
       column.columnConstraintList
-          .mapNotNull { it.foreignKeyClause }
-          .forEach {
-            if (it.columnNameList.size > 1) {
-              annotationHolder.createErrorAnnotation(it,
-                  "Column can only reference a single foreign key")
-            } else {
-              it.checkCompositeForeignKey(listOf(column.columnName))
-            }
+        .mapNotNull { it.foreignKeyClause }
+        .forEach {
+          if (it.columnNameList.size > 1) {
+            annotationHolder.createErrorAnnotation(
+              it,
+              "Column can only reference a single foreign key"
+            )
+          } else {
+            it.checkCompositeForeignKey(listOf(column.columnName))
           }
+        }
     }
 
     tableConstraintList.filter { it.foreignKeyClause != null }
-        .forEach { constraint ->
-          constraint.foreignKeyClause!!.checkCompositeForeignKey(
-              constraint.columnNameList
-          )
-        }
+      .forEach { constraint ->
+        constraint.foreignKeyClause!!.checkCompositeForeignKey(
+          constraint.columnNameList
+        )
+      }
   }
 
   private fun checkPrimaryKey(annotationHolder: SqlAnnotationHolder) {
     // Verify there is only a single primary key
     val constraints = columnDefList.flatMap { it.columnConstraintList }
-        .filter { it.hasPrimaryKey() }
-        .plus(tableConstraintList.filter { it.hasPrimaryKey() })
+      .filter { it.hasPrimaryKey() }
+      .plus(tableConstraintList.filter { it.hasPrimaryKey() })
     if (constraints.size > 1) {
       constraints.forEach {
-        annotationHolder.createErrorAnnotation(it,
-            "Table ${tableName.name} can only have one primary key")
+        annotationHolder.createErrorAnnotation(
+          it,
+          "Table ${tableName.name} can only have one primary key"
+        )
       }
     }
   }
@@ -199,8 +221,10 @@ internal abstract class CreateTableMixin private constructor(
   private fun checkForSubqueries(annotationHolder: SqlAnnotationHolder) {
     columnDefList.forEach {
       PsiTreeUtil.findChildOfType(it, SqlCompoundSelectStmt::class.java)?.let {
-        annotationHolder.createErrorAnnotation(it,
-            "Subqueries are not permitted as part of CREATE TABLE statements")
+        annotationHolder.createErrorAnnotation(
+          it,
+          "Subqueries are not permitted as part of CREATE TABLE statements"
+        )
       }
     }
   }

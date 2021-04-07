@@ -1,10 +1,10 @@
 package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
-import java.io.File
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 
 class ColumnOrderingTest {
   @Before
@@ -20,7 +20,8 @@ class ColumnOrderingTest {
 
   @Test fun `tables works correctly for include all`() {
     DialectPreset.MYSQL.setup()
-    compileFile("""
+    compileFile(
+      """
       |CREATE TABLE test1 (
       |  id1 BIGINT NOT NULL,
       |  id2 BIGINT NOT NULL,
@@ -44,28 +45,35 @@ class ColumnOrderingTest {
       |  MODIFY COLUMN id5 BIGINT FIRST,
       |  MODIFY COLUMN id6 BIGINT AFTER id9,
       |  MODIFY COLUMN id7 VARCHAR(8);
-    """.trimMargin(), "1.s")
-    val file = compileFile("""
+    """.trimMargin(),
+      "1.s"
+    )
+    val file = compileFile(
+      """
       |SELECT *
       |FROM test1;
-    """.trimMargin(), "test.s")
+    """.trimMargin(),
+      "test.s"
+    )
 
-    assertThat(file.sqlStmtList!!.stmtList.first().compoundSelectStmt!!.queryExposed()
+    assertThat(
+      file.sqlStmtList!!.stmtList.first().compoundSelectStmt!!.queryExposed()
         .flatMap { it.columns }
-        .map { it.element.text }).containsExactly(
-        "id5",
-        "new14",
-        "new11",
-        "new16",
-        "id3",
-        "id7",
-        "new12",
-        "id8",
-        "new15",
-        "id9",
-        "id6",
-        "id10",
-        "new13"
+        .map { it.element.text }
+    ).containsExactly(
+      "id5",
+      "new14",
+      "new11",
+      "new16",
+      "id3",
+      "id7",
+      "new12",
+      "id8",
+      "new15",
+      "id9",
+      "id6",
+      "id10",
+      "new13"
     ).inOrder()
   }
 }

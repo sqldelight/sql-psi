@@ -20,8 +20,8 @@ internal abstract class CreateViewMixin(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<TableElement, CreateViewElementType>(stub, nodeType, node),
-    SqlCreateViewStmt,
-    TableElement {
+  SqlCreateViewStmt,
+  TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -41,10 +41,10 @@ internal abstract class CreateViewMixin(
 
   override fun tableExposed() = LazyQuery(viewName) {
     val columns =
-        if (columnAliasList.isEmpty())
-          compoundSelectStmt?.queryExposed()?.flatMap { it.columns }
-        else
-          columnAliasList.asColumns()
+      if (columnAliasList.isEmpty())
+        compoundSelectStmt?.queryExposed()?.flatMap { it.columns }
+      else
+        columnAliasList.asColumns()
 
     QueryResult(viewName, columns ?: emptyList())
   }
@@ -53,14 +53,16 @@ internal abstract class CreateViewMixin(
     super.annotate(annotationHolder)
     if (columnAliasList.isNotEmpty()) {
       if (columnAliasList.size != compoundSelectStmt?.queryExposed()?.map { it.columns }?.size)
-        annotationHolder.createErrorAnnotation(this,
-            "number of aliases is different from the number of columns")
+        annotationHolder.createErrorAnnotation(
+          this,
+          "number of aliases is different from the number of columns"
+        )
     }
   }
 }
 
 internal class CreateViewElementType(name: String) :
-    SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+  SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.VIEW_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateViewStmtImpl(stub, this)
 }
