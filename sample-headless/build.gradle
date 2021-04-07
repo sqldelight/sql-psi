@@ -4,7 +4,6 @@ dependencies {
   implementation project(':sample-core')
   implementation project(':core')
 
-  implementation dep.kotlinStdLib
   implementation dep.intellijCore
   implementation dep.intellijLang
 }

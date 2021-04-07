@@ -9,6 +9,5 @@ dependencies {
   compileOnly dep.intellijCore
   compileOnly dep.intellijLang
 
-  implementation dep.kotlinStdLib
   implementation project(':core')
 }
