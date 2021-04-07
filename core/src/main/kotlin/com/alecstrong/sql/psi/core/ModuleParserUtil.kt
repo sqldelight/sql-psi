@@ -11,8 +11,8 @@ abstract class ModuleParserUtil : GeneratedParserUtilBase() {
       if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "module_argument_real")) return false
       var result: Boolean
       val marker = GeneratedParserUtilBase.enter_section_(
-          builder, level, GeneratedParserUtilBase._COLLAPSE_, MODULE_ARGUMENT,
-          "<module argument real>"
+        builder, level, GeneratedParserUtilBase._COLLAPSE_, MODULE_ARGUMENT,
+        "<module argument real>"
       )
       columnName.parse(builder, level + 1)
       var parens = 0

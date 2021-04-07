@@ -9,7 +9,7 @@ import com.intellij.lang.ASTNode
 internal abstract class BinaryComparisonExprMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlBinaryExpr {
+  SqlBinaryExpr {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
 

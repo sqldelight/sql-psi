@@ -16,7 +16,7 @@ internal abstract class DropTableMixin private constructor(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<TableElement, DropTableElementType>(stub, nodeType, node),
-    SqlDropTableStmt {
+  SqlDropTableStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(

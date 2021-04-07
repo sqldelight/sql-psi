@@ -19,7 +19,7 @@ internal interface SchemaContributorIndex {
 
     fun getInstance(project: Project): SchemaContributorIndex {
       return ServiceManager.getService(project, SchemaContributorIndex::class.java)
-          ?: SchemaContributorIndexImpl.instance
+        ?: SchemaContributorIndexImpl.instance
     }
   }
 }
@@ -37,9 +37,10 @@ internal class SchemaContributorIndexImpl : SchemaContributorIndex, StringStubIn
     scope: GlobalSearchScope
   ): Collection<SchemaContributor> {
     if (DumbService.isDumb(project)) return emptyList()
-    return StubIndex.getElements<String, SchemaContributor>(getKey(), key,
-        project, scope,
-        SchemaContributor::class.java
+    return StubIndex.getElements<String, SchemaContributor>(
+      getKey(), key,
+      project, scope,
+      SchemaContributor::class.java
     )
   }
 

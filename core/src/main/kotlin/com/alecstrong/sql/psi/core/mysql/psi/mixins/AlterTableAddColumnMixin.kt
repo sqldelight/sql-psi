@@ -10,18 +10,18 @@ import com.intellij.lang.ASTNode
 internal abstract class AlterTableAddColumnMixin(
   node: ASTNode
 ) : SqlAlterTableAddColumnImpl(node),
-    MySqlAlterTableAddColumn,
-    AlterTableApplier {
+  MySqlAlterTableAddColumn,
+  AlterTableApplier {
   override fun applyTo(lazyQuery: LazyQuery): LazyQuery {
     return LazyQuery(
-        tableName = lazyQuery.tableName,
-        query = {
-          val columns = placementClause.placeInQuery(
-              columns = lazyQuery.query.columns,
-              column = QueryElement.QueryColumn(columnDef.columnName)
-          )
-          lazyQuery.query.copy(columns = columns)
-        }
+      tableName = lazyQuery.tableName,
+      query = {
+        val columns = placementClause.placeInQuery(
+          columns = lazyQuery.query.columns,
+          column = QueryElement.QueryColumn(columnDef.columnName)
+        )
+        lazyQuery.query.copy(columns = columns)
+      }
     )
   }
 }

@@ -15,7 +15,7 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class LiteralValueMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlLiteralValue {
+  SqlLiteralValue {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (node.findChildByType(setterOnlyLiterals) != null) {
       val values = PsiTreeUtil.getParentOfType(this, SqlValuesExpression::class.java)
@@ -30,6 +30,7 @@ internal abstract class LiteralValueMixin(
 
   companion object {
     private val setterOnlyLiterals = TokenSet.create(
-        SqlTypes.CURRENT_DATE, SqlTypes.CURRENT_TIME, SqlTypes.CURRENT_TIMESTAMP)
+      SqlTypes.CURRENT_DATE, SqlTypes.CURRENT_TIME, SqlTypes.CURRENT_TIMESTAMP
+    )
   }
 }

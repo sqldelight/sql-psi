@@ -45,8 +45,10 @@ private object ApplicationEnvironment {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
       Logger.setFactory { logger }
 
-      CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(),
-          MetaLanguage.EP_NAME, MetaLanguage::class.java)
+      CoreApplicationEnvironment.registerExtensionPoint(
+        Extensions.getRootArea(),
+        MetaLanguage.EP_NAME, MetaLanguage::class.java
+      )
 
       val fileRegistry = FileTypeRegistry.ourInstanceGetter
       FileTypeRegistry.ourInstanceGetter = fileRegistry
@@ -61,34 +63,41 @@ open class SqlCoreEnvironment(
   private val fileIndex: CoreFileIndex
 
   protected val projectEnvironment = CoreProjectEnvironment(
-      ApplicationEnvironment.coreApplicationEnvironment.parentDisposable,
-      ApplicationEnvironment.coreApplicationEnvironment
+    ApplicationEnvironment.coreApplicationEnvironment.parentDisposable,
+    ApplicationEnvironment.coreApplicationEnvironment
   )
 
   protected val localFileSystem: VirtualFileSystem
 
   init {
     localFileSystem = VirtualFileManager.getInstance().getFileSystem(
-        StandardFileSystems.FILE_PROTOCOL)
+      StandardFileSystems.FILE_PROTOCOL
+    )
 
-    projectEnvironment.registerProjectComponent(ProjectRootManager::class.java,
-        ProjectRootManagerImpl(projectEnvironment.project))
+    projectEnvironment.registerProjectComponent(
+      ProjectRootManager::class.java,
+      ProjectRootManagerImpl(projectEnvironment.project)
+    )
 
-    projectEnvironment.project.registerService(DirectoryIndex::class.java,
-        DirectoryIndexImpl(projectEnvironment.project))
+    projectEnvironment.project.registerService(
+      DirectoryIndex::class.java,
+      DirectoryIndexImpl(projectEnvironment.project)
+    )
 
     fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
     val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.picoContainer
-        .registerComponentInstance(SchemaContributorIndex::class.java.name, object : SchemaContributorIndex {
+      .registerComponentInstance(
+        SchemaContributorIndex::class.java.name,
+        object : SchemaContributorIndex {
           private val contributors by lazy {
             val manager = PsiManager.getInstance(projectEnvironment.project)
             val map = linkedMapOf<VirtualFile, Collection<SchemaContributor>>()
             contributorIndex.iterateContent { file ->
               map[file] = (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
-                  ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
+                ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
               return@iterateContent true
             }
             map
@@ -103,15 +112,19 @@ open class SqlCoreEnvironment(
           ): Collection<SchemaContributor> {
             return contributors.filterKeys { scope.contains(it) }.flatMap { (_, values) -> values }
           }
-        })
+        }
+      )
   }
 
   fun annotate(annotationHolder: SqlAnnotationHolder) {
     val otherFailures = mutableListOf<() -> Unit>()
     val myHolder = object : SqlAnnotationHolder {
       override fun createErrorAnnotation(element: PsiElement, s: String) {
-        if (PsiTreeUtil.getNonStrictParentOfType(element, SqlCreateTableStmt::class.java,
-                SqlCreateVirtualTableStmt::class.java, SqlCreateViewStmt::class.java) != null) {
+        if (PsiTreeUtil.getNonStrictParentOfType(
+            element, SqlCreateTableStmt::class.java,
+            SqlCreateVirtualTableStmt::class.java, SqlCreateViewStmt::class.java
+          ) != null
+        ) {
           annotationHolder.createErrorAnnotation(element, s)
         } else {
           otherFailures.add {
@@ -145,10 +158,13 @@ open class SqlCoreEnvironment(
     } catch (e: AnnotationException) {
       annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
     } catch (e: Throwable) {
-      throw IllegalStateException("""
+      throw IllegalStateException(
+        """
         |Failed to compile ${this.containingFile.virtualFile.path}:${this.node.startOffset}:
         |  ${this.text}
-        |""".trimMargin(), e)
+        |""".trimMargin(),
+        e
+      )
     }
     children.forEach { it.annotateRecursively(annotationHolder) }
   }
@@ -168,7 +184,7 @@ private class CoreFileIndex(
   override fun iterateContent(iterator: ContentIterator): Boolean {
     return sourceFolders.all {
       val file = localFileSystem.findFileByPath(it.absolutePath)
-          ?: throw NullPointerException("File ${it.absolutePath} not found")
+        ?: throw NullPointerException("File ${it.absolutePath} not found")
       iterateContentUnderDirectory(file, iterator)
     }
   }

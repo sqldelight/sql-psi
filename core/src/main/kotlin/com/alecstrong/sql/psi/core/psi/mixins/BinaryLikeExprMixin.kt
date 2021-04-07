@@ -14,11 +14,12 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class BinaryLikeExprMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlBinaryLikeExpr {
+  SqlBinaryLikeExpr {
 
   private val hasMatchOperator: Boolean
     get() = binaryLikeOperator.node.findChildByType(
-        SqlTypes.MATCH) != null
+      SqlTypes.MATCH
+    ) != null
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (firstChild is SqlBindExpr && lastChild is SqlBindExpr) {
@@ -50,8 +51,8 @@ internal abstract class BinaryLikeExprMixin(
 
     if (isMatchUsageError) {
       annotationHolder.createErrorAnnotation(
-          this,
-          "Unable to use function MATCH in the requested context"
+        this,
+        "Unable to use function MATCH in the requested context"
       )
     }
   }
@@ -62,8 +63,8 @@ internal abstract class BinaryLikeExprMixin(
   ): Boolean {
     return if (table.usesFtsModule) {
       queryAvailable(expression)
-          .filter { it.table?.name == table.tableName.name }
-          .any { query -> query.synthesizedColumns.any { it.nullable } }
+        .filter { it.table?.name == table.tableName.name }
+        .any { query -> query.synthesizedColumns.any { it.nullable } }
     } else {
       true
     }
@@ -74,14 +75,14 @@ internal abstract class BinaryLikeExprMixin(
     columnName: SqlColumnName
   ): Boolean {
     val table = PsiTreeUtil.findFirstParent(columnName) { it is SqlCreateVirtualTableStmt }
-        as? SqlCreateVirtualTableStmt
+      as? SqlCreateVirtualTableStmt
 
     return if (table?.usesFtsModule == true) {
       queryAvailable(expression)
-          .filter { it.table?.name == table.tableName.name }
-          .any { query ->
-            query.columns.filter { it.element.textMatches(expression.columnName.name) }.any { it.nullable }
-          }
+        .filter { it.table?.name == table.tableName.name }
+        .any { query ->
+          query.columns.filter { it.element.textMatches(expression.columnName.name) }.any { it.nullable }
+        }
     } else {
       true
     }

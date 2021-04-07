@@ -54,8 +54,10 @@ internal abstract class SqlSchemaContributorElementType<SchemaType : SchemaContr
     stubStream: StubInputStream,
     parentStub: StubElement<*>?
   ): SchemaContributorStub {
-    return SchemaContributorStubImpl(parentStub, this, stubStream.readNameString()!!,
-        stubStream.readInt())
+    return SchemaContributorStubImpl(
+      parentStub, this, stubStream.readNameString()!!,
+      stubStream.readInt()
+    )
   }
 
   override fun createStub(

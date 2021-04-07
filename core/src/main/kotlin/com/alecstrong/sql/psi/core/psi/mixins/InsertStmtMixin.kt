@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement
 internal abstract class InsertStmtMixin(
   node: ASTNode
 ) : MutatorMixin(node),
-    SqlInsertStmt {
+  SqlInsertStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
     // Aliasing the table in an insert is useful when doing an UPSERT operation:
     // INSERT INTO tbl AS tblAlias (..) VALUES (..) ON CONFLICT (..) DO UPDATE SET x = tblAlias.x + excluded.x

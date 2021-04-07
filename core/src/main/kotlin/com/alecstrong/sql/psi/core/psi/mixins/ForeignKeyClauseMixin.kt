@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement
 internal abstract class ForeignKeyClauseMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlForeignKeyClause {
+  SqlForeignKeyClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in columnNameList) {
       val table = tablesAvailable(child).firstOrNull { it.tableName.name == foreignTable.name } ?: return emptyList()

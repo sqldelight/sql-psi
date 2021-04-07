@@ -9,7 +9,7 @@ import com.intellij.lang.ASTNode
 internal abstract class TableOrSubqueryMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlTableOrSubquery {
+  SqlTableOrSubquery {
   private val queryExposed = ModifiableFileLazy lazy@{
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)

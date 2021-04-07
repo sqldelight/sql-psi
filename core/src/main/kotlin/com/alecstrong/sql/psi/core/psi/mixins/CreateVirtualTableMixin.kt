@@ -21,8 +21,8 @@ internal abstract class CreateVirtualTableMixin(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
-    SqlCreateVirtualTableStmt,
-    TableElement {
+  SqlCreateVirtualTableStmt,
+  TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -41,18 +41,19 @@ internal abstract class CreateVirtualTableMixin(
 
   override fun tableExposed(): LazyQuery {
     val columnNameElements = findChildrenByClass(
-        SqlModuleArgument::class.java)
-        .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
+      SqlModuleArgument::class.java
+    )
+      .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
 
     val synthesizedColumns = if (usesFtsModule) {
       val columnNames = columnNameElements.map { it.name }
 
       listOf(
-          SynthesizedColumn(
-              table = this,
-              acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
-                  .filter { it !in columnNames }
-          )
+        SynthesizedColumn(
+          table = this,
+          acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
+            .filter { it !in columnNames }
+        )
       )
     } else {
       emptyList()
@@ -60,16 +61,16 @@ internal abstract class CreateVirtualTableMixin(
 
     return LazyQuery(tableName) {
       QueryResult(
-          table = tableName,
-          columns = columnNameElements.asColumns(),
-          synthesizedColumns = synthesizedColumns
+        table = tableName,
+        columns = columnNameElements.asColumns(),
+        synthesizedColumns = synthesizedColumns
       )
     }
   }
 }
 
 internal class CreateVirtualTableElementType(name: String) :
-    SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+  SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateVirtualTableStmtImpl(stub, this)
 }

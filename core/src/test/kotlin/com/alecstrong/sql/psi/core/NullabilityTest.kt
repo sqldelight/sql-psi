@@ -1,10 +1,10 @@
 package com.alecstrong.sql.psi.core
 
 import com.google.common.truth.Truth.assertThat
-import java.io.File
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.File
 
 class NullabilityTest {
   @Before
@@ -20,7 +20,8 @@ class NullabilityTest {
 
   @Test fun outerJoin() {
     DialectPreset.SQLITE_3_18.setup()
-    val file = compileFile("""
+    val file = compileFile(
+      """
       |CREATE TABLE car (
       |  _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       |  id TEXT NOT NULL,
@@ -38,7 +39,8 @@ class NullabilityTest {
       |      FROM owner
       |      LEFT OUTER JOIN car ON owner.carId = car.id)
       |WHERE carBrand = ?;
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
     val projection = select.queryExposed().flatMap { it.columns }
@@ -50,7 +52,8 @@ class NullabilityTest {
 
   @Test fun leftJoinGroupBy() {
     DialectPreset.SQLITE_3_18.setup()
-    val file = compileFile("""
+    val file = compileFile(
+      """
       |CREATE TABLE target (
       |  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       |  coacheeId INTEGER NOT NULL,
@@ -78,7 +81,8 @@ class NullabilityTest {
       |  GROUP BY 1
       |  ORDER BY target.name COLLATE NOCASE ASC
       |;
-    """.trimMargin())
+    """.trimMargin()
+    )
 
     val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
     val projection = select.queryExposed().flatMap { it.columns }

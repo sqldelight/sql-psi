@@ -19,7 +19,7 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class CompoundSelectStmtMixin(
   node: ASTNode
 ) : WithClauseContainer(node),
-    SqlCompoundSelectStmt {
+  SqlCompoundSelectStmt {
   private val queryExposed = ModifiableFileLazy {
     if (detectRecursion() != null) {
       return@ModifiableFileLazy emptyList<QueryResult>()
@@ -31,11 +31,13 @@ internal abstract class CompoundSelectStmtMixin(
     return@ModifiableFileLazy selectStmtList.drop(1).fold(selectStmtList.first().queryExposed()) { query, compounded ->
       val columns = query.flatMap { it.columns }
       val compoundedColumns = compounded.queryExposed().flatMap { it.columns }
-      return@fold listOf(query.first().copy(
+      return@fold listOf(
+        query.first().copy(
           columns = columns.zip(compoundedColumns) { column, compounded ->
             column.copy(compounded = column.compounded + compounded)
           }
-      ))
+        )
+      )
     }
   }
 
@@ -59,13 +61,13 @@ internal abstract class CompoundSelectStmtMixin(
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is SqlOrderingTerm && selectStmtList.size == 1) {
       val exposed = (selectStmtList.first() as SelectStmtMixin).fromQuery()
-          .map { it.copy(columns = it.columns.filter { !it.hiddenByUsing }) }
+        .map { it.copy(columns = it.columns.filter { !it.hiddenByUsing }) }
       val exposedColumns = exposed.flatMap { it.columns }
 
       // Ordering terms are also applicable in the select statement's from clause.
       return queryExposed().filter { it !in exposed }
-          .map { QueryResult(it.table, it.columns.filter { it !in exposedColumns }) }
-          .plus(exposed)
+        .map { QueryResult(it.table, it.columns.filter { it !in exposedColumns }) }
+        .plus(exposed)
     } else if (child is SqlExpr || child is SqlOrderingTerm) {
       return queryExposed()
     }
@@ -80,13 +82,16 @@ internal abstract class CompoundSelectStmtMixin(
     }
 
     selectStmtList.drop(1)
-        .forEach {
-          val count = it.queryExposed().flatMap { it.columns }.count()
-          if (count != numColumns) {
-            annotationHolder.createErrorAnnotation(it, "Unexpected number of columns in compound" +
-                " statement found: $count expected: $numColumns")
-          }
+      .forEach {
+        val count = it.queryExposed().flatMap { it.columns }.count()
+        if (count != numColumns) {
+          annotationHolder.createErrorAnnotation(
+            it,
+            "Unexpected number of columns in compound" +
+              " statement found: $count expected: $numColumns"
+          )
         }
+      }
   }
 
   private fun detectRecursion(): String? {

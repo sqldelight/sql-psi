@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 internal abstract class TableAliasMixin(
   node: ASTNode
 ) : SqlNamedElementImpl(node),
-    SqlTableAlias {
+  SqlTableAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::table_alias_real
 
   override fun source(): PsiElement {

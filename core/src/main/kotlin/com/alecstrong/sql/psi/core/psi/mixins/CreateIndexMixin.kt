@@ -18,7 +18,7 @@ internal abstract class CreateIndexMixin(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<SqlCreateIndexStmt, CreateIndexElementType>(stub, nodeType, node),
-    SqlCreateIndexStmt {
+  SqlCreateIndexStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -38,7 +38,7 @@ internal abstract class CreateIndexMixin(
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in indexedColumnList || child == expr) {
       return listOfNotNull(
-          tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query
+        tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query
       )
     }
     return super.queryAvailable(child)
@@ -46,8 +46,9 @@ internal abstract class CreateIndexMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (node.findChildByType(SqlTypes.EXISTS) == null &&
-        containingFile.schema<SqlCreateIndexStmt>(this)
-            .any { it != this && it.indexName.textMatches(indexName) }) {
+      containingFile.schema<SqlCreateIndexStmt>(this)
+        .any { it != this && it.indexName.textMatches(indexName) }
+    ) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
     super.annotate(annotationHolder)

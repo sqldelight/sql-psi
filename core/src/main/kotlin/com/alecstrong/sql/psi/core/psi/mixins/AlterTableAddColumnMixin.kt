@@ -10,16 +10,16 @@ import com.intellij.lang.ASTNode
 internal abstract class AlterTableAddColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlAlterTableAddColumn,
-    AlterTableApplier {
+  SqlAlterTableAddColumn,
+  AlterTableApplier {
   override fun applyTo(lazyQuery: LazyQuery): LazyQuery {
     return LazyQuery(
-        tableName = lazyQuery.tableName,
-        query = {
-          lazyQuery.query.copy(
-              columns = lazyQuery.query.columns + QueryElement.QueryColumn(columnDef.columnName)
-          )
-        }
+      tableName = lazyQuery.tableName,
+      query = {
+        lazyQuery.query.copy(
+          columns = lazyQuery.query.columns + QueryElement.QueryColumn(columnDef.columnName)
+        )
+      }
     )
   }
 }

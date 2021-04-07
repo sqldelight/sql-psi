@@ -23,8 +23,8 @@ internal fun MySqlPlacementClause?.placeInQuery(
 
       val index = indexOfFirst { (it.element as SqlColumnName).textMatches(columnName!!) }
       if (index == -1) throw AnnotationException(
-          msg = "Unable to replace $replace with $column after $columnName in $columns",
-          element = this@placeInQuery
+        msg = "Unable to replace $replace with $column after $columnName in $columns",
+        element = this@placeInQuery
       )
       add(index + 1, column)
     }

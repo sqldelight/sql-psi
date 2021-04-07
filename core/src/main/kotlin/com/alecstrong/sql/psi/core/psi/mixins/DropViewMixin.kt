@@ -17,7 +17,7 @@ internal abstract class DropViewMixin(
   nodeType: IElementType?,
   node: ASTNode?
 ) : SqlSchemaContributorImpl<TableElement, DropViewElementType>(stub, nodeType, node),
-    SqlDropViewStmt {
+  SqlDropViewStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
@@ -37,7 +37,7 @@ internal abstract class DropViewMixin(
 }
 
 internal class DropViewElementType(name: String) :
-    SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+  SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.VIEW_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlDropViewStmtImpl(stub, this)
 }

@@ -12,7 +12,7 @@ import com.intellij.lang.ASTNode
 internal abstract class ResultColumnMixin(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
-    SqlResultColumn {
+  SqlResultColumn {
   private val queryExposed = ModifiableFileLazy lazy@{
     val fromQuery = (parent as? FromQuery)?.fromQuery() ?: return@lazy emptyList<QueryResult>()
     tableName?.let { tableNameElement ->
@@ -24,7 +24,7 @@ internal abstract class ResultColumnMixin(
       if (it is SqlColumnExpr) {
         val reference = (it.columnName as ColumnNameMixin).reference
         column = reference.resolveToQuery()
-            ?: QueryElement.QueryColumn(it.columnName.reference?.resolve() ?: it)
+          ?: QueryElement.QueryColumn(it.columnName.reference?.resolve() ?: it)
       } else {
         column = QueryElement.QueryColumn(it)
       }

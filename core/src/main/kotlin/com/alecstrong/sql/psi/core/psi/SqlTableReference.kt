@@ -17,8 +17,8 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
     if (element is SqlNewTableName) return@lazy element
     if (element.parent.isDefinition()) return@lazy element
     return@lazy variants.mapNotNull { it.psiElement }
-        .filterIsInstance<PsiNamedElement>()
-        .firstOrNull { it.name == element.name }
+      .filterIsInstance<PsiNamedElement>()
+      .firstOrNull { it.name == element.name }
   }
 
   override fun resolve() = resolved.forFile(element.containingFile)
@@ -28,15 +28,15 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
     if (element.parent.isDefinition()) return emptyArray()
     if (selectFromCurrentQuery()) {
       return (element.parent as SqlCompositeElement).queryAvailable(element)
-          .mapNotNull { it.table }
-          .filter { it.isValid }
-          .map(LookupElementBuilder::create)
-          .toTypedArray()
+        .mapNotNull { it.table }
+        .filter { it.isValid }
+        .map(LookupElementBuilder::create)
+        .toTypedArray()
     }
     return (element.parent as SqlCompositeElement).tablesAvailable(element)
-        .filter { it.tableName.isValid }
-        .map { LookupElementBuilder.create(it.tableName) }
-        .toTypedArray()
+      .filter { it.tableName.isValid }
+      .map { LookupElementBuilder.create(it.tableName) }
+      .toTypedArray()
   }
 
   private fun PsiElement.isDefinition() = when (this) {
