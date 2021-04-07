@@ -19,8 +19,7 @@ buildscript {
   }
   repositories {
     mavenCentral()
-    maven { url 'https://dl.bintray.com/kotlin/dokka' }
-    maven { url 'https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven' }
+    maven { url 'https://dl.bintray.com/kotlin/kotlinx' }
     maven { url 'https://jitpack.io' }
   }
 
@@ -52,6 +51,7 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
+    maven { url 'https://dl.bintray.com/kotlin/kotlinx/' }
   }
 
   group = GROUP
