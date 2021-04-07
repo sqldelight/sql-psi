@@ -19,7 +19,6 @@ buildscript {
   }
   repositories {
     mavenCentral()
-    jcenter()
     maven { url 'https://jitpack.io' }
   }
 
@@ -49,9 +48,8 @@ spotless {
 allprojects {
   repositories {
     mavenCentral()
-    jcenter()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
-    maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+    maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
   }
 
   group = GROUP
