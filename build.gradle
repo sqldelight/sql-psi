@@ -7,7 +7,6 @@ buildscript {
     ideaVersion = '201.8743.12'
 
     dep = [
-        kotlinStdLib: "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
         kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
         intellij: "IC-$ideaVersion",
         intellijCore: "com.jetbrains.intellij.platform:core-impl:$ideaVersion",
