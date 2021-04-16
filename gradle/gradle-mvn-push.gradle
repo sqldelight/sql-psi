@@ -1,9 +1,5 @@
 apply plugin: "com.vanniktech.maven.publish"
 
-mavenPublish {
-    releaseSigningEnabled = !getGpgKey().isEmpty()
-}
-
 publishing {
     repositories {
         maven {

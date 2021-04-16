@@ -4,6 +4,8 @@ apply plugin: 'org.jetbrains.grammarkit'
 apply plugin: 'com.alecstrong.grammar.kit.composer'
 apply plugin: 'maven-publish'
 
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 
 sourceSets {
@@ -28,5 +30,4 @@ task generateSqlLexer(type: GenerateLexer) {
 }
 
 compileKotlin.dependsOn generateSqlLexer
-
-apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+dokkaHtml.dependsOn generateSqlLexer

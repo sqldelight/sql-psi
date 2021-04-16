@@ -1,10 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'com.alecstrong.grammar.kit.composer'
 
-sourceSets {
-  main.java.srcDir "gen"
-}
-
 dependencies {
   compileOnly dep.intellijCore
   compileOnly dep.intellijLang
