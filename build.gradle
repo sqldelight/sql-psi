@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
   ext {
-    kotlinVersion = '1.4.20'
+    kotlinVersion = '1.4.32'
     ideaVersion = '201.8743.12'
 
     dep = [
@@ -21,16 +21,16 @@ buildscript {
     mavenCentral()
     maven { url 'https://dl.bintray.com/kotlin/kotlinx' }
     maven { url 'https://jitpack.io' }
+    gradlePluginPortal()
   }
 
   dependencies {
     classpath dep.kotlinGradlePlugin
-    classpath 'de.undercouch:gradle-download-task:3.1.2'
-    classpath "com.github.hurricup:gradle-grammar-kit-plugin:2020.1.4"
-    classpath "com.alecstrong:grammar-kit-composer:0.1.4"
+    classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-grammarkit-plugin:2020.1.4"
+    classpath "com.alecstrong:grammar-kit-composer:0.1.5"
     classpath "com.diffplug.spotless:spotless-plugin-gradle:5.11.1"
     classpath "com.vanniktech:gradle-maven-publish-plugin:0.14.2"
-    classpath "org.jetbrains.dokka:dokka-gradle-plugin:${kotlinVersion}"
+    classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.30"
   }
 }
 
@@ -57,9 +57,9 @@ allprojects {
   group = GROUP
   version = VERSION_NAME
 
-  if (plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+  plugins.withId("org.jetbrains.kotlin.jvm") {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
   }
 
   tasks.withType(KotlinCompile) {
