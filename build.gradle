@@ -11,8 +11,6 @@ buildscript {
         intellij: "IC-$ideaVersion",
         intellijCore: "com.jetbrains.intellij.platform:core-impl:$ideaVersion",
         intellijLang: "com.jetbrains.intellij.platform:lang-impl:$ideaVersion",
-        intellijAnalysis: "com.jetbrains.intellij.platform:analysis-impl:$ideaVersion",
-        intellijIndexing: "com.jetbrains.intellij.platform:indexing-impl:$ideaVersion",
         junit: 'junit:junit:4.12',
         truth: 'com.google.truth:truth:0.30',
     ]
@@ -62,6 +60,13 @@ allprojects {
     targetCompatibility = JavaVersion.VERSION_1_8
   }
 
+  plugins.withId("org.jetbrains.grammarkit") {
+    grammarKit {
+      intellijRelease = ideaVersion
+      grammarKitRelease = "2020.1"
+    }
+  }
+
   tasks.withType(KotlinCompile) {
     kotlinOptions {
       jvmTarget = "1.8"
@@ -73,20 +78,6 @@ allprojects {
       events = ["failed", "skipped", "passed"]
       exceptionFormat "full"
     }
-  }
-
-  configurations {
-    grammar
-  }
-
-  dependencies {
-    grammar dep.intellijIndexing
-    grammar dep.intellijAnalysis
-    grammar "org.jetbrains.intellij.deps:asm-all:7.0.1"
-  }
-
-  tasks.withType(GenerateParser).configureEach {
-    classpath = configurations.grammar + configurations.compileOnly
   }
 
   configurations.all {
