@@ -45,7 +45,7 @@ class NullabilityTest {
     val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
     val projection = select.queryExposed().flatMap { it.columns }
 
-    assertThat(projection[0].nullable).isFalse()
+    assertThat(projection[0].nullable).isNull()
     assertThat(projection[1].nullable).isTrue()
     assertThat(projection[2].nullable).isTrue()
   }
@@ -87,8 +87,31 @@ class NullabilityTest {
     val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
     val projection = select.queryExposed().flatMap { it.columns }
 
+    assertThat(projection[0].nullable).isNull()
+    assertThat(projection[1].nullable).isNull()
+    assertThat(projection[2].nullable).isTrue()
+  }
+
+  @Test fun checkNotNull() {
+    DialectPreset.SQLITE_3_18.setup()
+    val file = compileFile(
+      """
+      |CREATE TABLE target (
+      |  name TEXT,
+      |  thing TEXT
+      |);
+      |
+      |SELECT name, name AS poop, thing AS poop2
+      |FROM target
+      |WHERE name IS NOT NULL AND thing IS NOT NULL;
+    """.trimMargin()
+    )
+
+    val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
+    val projection = select.queryExposed().flatMap { it.columns }
+
     assertThat(projection[0].nullable).isFalse()
     assertThat(projection[1].nullable).isFalse()
-    assertThat(projection[2].nullable).isTrue()
+    assertThat(projection[2].nullable).isFalse()
   }
 }
