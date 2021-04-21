@@ -81,7 +81,7 @@ internal abstract class BinaryLikeExprMixin(
       queryAvailable(expression)
         .filter { it.table?.name == table.tableName.name }
         .any { query ->
-          query.columns.filter { it.element.textMatches(expression.columnName.name) }.any { it.nullable }
+          query.columns.filter { it.element.textMatches(expression.columnName.name) }.any { it.nullable == true }
         }
     } else {
       true

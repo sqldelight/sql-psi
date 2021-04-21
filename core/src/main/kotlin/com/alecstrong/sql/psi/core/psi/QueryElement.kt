@@ -41,7 +41,11 @@ interface QueryElement : PsiElement {
 
   data class QueryColumn(
     val element: PsiElement,
-    val nullable: Boolean = false,
+    /**
+     * If set, this overrides the nullability of the column. For example if you LEFT JOIN a table,
+     * all its columns will be nullable, and if you check IS NOT NULL, it will not be nullable.
+     */
+    val nullable: Boolean? = null,
     val compounded: List<QueryColumn> = emptyList(),
     val hiddenByUsing: Boolean = false
   )
