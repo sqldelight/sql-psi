@@ -4,6 +4,7 @@ import com.alecstrong.sql.psi.core.hsql.HsqlParserUtil
 import com.alecstrong.sql.psi.core.mysql.MySqlParserUtil
 import com.alecstrong.sql.psi.core.postgresql.PostgreSqlParserUtil
 import com.alecstrong.sql.psi.core.psi.SqlTypes
+import com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.StatementValidatorMixin
 import com.alecstrong.sql.psi.core.mysql.psi.mixins.ColumnDefMixin as MySqlColumnDefMixin
 import com.alecstrong.sql.psi.core.postgresql.psi.mixins.ColumnDefMixin as PostgreSqlColumnDefMixin
 import com.alecstrong.sql.psi.core.sqlite_3_18.SqliteParserUtil as Sqlite_3_18Util
@@ -22,6 +23,7 @@ enum class DialectPreset {
       Sqlite_3_18Util.createElement = {
         when (it.elementType) {
           SqlTypes.COLUMN_DEF -> Sqlite_3_18ColumnDefMixin(it)
+          SqlTypes.STMT -> StatementValidatorMixin(it)
           else -> currentElementCreation(it)
         }
       }
