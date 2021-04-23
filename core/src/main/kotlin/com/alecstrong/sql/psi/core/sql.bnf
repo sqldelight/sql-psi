@@ -37,6 +37,8 @@
     CONCAT='||'
     DO='DO'
     NOTHING='NOTHING'
+    WINDOW='WINDOW'
+    PARTITION='PARTITION'
 
     space='regexp:\s+'
     comment='regexp:--.*'
