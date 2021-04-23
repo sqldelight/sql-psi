@@ -1,35 +1,33 @@
 package com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
-import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
+import com.alecstrong.sql.psi.core.psi.SqlBindExpr
+import com.alecstrong.sql.psi.core.psi.SqlCompositeElement
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.impl.SqlStmtImpl
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
-import com.intellij.psi.search.PsiElementProcessor
 import com.intellij.psi.tree.TokenSet
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.parentOfType
 import java.util.Locale
 
 open class StatementValidatorMixin(node: ASTNode) : SqlStmtImpl(node) {
-  override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    PsiTreeUtil.processElements(
-      this,
-      PsiElementProcessor { element: PsiElement ->
-        element.node.getChildren(TokenSet.create(SqlTypes.ID)).forEach {
-          if (parentOfType<SqlCreateVirtualTableStmt>() != null) {
-            // Virtual tables do their own text parsing/validation.
-            return@PsiElementProcessor true
-          }
-
-          if (it.text.toUpperCase(Locale.ROOT) in invalidIds) {
-            annotationHolder.createErrorAnnotation(element, "Reserved keyword in sqlite")
-          }
-        }
-        true
+  private fun SqlCompositeElement.annotateReservedKeywords(annotationHolder: SqlAnnotationHolder) {
+    if (this is SqlBindExpr) return
+    children.filterIsInstance<SqlCompositeElement>().forEach {
+      it.annotateReservedKeywords(annotationHolder)
+    }
+    node.getChildren(TokenSet.create(SqlTypes.ID)).forEach {
+      if (it.text.toUpperCase(Locale.ROOT) in invalidIds) {
+        annotationHolder.createErrorAnnotation(this, "Reserved keyword in sqlite")
       }
-    )
+    }
+  }
+
+  override fun annotate(annotationHolder: SqlAnnotationHolder) {
+    if (createVirtualTableStmt != null) {
+      // Virtual tables do their own text parsing/validation.
+      return
+    }
+    annotateReservedKeywords(annotationHolder)
 
     super.annotate(annotationHolder)
   }
