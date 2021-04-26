@@ -19,7 +19,6 @@ buildscript {
   }
   repositories {
     mavenCentral()
-    maven { url 'https://dl.bintray.com/kotlin/kotlinx' }
     maven { url 'https://jitpack.io' }
     gradlePluginPortal()
   }
@@ -30,7 +29,7 @@ buildscript {
     classpath "com.alecstrong:grammar-kit-composer:0.1.5"
     classpath "com.diffplug.spotless:spotless-plugin-gradle:5.11.1"
     classpath "com.vanniktech:gradle-maven-publish-plugin:0.14.2"
-    classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.30"
+    classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32"
   }
 }
 
@@ -51,7 +50,6 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
-    maven { url 'https://dl.bintray.com/kotlin/kotlinx/' }
   }
 
   group = GROUP
