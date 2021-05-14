@@ -11,9 +11,11 @@ import com.alecstrong.sql.psi.core.psi.SqlTableName
 import com.alecstrong.sql.psi.core.psi.SqlTableReference
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlViewName
+import com.intellij.icons.AllIcons
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiReference
+import javax.swing.Icon
 
 internal abstract class TableNameMixin(
   node: ASTNode
@@ -46,5 +48,9 @@ internal abstract class TableNameMixin(
       annotationHolder.createErrorAnnotation(this, "No table found with name $name")
     }
     super.annotate(annotationHolder)
+  }
+
+  override fun getIcon(flags: Int): Icon {
+    return AllIcons.Nodes.DataTables
   }
 }

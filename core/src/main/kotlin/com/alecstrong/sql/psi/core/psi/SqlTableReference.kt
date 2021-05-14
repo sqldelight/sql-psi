@@ -30,12 +30,12 @@ internal class SqlTableReference<T : SqlNamedElementImpl>(
       return (element.parent as SqlCompositeElement).queryAvailable(element)
         .mapNotNull { it.table }
         .filter { it.isValid }
-        .map(LookupElementBuilder::create)
+        .map(LookupElementBuilder::createWithIcon)
         .toTypedArray()
     }
     return (element.parent as SqlCompositeElement).tablesAvailable(element)
       .filter { it.tableName.isValid }
-      .map { LookupElementBuilder.create(it.tableName) }
+      .map { LookupElementBuilder.createWithIcon(it.tableName) }
       .toTypedArray()
   }
 

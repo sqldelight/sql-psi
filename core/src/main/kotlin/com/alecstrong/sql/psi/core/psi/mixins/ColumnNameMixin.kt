@@ -5,8 +5,10 @@ import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlParser
 import com.alecstrong.sql.psi.core.psi.SqlColumnReference
 import com.alecstrong.sql.psi.core.psi.SqlNamedElementImpl
+import com.intellij.icons.AllIcons
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
+import javax.swing.Icon
 
 internal abstract class ColumnNameMixin(
   node: ASTNode
@@ -24,5 +26,9 @@ internal abstract class ColumnNameMixin(
     } catch (e: AnnotationException) {
       annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
     }
+  }
+
+  override fun getIcon(flags: Int): Icon {
+    return AllIcons.Nodes.DataColumn
   }
 }
