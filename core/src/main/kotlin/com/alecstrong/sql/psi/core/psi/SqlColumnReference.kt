@@ -87,10 +87,10 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     .map {
       if (it is SqlColumnName) {
         val sqlColumnDef = it.reference?.resolve()?.parent as? SqlColumnDef
-        LookupElementBuilder.create(it)
+        LookupElementBuilder.createWithIcon(it)
           .withTypeText(sqlColumnDef?.columnType?.text)
       } else {
-        LookupElementBuilder.create(it)
+        LookupElementBuilder.createWithIcon(it)
       }
     }
     .toTypedArray()

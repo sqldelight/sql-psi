@@ -29,6 +29,7 @@ import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiManager
+import com.intellij.psi.impl.smartPointers.SmartPointerAnchorProvider
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
@@ -48,6 +49,10 @@ private object ApplicationEnvironment {
       CoreApplicationEnvironment.registerExtensionPoint(
         Extensions.getRootArea(),
         MetaLanguage.EP_NAME, MetaLanguage::class.java
+      )
+      CoreApplicationEnvironment.registerExtensionPoint(
+        Extensions.getRootArea(), SmartPointerAnchorProvider.EP_NAME,
+        SmartPointerAnchorProvider::class.java
       )
 
       val fileRegistry = FileTypeRegistry.ourInstanceGetter
