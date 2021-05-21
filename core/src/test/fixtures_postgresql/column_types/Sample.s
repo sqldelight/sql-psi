@@ -29,5 +29,6 @@ CREATE TABLE all_types(
   some_timestamp TIMESTAMP,
   some_boolean BOOLEAN,
   some_bool BOOL,
-  some_json JSON
+  some_json JSON,
+  some_jsonb JSONB
 );
