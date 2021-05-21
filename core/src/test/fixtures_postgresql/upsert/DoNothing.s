@@ -1,0 +1,9 @@
+CREATE TABLE test7 (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL
+);
+
+INSERT INTO test7 (id, name)
+VALUES (1, 'bob')
+ON CONFLICT DO NOTHING
+;
