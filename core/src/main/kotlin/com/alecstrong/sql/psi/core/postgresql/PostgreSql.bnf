@@ -13,9 +13,11 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ASC"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.BY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLLATE"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONFLICT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.CONSTRAINT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DELETE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.DESC"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DO"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FAIL"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.FROM"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.IGNORE"
@@ -24,8 +26,10 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.KEY"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.LIMIT"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOT"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.NOTHING"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.NULL"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.OFFSET"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.ON"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.OR"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.ORDER"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.PRIMARY"
@@ -102,7 +106,7 @@ date_data_type ::= 'DATE' | (('TIME' | 'TIMESTAMP') [ '(' {signed_number} ')' ])
 
 boolean_data_type ::= 'BOOLEAN' | 'BOOL'
 
-json_data_type ::= 'JSON'
+json_data_type ::= 'JSON' | 'JSONB'
 
 with_clause_auxiliary_stmt ::= {compound_select_stmt} | delete_stmt_limited | insert_stmt | update_stmt_limited {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlWithClauseAuxiliaryStmtImpl"
@@ -116,7 +120,10 @@ delete_stmt_limited ::= [ {with_clause} ] DELETE FROM {qualified_table_name} [ W
   override = true
 }
 
-insert_stmt ::= [ {with_clause} ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ {database_name} '.' ] {table_name} [ AS {table_alias} ] [ '(' {column_name} ( ',' {column_name} ) * ')' ] {insert_stmt_values} [ returning_clause ] {
+insert_stmt ::= [ {with_clause} ]
+    INSERT INTO [ {database_name} '.' ] {table_name} [ AS {table_alias} ]
+    [ '(' {column_name} ( ',' {column_name} ) * ')' ]
+    {insert_stmt_values} [ ON CONFLICT DO NOTHING ] [ returning_clause ] {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlInsertStmtImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlInsertStmt"
   override = true
