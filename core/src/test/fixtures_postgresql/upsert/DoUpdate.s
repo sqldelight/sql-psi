@@ -22,3 +22,8 @@ INSERT INTO test8 (id, name)
 VALUES (1, 'bob')
 ON CONFLICT (id, name) DO UPDATE SET name = DEFAULT
 ;
+
+INSERT INTO test8 (id, name)
+VALUES (1, 'bob')
+ON CONFLICT (id, name) DO UPDATE SET name = 'new' || name
+;
