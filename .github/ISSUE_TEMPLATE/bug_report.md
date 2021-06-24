@@ -2,7 +2,7 @@
 name: Bug report
 about: Valid SQL syntax is not supported
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
