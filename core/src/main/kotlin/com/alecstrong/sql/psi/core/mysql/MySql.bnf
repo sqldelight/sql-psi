@@ -80,7 +80,10 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
   default_constraint |
   COLLATE {collation_name} |
   {foreign_key_clause} |
-  comment_type
+  comment_type |
+  ['GENERATED' 'ALWAYS'] 'AS' '(' <<expr '-1'>> ')' |
+  'VIRTUAL' |
+  'STORED'
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlColumnConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnConstraint"
