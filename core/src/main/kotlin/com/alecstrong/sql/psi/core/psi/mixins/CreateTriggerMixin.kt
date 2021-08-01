@@ -39,7 +39,10 @@ internal abstract class CreateTriggerMixin(
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is MutatorMixin || child is SqlExpr || child is CompoundSelectStmtMixin) {
-      val table = tablesAvailable(this).first { it.tableName.name == tableName?.name }.query
+      val table = tablesAvailable(this).firstOrNull {
+        it.tableName.name == tableName?.name
+      }?.query ?: return super.queryAvailable(child)
+
       if (hasElement(SqlTypes.INSERT)) {
         return listOf(
           QueryResult(
