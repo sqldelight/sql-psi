@@ -158,6 +158,7 @@ alter_table_rules ::= (
   {alter_table_add_column}
   | {alter_table_rename_table}
   | alter_table_rename_column
+  | alter_table_drop_column
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
@@ -166,5 +167,10 @@ alter_table_rules ::= (
 
 alter_table_rename_column ::= RENAME [ COLUMN ] {column_name} TO {column_alias} {
   mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.AlterTableRenameColumnMixin"
+  pin = 1
+}
+
+alter_table_drop_column ::= 'DROP' [ COLUMN ] {column_name} {
+  mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.AlterTableDropColumnMixin"
   pin = 1
 }
