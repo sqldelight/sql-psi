@@ -22,15 +22,16 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Execute a build
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build :sample-plugin:buildPlugin --stacktrace
 
     - name: Verify plugin on IntelliJ Platforms
       id: verify
       uses: ChrisCarini/intellij-platform-plugin-verifier-action@latest
       with:
+        plugin-location: sample-plugin/build/distributions/*.zip
         ide-versions: |
-          ideaIC:2020.1
-          ideaIU:2020.1
+          ideaIC:2021.1
+          ideaIU:2021.1
 
     - name: Get log file path and print contents
       if: failure()
