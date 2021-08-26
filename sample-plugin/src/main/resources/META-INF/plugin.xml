@@ -8,8 +8,12 @@
   <depends>com.intellij.modules.lang</depends>
 
   <description><![CDATA[
-      Sample for SQLite-PSI project.
+      Sample for SQLite-PSI project. Adding more text here to pass validation checks.
     ]]></description>
+  <vendor url="https://www.alecstrong.com" email="noreply@alecstrong.com">Alecstrong Inc.</vendor>
+  <version>1.0.0</version>
+  <change-notes>Initial release of the plugin.</change-notes>
+  <depends>com.intellij.modules.platform</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <lang.parserDefinition language="Sample" implementationClass="com.alecstrong.sql.psi.sample.core.SampleParserDefinition" />

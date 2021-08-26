@@ -41,6 +41,9 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.UPDATE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.WHERE"
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITH"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RENAME"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
   ]
 }
 overrides ::= type_name
@@ -50,6 +53,7 @@ overrides ::= type_name
   | delete_stmt_limited
   | insert_stmt
   | update_stmt_limited
+  | alter_table_rules
 
 column_constraint ::= [ CONSTRAINT {identifier} ] (
   PRIMARY KEY [ ASC | DESC ] {conflict_clause} |
@@ -148,4 +152,25 @@ update_stmt_limited ::= [ {with_clause} ] UPDATE [ OR ROLLBACK | OR ABORT | OR R
 returning_clause ::= 'RETURNING' {result_column} ( ',' {result_column} ) * {
   mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.ReturningClauseMixin"
   implements = "com.alecstrong.sql.psi.core.psi.QueryElement"
+}
+
+alter_table_rules ::= (
+  {alter_table_add_column}
+  | {alter_table_rename_table}
+  | alter_table_rename_column
+  | alter_table_drop_column
+) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
+  override = true
+}
+
+alter_table_rename_column ::= RENAME [ COLUMN ] {column_name} TO {column_alias} {
+  mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.AlterTableRenameColumnMixin"
+  pin = 1
+}
+
+alter_table_drop_column ::= 'DROP' [ COLUMN ] {column_name} {
+  mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.AlterTableDropColumnMixin"
+  pin = 1
 }
