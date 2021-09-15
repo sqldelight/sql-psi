@@ -29,11 +29,11 @@ CREATE TABLE all_types(
   some_date DATE,
 
   some_time TIME,
-  some_precision_time TIME (3)
+  some_precision_time TIME(3)
   some_time_without_timezone TIME WITHOUT TIME ZONE,
-  some_time_precision_without_timezone TIME (3) WITHOUT TIME ZONE,
+  some_time_precision_without_timezone TIME(3) WITHOUT TIME ZONE,
   some_time_with_time_zone TIME WITH TIME ZONE,
-  some_precision_time_with_time_zone TIME (3) WITH TIME ZONE,
+  some_precision_time_with_time_zone TIME(3) WITH TIME ZONE,
 
 
   some_timestamp TIMESTAMP,
