@@ -12,7 +12,6 @@ import java.io.File
 @RunWith(Parameterized::class)
 class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
   @Test fun execute() {
-    assumeTrue(dialect == DialectPreset.POSTGRESQL)
     dialect.setup()
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
