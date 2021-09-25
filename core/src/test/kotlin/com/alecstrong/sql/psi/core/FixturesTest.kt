@@ -2,7 +2,6 @@ package com.alecstrong.sql.psi.core
 
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
