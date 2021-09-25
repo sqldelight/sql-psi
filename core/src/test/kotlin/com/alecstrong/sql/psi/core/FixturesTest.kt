@@ -2,6 +2,7 @@ package com.alecstrong.sql.psi.core
 
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -11,6 +12,7 @@ import java.io.File
 @RunWith(Parameterized::class)
 class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
   @Test fun execute() {
+    assumeTrue(dialect == DialectPreset.POSTGRESQL)
     dialect.setup()
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
