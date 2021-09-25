@@ -97,7 +97,7 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
 // TODO include the sequence creation clause '(' create_sequence_stmt ')'
 identity_clause ::= 'IDENTITY'
 
-generated_clause ::= 'GENERATED' ('ALWAYS' | 'BY' 'DEFAULT') 'AS' ( identity_clause | (<<expr '-1'>> ['STORED']) )
+generated_clause ::= 'GENERATED' ( ('ALWAYS' 'AS' <<expr '-1'>> 'STORED') | ( ('ALWAYS' | 'BY' 'DEFAULT') 'AS' identity_clause ) )
 
 small_int_data_type ::= 'SMALLINT' | 'INT2'
 int_data_type ::= 'INTEGER' | 'INT' | 'INT4'
