@@ -60,6 +60,7 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
   [ NOT ] NULL {conflict_clause} |
   UNIQUE {conflict_clause} |
   {check_constraint} |
+  generated_clause |
   {default_constraint} |
   COLLATE {collation_name} |
   {foreign_key_clause}
@@ -92,6 +93,10 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBindParameter"
   override = true
 }
+
+identity_clause ::= 'IDENTITY'
+
+generated_clause ::= 'GENERATED' ( ('ALWAYS' 'AS' <<expr '-1'>> 'STORED') | ( ('ALWAYS' | 'BY' 'DEFAULT') 'AS' identity_clause ) )
 
 small_int_data_type ::= 'SMALLINT' | 'INT2'
 int_data_type ::= 'INTEGER' | 'INT' | 'INT4'
