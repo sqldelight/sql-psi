@@ -94,7 +94,6 @@ bind_parameter ::= ( '?' | ':' {identifier} ) {
   override = true
 }
 
-// TODO include the sequence creation clause '(' create_sequence_stmt ')'
 identity_clause ::= 'IDENTITY'
 
 generated_clause ::= 'GENERATED' ( ('ALWAYS' 'AS' <<expr '-1'>> 'STORED') | ( ('ALWAYS' | 'BY' 'DEFAULT') 'AS' identity_clause ) )
