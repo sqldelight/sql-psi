@@ -2,7 +2,7 @@ apply plugin: 'kotlin'
 
 dependencies {
   implementation project(':sample-core')
-  implementation project(':core')
+  implementation project(':sqlite-psi-core')
 
   implementation dep.intellijCore
   implementation dep.intellijLang

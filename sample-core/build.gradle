@@ -5,5 +5,5 @@ dependencies {
   compileOnly dep.intellijCore
   compileOnly dep.intellijLang
 
-  implementation project(':core')
+  implementation project(':sqlite-psi-core')
 }
