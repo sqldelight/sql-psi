@@ -1,0 +1,8 @@
+COPY foo (bar)
+FROM STDIN
+(
+FORMAT CSV,
+DELIMITER ';'
+HEADER TRUE
+)
+WHERE bar = 'f';

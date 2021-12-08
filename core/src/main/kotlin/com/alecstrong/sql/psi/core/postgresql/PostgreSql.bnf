@@ -179,3 +179,18 @@ alter_table_drop_column ::= 'DROP' [ COLUMN ] {column_name} {
   mixin = "com.alecstrong.sql.psi.core.postgresql.psi.mixins.AlterTableDropColumnMixin"
   pin = 1
 }
+
+copy_option_format ::= "FORMAT" ("TEXT" | "CSV" | "BINARY")
+copy_option_freeze ::= "FREEZE" [ ("TRUE" | "FALSE") ]
+copy_option_delimiter ::= "DELIMITER" string_literal
+copy_option_null ::= "NULL" string_literal
+copy_option_header ::= "HEADER" [ ("TRUE" | "FALSE") ]
+copy_option_quote ::= "QUOTE" string_literal
+copy_option_escape ::= "ESCAPE" string_literal
+copy_option_force_not_null ::= "FORCE_NOT_NULL" '(' {column_name} * ')'
+copy_option_force_null ::= "FORCE_NULL" '(' {column_name} * ')'
+copy_option_encoding ::= "ENCODING" string_literal
+
+copy_option ::= copy_option_format | copy_option_freeze | copy_option_delimiter | copy_option_null | copy_option_header | copy_option_quote | copy_option_escape | copy_option_force_not_null | copy_option_force_null | copy_option_encoding
+
+copy_stdin ::= "COPY" {qualified_table_name} [ '(' {column_name} ( ',' {column_name} ) * ')' ] FROM "STDIN" [ [ WITH ] '(' copy_option * ')' ] [ WHERE <<expr '-1'>> ]
