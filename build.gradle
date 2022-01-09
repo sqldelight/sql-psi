@@ -1,39 +1,12 @@
-import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-  ext {
-    kotlinVersion = '1.4.32'
-    ideaVersion = '201.8743.12'
-
-    dep = [
-        kotlinGradlePlugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
-        intellij: "IC-$ideaVersion",
-        intellijCore: "com.jetbrains.intellij.platform:core-impl:$ideaVersion",
-        intellijLang: "com.jetbrains.intellij.platform:lang-impl:$ideaVersion",
-        intellijAnalysis: "com.jetbrains.intellij.platform:analysis-impl:$ideaVersion",
-        intellijIndexing: "com.jetbrains.intellij.platform:indexing-impl:$ideaVersion",
-        junit: 'junit:junit:4.13.2',
-        truth: 'com.google.truth:truth:1.1.3',
-    ]
-  }
-  repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-    gradlePluginPortal()
-  }
-
-  dependencies {
-    classpath dep.kotlinGradlePlugin
-    classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-grammarkit-plugin:2020.1.4"
-    classpath "com.alecstrong:grammar-kit-composer:0.1.5"
-    classpath "com.diffplug.spotless:spotless-plugin-gradle:5.11.1"
-    classpath "com.vanniktech:gradle-maven-publish-plugin:0.14.2"
-    classpath "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32"
-  }
+plugins {
+  id("org.jetbrains.kotlin.jvm") version "1.6.10" apply false
+  id("com.alecstrong.grammar.kit.composer") version "0.1.6" apply false
+  id("com.diffplug.spotless") version "5.11.1"
+  id("com.vanniktech.maven.publish") version "0.14.2"
+  id("org.jetbrains.dokka") version "1.6.10"
 }
-
-apply plugin: "com.diffplug.spotless"
 
 spotless {
   kotlin {
@@ -50,19 +23,18 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
+    maven { url "https://cache-redirector.jetbrains.com/maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies" }
   }
 
   group = GROUP
   version = VERSION_NAME
 
-  plugins.withId("org.jetbrains.kotlin.jvm") {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-  }
-
   tasks.withType(KotlinCompile) {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+
     kotlinOptions {
-      jvmTarget = "1.8"
+      jvmTarget = "11"
       apiVersion = "1.3"
     }
   }
@@ -72,20 +44,6 @@ allprojects {
       events = ["failed", "skipped", "passed"]
       exceptionFormat "full"
     }
-  }
-
-  configurations {
-    grammar
-  }
-
-  dependencies {
-    grammar dep.intellijIndexing
-    grammar dep.intellijAnalysis
-    grammar "org.jetbrains.intellij.deps:asm-all:7.0.1"
-  }
-
-  tasks.withType(GenerateParser).configureEach {
-    classpath = configurations.grammar + configurations.compileOnly
   }
 
   configurations.all {
