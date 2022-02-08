@@ -1,9 +1,11 @@
-apply plugin: 'kotlin'
+plugins {
+  alias(libs.plugins.kotlinJvm)
+}
 
 dependencies {
   implementation project(':sample-core')
   implementation project(':core')
 
-  implementation intellijCore
-  implementation intellijLang
+  implementation libs.intellijCore
+  implementation libs.intellijLang
 }

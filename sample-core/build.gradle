@@ -1,15 +1,15 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm")
-  id("com.alecstrong.grammar.kit.composer")
+  alias(libs.plugins.kotlinJvm)
+  alias(libs.plugins.grammarKitComposer)
 }
 
 grammarKit {
-  intellijRelease.set(ideaVersion)
+  intellijRelease.set(libs.versions.ideaVersion)
 }
 
 dependencies {
-  compileOnly intellijCore
-  compileOnly intellijLang
+  compileOnly libs.intellijCore
+  compileOnly libs.intellijLang
 
   implementation project(':core')
 }
