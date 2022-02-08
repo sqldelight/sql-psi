@@ -1,12 +1,12 @@
 plugins {
-  id("org.jetbrains.kotlin.jvm")
-  id("com.alecstrong.grammar.kit.composer")
+  alias(libs.plugins.kotlinJvm)
+  alias(libs.plugins.grammarKitComposer)
 }
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 
 grammarKit {
-  intellijRelease.set(ideaVersion)
+  intellijRelease.set(libs.versions.ideaVersion)
 }
 
 sourceSets {
@@ -14,13 +14,13 @@ sourceSets {
 }
 
 dependencies {
-  compileOnly intellijLang
-  compileOnly intellijCore
+  compileOnly libs.intellijLang
+  compileOnly libs.intellijCore
 
-  testImplementation intellijLang
-  testImplementation intellijCore
-  testImplementation junit
-  testImplementation truth
+  testImplementation libs.intellijLang
+  testImplementation libs.intellijCore
+  testImplementation libs.junit
+  testImplementation libs.truth
 }
 
 generateLexer {
