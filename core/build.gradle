@@ -1,33 +1,34 @@
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'org.jetbrains.grammarkit'
-apply plugin: 'com.alecstrong.grammar.kit.composer'
-apply plugin: 'maven-publish'
+plugins {
+  id("org.jetbrains.kotlin.jvm")
+  id("com.alecstrong.grammar.kit.composer")
+}
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 
-import org.jetbrains.grammarkit.tasks.GenerateLexer
+grammarKit {
+  intellijRelease.set(ideaVersion)
+}
 
 sourceSets {
   main.java.srcDir "gen"
 }
 
 dependencies {
-  compileOnly dep.intellijLang
-  compileOnly dep.intellijCore
+  compileOnly intellijLang
+  compileOnly intellijCore
 
-  testImplementation dep.intellijLang
-  testImplementation dep.intellijCore
-  testImplementation dep.junit
-  testImplementation dep.truth
+  testImplementation intellijLang
+  testImplementation intellijCore
+  testImplementation junit
+  testImplementation truth
 }
 
-task generateSqlLexer(type: GenerateLexer) {
-  source 'src/main/kotlin/com/alecstrong/sql/psi/core/SqlLexer.flex'
-  targetDir 'gen/com/alecstrong/sql/psi/core/lexer/'
-  targetClass 'SqlLexer'
-  purgeOldFiles = true
+generateLexer {
+  source.set('src/main/kotlin/com/alecstrong/sql/psi/core/SqlLexer.flex')
+  targetDir.set('gen/com/alecstrong/sql/psi/core/lexer/')
+  targetClass.set('SqlLexer')
+  purgeOldFiles.set(true)
 }
 
-compileKotlin.dependsOn generateSqlLexer
-dokkaHtml.dependsOn generateSqlLexer
+compileKotlin.dependsOn generateLexer
+dokkaHtml.dependsOn generateLexer
