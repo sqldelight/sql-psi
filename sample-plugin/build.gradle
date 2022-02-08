@@ -1,12 +1,11 @@
 plugins {
-  id 'org.jetbrains.intellij' version '0.7.2'
+  id("org.jetbrains.kotlin.jvm")
+  id 'org.jetbrains.intellij' version '1.5.2'
 }
 
 intellij {
-  version dep.intellij
+  version.set("IC-$ideaVersion")
 }
-
-apply plugin: 'kotlin'
 
 sourceSets {
   main.java.srcDir "src/generated/kotlin"
