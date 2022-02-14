@@ -8,14 +8,13 @@ publishing {
         }
     }
 }
-
 def getGpgKey() {
-    return hasProperty('signingInMemoryKey') ? signingInMemoryKey : ""
+    return hasProperty('signingKey') ? signingKey : ""
 }
 
 signing {
-    def signingInMemoryKey = getGpgKey()
-    if (!signingInMemoryKey.isEmpty()) {
-        useInMemoryPgpKeys(signingInMemoryKey, "")
+    def signingKey = getGpgKey()
+    if (!signingKey.isEmpty()) {
+        useInMemoryPgpKeys(signingKey, "")
     }
 }
