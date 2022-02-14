@@ -1,6 +1,6 @@
 [versions]
 # 2021.2.1, matching grammarkit version
-ideaVersion = "212.5712.43"
+ideaVersion = "213.6777.52"
 kotlin = "1.6.10"
 
 [libraries]
@@ -13,6 +13,6 @@ truth = "com.google.truth:truth:1.1.3"
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 grammarKitComposer = { id = "com.alecstrong.grammar.kit.composer", version = "0.1.6" }
 spotless = { id = "com.diffplug.spotless", version = "6.2.2" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.18.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.14.2" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin" }
 intellij = { id = "org.jetbrains.intellij", version = "1.4.0" }
