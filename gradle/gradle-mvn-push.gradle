@@ -8,13 +8,3 @@ publishing {
         }
     }
 }
-def getGpgKey() {
-    return hasProperty('signingKey') ? signingKey : ""
-}
-
-signing {
-    def signingKey = getGpgKey()
-    if (!signingKey.isEmpty()) {
-        useInMemoryPgpKeys(signingKey, "")
-    }
-}
