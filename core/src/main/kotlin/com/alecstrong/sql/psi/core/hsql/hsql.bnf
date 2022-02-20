@@ -48,6 +48,7 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
   NOT NULL {conflict_clause} |
   UNIQUE {conflict_clause} |
   {check_constraint} |
+  generated_clause |
   {default_constraint} |
   COLLATE {collation_name} |
   {foreign_key_clause}
@@ -87,3 +88,5 @@ start_field ::= non_second_primary_datetime_field [ '(' digit ')' ]
 end_field ::= non_second_primary_datetime_field | 'SECOND' [ '(' digit ')' ]
 single_datetime_field ::= non_second_primary_datetime_field [ '(' digit ')' ] | 'SECOND' [ '(' digit [ ',' digit ] ')' ]
 non_second_primary_datetime_field ::= 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE'
+
+generated_clause ::= 'GENERATED' ( ( ('ALWAYS' | 'BY' 'DEFAULT') 'AS' 'IDENTITY' ) | ('ALWAYS' 'AS' <<expr '-1'>>) )
