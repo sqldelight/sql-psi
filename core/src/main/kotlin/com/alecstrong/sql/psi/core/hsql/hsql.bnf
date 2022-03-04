@@ -23,7 +23,7 @@
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.WITHOUT"
   ]
 }
-overrides ::= type_name | column_constraint
+overrides ::= type_name | column_constraint | bind_parameter
 type_name ::= (
   tiny_int_data_type |
   small_int_data_type |
@@ -55,6 +55,11 @@ column_constraint ::= [ CONSTRAINT {identifier} ] (
 ) {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlColumnConstraintImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnConstraint"
+  override = true
+}
+bind_parameter ::= ( '?' | ':' {identifier} ) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlBindParameterImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlBindParameter"
   override = true
 }
 
