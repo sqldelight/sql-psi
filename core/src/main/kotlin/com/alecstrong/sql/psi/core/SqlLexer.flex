@@ -190,6 +190,7 @@ STRING=('([^'])*'|\"([^\"])*\")
   "VACUUM"               { return VACUUM; }
   "WITHOUT"              { return WITHOUT; }
   "ROWID"                { return ROWID; }
+  "MERGE"                { return MERGE; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }

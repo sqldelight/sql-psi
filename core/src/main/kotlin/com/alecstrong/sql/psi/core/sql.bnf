@@ -39,6 +39,7 @@
     NOTHING='NOTHING'
     WINDOW='WINDOW'
     PARTITION='PARTITION'
+    MERGE='MERGE'
 
     space='regexp:\s+'
     comment='regexp:--.*'
