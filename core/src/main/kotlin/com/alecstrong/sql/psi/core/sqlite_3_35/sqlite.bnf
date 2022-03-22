@@ -1,0 +1,38 @@
+{
+  // Specify the parent parser.
+  overrides="com.alecstrong.sql.psi.core.SqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "Sqlite"
+
+  parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RENAME"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.TO"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COLUMN"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.DROP"
+  ]
+}
+overrides ::= alter_table_rules
+
+alter_table_rules ::= (
+  {alter_table_add_column}
+  | {alter_table_rename_table}
+  | alter_table_rename_column
+  | alter_table_drop_column
+) {
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlAlterTableRulesImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlAlterTableRules"
+  override = true
+}
+
+alter_table_rename_column ::= RENAME [ COLUMN ] {column_name} TO {column_alias} {
+  mixin = "com.alecstrong.sql.psi.core.sqlite_3_25.psi.mixins.AlterTableRenameColumnMixin"
+  pin = 1
+}
+
+alter_table_drop_column ::= DROP COLUMN {column_name} {
+  mixin = "com.alecstrong.sql.psi.core.sqlite_3_35.psi.mixins.AlterTableDropColumnMixin"
+  pin = 1
+}
