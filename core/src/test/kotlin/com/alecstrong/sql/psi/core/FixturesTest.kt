@@ -91,7 +91,8 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
       DialectPreset.SQLITE_3_18 to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported", "src/test/fixtures_sqlite_3_18"),
       DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24"),
       DialectPreset.SQLITE_3_25 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25"),
-      DialectPreset.SQLITE_3_35 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25", "src/test/fixtures_sqlite_3_35"),
+      DialectPreset.SQLITE_3_30 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25", "src/test/fixtures_sqlite_3_30"),
+      DialectPreset.SQLITE_3_35 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25", "src/test/fixtures_sqlite_3_30", "src/test/fixtures_sqlite_3_35"),
       DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql"),
       DialectPreset.HSQL to arrayOf("src/test/fixtures_hsql"),
       DialectPreset.POSTGRESQL to arrayOf("src/test/fixtures_postgresql")
