@@ -4,7 +4,7 @@ import com.alecstrong.sql.psi.core.SqlFileBase
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.intellij.psi.PsiElement
 
-internal interface SqlCompositeElement : SqlAnnotatedElement {
+interface SqlCompositeElement : SqlAnnotatedElement {
   /**
    * Returns the result set accessible by a given child.
    *
