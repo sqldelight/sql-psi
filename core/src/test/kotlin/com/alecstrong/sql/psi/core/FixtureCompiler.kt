@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.core
 
+import com.alecstrong.sql.psi.test.fixtures.TestHeadlessParser
 import com.intellij.psi.PsiElement
 import java.io.File
 

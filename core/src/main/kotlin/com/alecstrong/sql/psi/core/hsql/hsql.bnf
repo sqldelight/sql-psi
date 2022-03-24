@@ -103,6 +103,7 @@ insert_stmt ::= [ {with_clause} ] ( INSERT | MERGE ) INTO [ {database_name} '.' 
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlInsertStmtImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlInsertStmt"
   override = true
+  pin = 5
 }
 
 merge_key_selector ::= KEY '(' {column_name} ')'

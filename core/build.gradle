@@ -17,10 +17,9 @@ dependencies {
   compileOnly libs.intellijLang
   compileOnly libs.intellijCore
 
-  testImplementation libs.intellijLang
-  testImplementation libs.intellijCore
   testImplementation libs.junit
   testImplementation libs.truth
+  testImplementation project(":test-fixtures")
 }
 
 generateLexer {
