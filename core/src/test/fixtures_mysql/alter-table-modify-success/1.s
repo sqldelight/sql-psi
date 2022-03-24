@@ -1,9 +1,0 @@
-CREATE TABLE test(
-  id VARCHAR(8)
-);
-
-ALTER TABLE test
-  MODIFY COLUMN id BIGINT;
-
-SELECT id
-FROM test;

@@ -1,10 +1,11 @@
-package com.alecstrong.sql.psi.core
+package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.test.fixtures.TestHeadlessParser
+import com.alecstrong.sql.psi.core.SqlAnnotationHolder
+import com.alecstrong.sql.psi.core.SqlFileBase
 import com.intellij.psi.PsiElement
 import java.io.File
 
-internal fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
+fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
   val directory = File("build/tmp").apply { mkdirs() }
   val file = File(directory, fileName).apply {
     createNewFile()

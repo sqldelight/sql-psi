@@ -1,10 +1,8 @@
 package com.alecstrong.sql.psi.core
 
-import com.alecstrong.sql.psi.core.mysql.MySqlParserUtil
 import com.alecstrong.sql.psi.core.postgresql.PostgreSqlParserUtil
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.StatementValidatorMixin
-import com.alecstrong.sql.psi.core.mysql.psi.mixins.ColumnDefMixin as MySqlColumnDefMixin
 import com.alecstrong.sql.psi.core.postgresql.psi.mixins.ColumnDefMixin as PostgreSqlColumnDefMixin
 import com.alecstrong.sql.psi.core.sqlite_3_18.SqliteParserUtil as Sqlite_3_18Util
 import com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.ColumnDefMixin as Sqlite_3_18ColumnDefMixin
@@ -56,21 +54,6 @@ enum class DialectPreset {
       SQLITE_3_30.setup()
       Sqlite_3_35Util.reset()
       Sqlite_3_35Util.overrideSqlParser()
-    }
-  },
-  MYSQL {
-    override fun setup() {
-      SqlParserUtil.reset()
-      MySqlParserUtil.reset()
-      MySqlParserUtil.overrideSqlParser()
-
-      val currentElementCreation = MySqlParserUtil.createElement
-      MySqlParserUtil.createElement = {
-        when (it.elementType) {
-          SqlTypes.COLUMN_DEF -> MySqlColumnDefMixin(it)
-          else -> currentElementCreation(it)
-        }
-      }
     }
   },
   POSTGRESQL {
