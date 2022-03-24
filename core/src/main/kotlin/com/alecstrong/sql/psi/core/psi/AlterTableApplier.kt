@@ -3,11 +3,11 @@ package com.alecstrong.sql.psi.core.psi
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
-internal interface AlterTableApplier : PsiElement {
+interface AlterTableApplier : PsiElement {
   fun applyTo(lazyQuery: LazyQuery): LazyQuery
 }
 
-internal val AlterTableApplier.alterStmt
+val AlterTableApplier.alterStmt
   get() = PsiTreeUtil.getParentOfType(
     this,
     SqlAlterTableStmt::class.java
