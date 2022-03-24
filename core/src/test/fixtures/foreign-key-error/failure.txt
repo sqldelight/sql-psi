@@ -1,3 +1,0 @@
-Player.s line 4:12 - Table team does not have a unique index on column name
-Player.s line 4:28 - No column found with name name
-Team.s line 3:51 - '(', ')', ',', <column constraint real>, DEFERRABLE, MATCH, NOT or ON expected, got '.'

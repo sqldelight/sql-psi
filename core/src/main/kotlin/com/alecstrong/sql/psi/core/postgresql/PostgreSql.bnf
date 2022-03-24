@@ -126,6 +126,7 @@ with_clause_auxiliary_stmt ::= {compound_select_stmt} | delete_stmt_limited | in
 delete_stmt_limited ::= [ {with_clause} ] DELETE FROM {qualified_table_name} [ WHERE <<expr '-1'>> ] [ [ ORDER BY {ordering_term} ( ',' {ordering_term} ) * ] LIMIT <<expr '-1'>> [ ( OFFSET | ',' ) <<expr '-1'>> ] ] [ returning_clause ] {
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlDeleteStmtLimitedImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlDeleteStmtLimited"
+  pin = 2
   override = true
 }
 
@@ -137,6 +138,7 @@ insert_stmt ::= [ {with_clause} ]
   extends = "com.alecstrong.sql.psi.core.psi.impl.SqlInsertStmtImpl"
   implements = "com.alecstrong.sql.psi.core.psi.SqlInsertStmt"
   override = true
+  pin = 5
 }
 
 

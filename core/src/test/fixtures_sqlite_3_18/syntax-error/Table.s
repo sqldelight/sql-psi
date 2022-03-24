@@ -1,2 +1,1 @@
-SELECT *
-FRM chair;
+DELETE FRM chair;

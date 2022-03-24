@@ -1,21 +1,33 @@
-package com.alecstrong.sql.psi.core
+package com.alecstrong.sql.psi.test.fixtures
 
+import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
-import org.junit.runners.Parameterized.Parameters
 import java.io.File
+import java.util.Enumeration
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
 
-@RunWith(Parameterized::class)
-class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot: File) {
+abstract class FixturesTest(val name: String, val fixtureRoot: File) {
+  protected open val replaceRules: Array<Pair<String, String>> = emptyArray()
+
+  abstract fun setupDialect()
+
   @Test fun execute() {
-    dialect.setup()
+    setupDialect()
+
     val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
+
+    val newRoot = File("build/fixtureCopies/${fixtureRoot.name}Copy")
+    fixtureRoot.copyRecursively(newRoot, overwrite = true)
+    if (name in ansiFixtures.map { it.first() }) {
+      newRoot.replaceKeywords()
+    }
+
     val environment = parser.build(
-      fixtureRoot.path,
+      newRoot.path,
       object : SqlAnnotationHolder {
         override fun createErrorAnnotation(element: PsiElement, s: String) {
           val documentManager = PsiDocumentManager.getInstance(element.project)
@@ -40,7 +52,7 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
     println(sourceFiles)
 
     val expectedFailures = ArrayList<String>()
-    val expectedFailuresFile = File(fixtureRoot, "failure.txt")
+    val expectedFailuresFile = File(newRoot, "failure.txt")
     if (expectedFailuresFile.exists()) {
       expectedFailures += expectedFailuresFile.readText().splitLines().filter { it.isNotEmpty() }
     }
@@ -77,37 +89,65 @@ class FixturesTest(val dialect: DialectPreset, val name: String, val fixtureRoot
         throw AssertionError("Test failed because the compile output unexpectedly has $extrasStr. $assertionMsgEnd")
       }
     }
+
+    newRoot.deleteRecursively()
   }
 
-  fun PsiElement.printTree(printer: (String) -> Unit) {
+  private fun PsiElement.printTree(printer: (String) -> Unit) {
     printer("$this\n")
     children.forEach { child ->
       child.printTree { printer("  $it") }
     }
   }
 
-  companion object {
-    private val dialects = mapOf(
-      DialectPreset.SQLITE_3_18 to arrayOf("src/test/fixtures", "src/test/fixtures_upsert_not_supported", "src/test/fixtures_sqlite_3_18"),
-      DialectPreset.SQLITE_3_24 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24"),
-      DialectPreset.SQLITE_3_25 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25"),
-      DialectPreset.SQLITE_3_30 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25", "src/test/fixtures_sqlite_3_30"),
-      DialectPreset.SQLITE_3_35 to arrayOf("src/test/fixtures", "src/test/fixtures_sqlite_3_24", "src/test/fixtures_sqlite_3_25", "src/test/fixtures_sqlite_3_30", "src/test/fixtures_sqlite_3_35"),
-      DialectPreset.MYSQL to arrayOf("src/test/fixtures_mysql"),
-      DialectPreset.HSQL to arrayOf("src/test/fixtures_hsql"),
-      DialectPreset.POSTGRESQL to arrayOf("src/test/fixtures_postgresql")
-    )
+  private fun File.replaceKeywords() {
+    if (isDirectory) {
+      listFiles()?.forEach { it.replaceKeywords() }
+      return
+    }
+    replaceRules.forEach { (from, to) ->
+      writeText(readText().replace(from, to))
+    }
+  }
 
-    @Suppress("unused") // Used by Parameterized JUnit runner reflectively.
-    @Parameters(name = "{0}: {1}")
-    @JvmStatic fun parameters() = dialects.flatMap { (dialect, fixtureFolders) ->
-      fixtureFolders.flatMap { fixtureFolder ->
-        File(fixtureFolder).listFiles()
-          .filter { it.isDirectory }
-          .map { arrayOf(dialect, it.name, it) }
+  companion object {
+    init {
+      loadFolderFromResources("fixtures")
+    }
+
+    @JvmStatic
+    protected val ansiFixtures = File("build/fixtures").listFiles()
+      .filter { it.isDirectory }
+      .map { arrayOf(it.name, it) }
+  }
+}
+
+private fun Any.loadFolderFromResources(path: String) {
+  val jarFile = File(javaClass.protectionDomain.codeSource.location.path)
+  val parentFile = File("build")
+  File(parentFile, path).apply { if (exists()) deleteRecursively() }
+
+  assert(jarFile.isFile)
+
+  val jar = JarFile(jarFile)
+  val entries: Enumeration<JarEntry> = jar.entries() // gives ALL entries in jar
+  while (entries.hasMoreElements()) {
+    val entry = entries.nextElement()
+    val name: String = entry.name
+    if (name.startsWith("$path/")) { // filter according to the path
+      if (entry.isDirectory) {
+        File(parentFile, entry.name).mkdir()
+      } else {
+        File(parentFile, entry.name).apply {
+          createNewFile()
+          jar.getInputStream(entry).use {
+            it.copyTo(outputStream())
+          }
+        }
       }
     }
   }
+  jar.close()
 }
 
 private fun formatErrorList(errors: List<String>): String {
