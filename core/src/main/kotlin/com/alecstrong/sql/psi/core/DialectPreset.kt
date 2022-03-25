@@ -6,7 +6,6 @@ import com.alecstrong.sql.psi.core.sqlite_3_18.SqliteParserUtil as Sqlite_3_18Ut
 import com.alecstrong.sql.psi.core.sqlite_3_18.psi.mixins.ColumnDefMixin as Sqlite_3_18ColumnDefMixin
 import com.alecstrong.sql.psi.core.sqlite_3_24.SqliteParserUtil as Sqlite_3_24Util
 import com.alecstrong.sql.psi.core.sqlite_3_25.SqliteParserUtil as Sqlite_3_25Util
-import com.alecstrong.sql.psi.core.sqlite_3_30.SqliteParserUtil as Sqlite_3_30Util
 
 enum class DialectPreset {
   SQLITE_3_18 {
@@ -37,13 +36,6 @@ enum class DialectPreset {
       SQLITE_3_24.setup()
       Sqlite_3_25Util.reset()
       Sqlite_3_25Util.overrideSqlParser()
-    }
-  },
-  SQLITE_3_30 {
-    override fun setup() {
-      SQLITE_3_25.setup()
-      Sqlite_3_30Util.reset()
-      Sqlite_3_30Util.overrideSqlParser()
     }
   };
 
