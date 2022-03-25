@@ -3,7 +3,7 @@ package com.alecstrong.sql.psi.core
 import com.intellij.psi.PsiFile
 import java.util.concurrent.atomic.AtomicReference
 
-internal class ModifiableFileLazy<out T>(
+class ModifiableFileLazy<out T>(
   private val initializer: () -> T
 ) {
   private var modifiedStamp = -1L
