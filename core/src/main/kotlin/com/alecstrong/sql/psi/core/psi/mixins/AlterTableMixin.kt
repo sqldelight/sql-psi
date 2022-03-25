@@ -28,7 +28,7 @@ import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil.getParentOfType
 
-internal interface AlterTableStmtStub : SchemaContributorStub {
+interface AlterTableStmtStub : SchemaContributorStub {
   fun newTableName(): String?
 }
 
@@ -128,7 +128,7 @@ internal abstract class AlterTableMixin private constructor(
   }
 }
 
-internal open class AlterTableElementType(
+open class AlterTableElementType(
   name: String
 ) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME

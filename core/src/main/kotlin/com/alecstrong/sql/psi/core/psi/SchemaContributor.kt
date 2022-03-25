@@ -10,7 +10,7 @@ interface SchemaContributor : SqlCompositeElement {
   fun name(): String
 }
 
-internal interface SchemaContributorStub : StubElement<SchemaContributor> {
+interface SchemaContributorStub : StubElement<SchemaContributor> {
   fun name(): String
   fun getTextOffset(): Int
 }

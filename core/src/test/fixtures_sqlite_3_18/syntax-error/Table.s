@@ -1,1 +1,0 @@
-DELETE FRM chair;
