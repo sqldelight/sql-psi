@@ -1,1 +1,0 @@
-Test.s line 12:7 - No column found with name rowid
