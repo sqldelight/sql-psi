@@ -15,6 +15,7 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import kotlin.reflect.KClass
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
@@ -33,8 +34,16 @@ abstract class SqlFileBase(
     sqlStmtElement: PsiElement? = null,
     includeAll: Boolean = true
   ): Collection<T> {
+    return schema(T::class, sqlStmtElement, includeAll)
+  }
+
+  fun <T : SchemaContributor> schema(
+    type: KClass<T>,
+    sqlStmtElement: PsiElement? = null,
+    includeAll: Boolean = true
+  ): Collection<T> {
     val schema = Schema()
-    iteratePreviousStatements<T>(sqlStmtElement, includeAll) { statement ->
+    iteratePreviousStatements(type, sqlStmtElement, includeAll) { statement ->
       if (sqlStmtElement != null && PsiTreeUtil.isAncestor(sqlStmtElement, statement, false)) {
         if (order == null && (statement is TableElement && statement !is SqlCreateTableStmt)) {
           // If we're in a queries file, the table is not available to itself (unless its a create).
@@ -43,13 +52,13 @@ abstract class SqlFileBase(
         if (order != null) {
           // If we're in a migration file, only return the tables up to this point.
           if (statement is SqlCreateTableStmt) statement.modifySchema(schema)
-          return@schema schema.values()
+          return@schema schema.values(type)
         }
       }
 
       statement.modifySchema(schema)
     }
-    return schema.values()
+    return schema.values(type)
   }
 
   /**
@@ -78,7 +87,8 @@ abstract class SqlFileBase(
     }.orEmpty()
   }
 
-  private inline fun <reified T : SchemaContributor> iteratePreviousStatements(
+  private inline fun <T : SchemaContributor> iteratePreviousStatements(
+    type: KClass<T>,
     until: PsiElement?,
     includeAll: Boolean = true,
     block: (SchemaContributor) -> Unit
@@ -88,7 +98,7 @@ abstract class SqlFileBase(
       val topContributors = LinkedHashSet<SchemaContributor>()
       val index = SchemaContributorIndex.getInstance(project)
 
-      index.get(T::class.java.name, project, searchScope()).forEach {
+      index.get(type.java.name, project, searchScope()).forEach {
         val file = it.containingFile
 
         if (file == originalFile) return@forEach
