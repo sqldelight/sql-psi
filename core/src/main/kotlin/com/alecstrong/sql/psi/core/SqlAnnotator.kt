@@ -3,6 +3,7 @@ package com.alecstrong.sql.psi.core
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElement
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
+import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 
 open class SqlAnnotator : Annotator {
@@ -21,6 +22,6 @@ interface SqlAnnotationHolder {
 
 private class AnnotationHolderImplWrapper(val holder: AnnotationHolder) : SqlAnnotationHolder {
   override fun createErrorAnnotation(element: PsiElement, s: String) {
-    holder.createErrorAnnotation(element, s)
+    holder.newAnnotation(HighlightSeverity.ERROR, s).range(element).create()
   }
 }
