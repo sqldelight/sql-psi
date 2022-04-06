@@ -219,9 +219,9 @@ expr ::= ( raise_expr
          | binary_pipe_expr
          | unary_expr
          | literal_expr
+         | other_expr
          | column_expr
-         | bind_expr
-         | other_expr )
+         | bind_expr )
 
 other_expr ::= extension_expr
 extension_expr ::= NULL
