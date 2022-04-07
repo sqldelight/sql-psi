@@ -17,7 +17,7 @@ internal abstract class TableOrSubqueryMixin(
         return@lazy emptyList<QueryResult>()
       }
       tableAlias?.let { alias ->
-        return@lazy listOf(QueryResult(alias, result.flatMap { it.columns }))
+        return@lazy listOf(QueryResult(alias, result.flatMap { it.columns }, result.flatMap { it.synthesizedColumns }))
       }
       return@lazy result
     }
