@@ -255,7 +255,7 @@ binary_and_expr ::= expr AND expr {
 binary_or_expr ::= expr OR expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ( ',' | FROM | FOR ) expr ) * | '*' ] ')'
+function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ( ',' | FROM | FOR | SEPARATOR ) expr ) * | '*' ] ')'
 paren_expr ::= '(' expr ')' {
   pin = 1
 }
