@@ -1,0 +1,1 @@
+SELECT substring('Thomas' FROM 2 FOR 3);
