@@ -19,7 +19,7 @@ internal abstract class ColumnAliasMixin(
   override fun source(): PsiElement {
     parent.let {
       return when (it) {
-        is ResultColumnMixin -> it.expr!!
+        is ResultColumnMixin -> it
 
         is SqlCteTableName -> {
           val index = it.columnAliasList.indexOf(this)
