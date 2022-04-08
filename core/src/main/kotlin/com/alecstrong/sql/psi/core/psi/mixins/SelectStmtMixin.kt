@@ -20,6 +20,7 @@ import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SelectStmtMixin(
@@ -27,6 +28,12 @@ internal abstract class SelectStmtMixin(
 ) : SqlCompositeElementImpl(node),
   SqlSelectStmt,
   FromQuery {
+  /**
+   * During some resolution steps we don't care about the parent's projection and can safely ignore
+   * it to avoid recursing too far.
+   */
+  private var ignoreParentProjection = false
+
   private val queryExposed = ModifiableFileLazy {
     if (valuesExpressionList.isNotEmpty()) {
       return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
@@ -47,7 +54,27 @@ internal abstract class SelectStmtMixin(
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    if (child in exprList || child in resultColumnList) {
+    if (child in exprList) {
+      val available = fromQuery().map { it.copy(adjacent = true) } +
+        super.queryAvailable(this).map { it.copy(adjacent = false) }
+      if (ignoreParentProjection) return available
+
+      val projection = (parent as CompoundSelectStmtMixin).queryExposed().map { selectStmt ->
+        selectStmt.copy(
+          adjacent = false,
+          columns = selectStmt.columns.filter { projectionColumn ->
+            // Avoid including any projection columns that would create name collisions.
+            (projectionColumn.element as? PsiNamedElement)?.name !in
+              available.flatMap {
+                it.columns.mapNotNull { (it.element as? PsiNamedElement)?.name }
+              }
+          }
+        )
+      }
+
+      return available + projection
+    }
+    if (child in resultColumnList) {
       return fromQuery().map { it.copy(adjacent = true) } +
         super.queryAvailable(this).map { it.copy(adjacent = false) }
     }
@@ -83,11 +110,16 @@ internal abstract class SelectStmtMixin(
   }
 
   private fun SqlColumnName.isSameAs(other: SqlColumnName): Boolean {
-    if (this == other) return true
-    val thisRef = reference?.resolve() ?: return false
-    if (thisRef == other) return true
-    val otherRef = other.reference?.resolve() ?: return false
-    return thisRef == otherRef
+    try {
+      ignoreParentProjection = true
+      if (this == other) return true
+      val thisRef = reference?.resolve() ?: return false
+      if (thisRef == other) return true
+      val otherRef = other.reference?.resolve() ?: return false
+      return thisRef == otherRef
+    } finally {
+      ignoreParentProjection = false
+    }
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
