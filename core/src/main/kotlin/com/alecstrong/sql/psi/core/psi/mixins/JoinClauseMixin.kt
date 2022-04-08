@@ -18,7 +18,7 @@ internal abstract class JoinClauseMixin(
     if (child is SqlJoinConstraint) {
       val queryAvailable = tableOrSubqueryList[0].queryExposed()
         .map { it.copy(adjacent = true) }
-        .plus(super.queryAvailable(child))
+        .plus(super.queryAvailable(child).map { it.copy(adjacent = false) })
         .toMutableList()
       tableOrSubqueryList.drop(1).zip(joinConstraintList)
         .forEach { (subquery, constraint) ->
