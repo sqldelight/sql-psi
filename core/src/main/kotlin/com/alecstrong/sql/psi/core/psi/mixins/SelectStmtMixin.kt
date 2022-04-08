@@ -15,6 +15,7 @@ import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlIsExpr
 import com.alecstrong.sql.psi.core.psi.SqlLiteralExpr
 import com.alecstrong.sql.psi.core.psi.SqlParenExpr
+import com.alecstrong.sql.psi.core.psi.SqlResultColumn
 import com.alecstrong.sql.psi.core.psi.SqlSelectStmt
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.alecstrong.sql.psi.core.psi.asColumns
@@ -93,6 +94,7 @@ internal abstract class SelectStmtMixin(
 
   private fun PsiElement.nonNullIn(whereExpr: SqlExpr): Boolean {
     if (this is SqlColumnAlias) return source().nonNullIn(whereExpr)
+    if (this is SqlResultColumn) return expr?.nonNullIn(whereExpr) ?: false
     if (this is SqlColumnExpr) return columnName.nonNullIn(whereExpr)
     if (this !is SqlColumnName) return false
     return when (whereExpr) {
