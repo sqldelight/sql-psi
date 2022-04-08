@@ -1,6 +1,6 @@
 -- Table definition edited down to the relevant columns:
 CREATE TABLE `models` (
-  `model_id` TEXT NOT NULL AUTOINCREMENT,
+  `model_id` TEXT NOT NULL,
   `model_descriptor_id` TEXT NOT NULL,
   `build_date` TEXT NOT NULL,
   PRIMARY KEY (`model_id`)

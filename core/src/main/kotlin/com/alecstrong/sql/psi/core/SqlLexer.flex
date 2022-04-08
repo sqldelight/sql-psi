@@ -64,6 +64,7 @@ STRING=('([^'])*'|\"([^\"])*\")
   "NOTHING"              { return NOTHING; }
   "WINDOW"               { return WINDOW; }
   "PARTITION"            { return PARTITION; }
+  "MERGE"                { return MERGE; }
   "EXPLAIN"              { return EXPLAIN; }
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }
@@ -105,6 +106,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "KEY"                  { return KEY; }
   "AUTOINCREMENT"        { return AUTOINCREMENT; }
   "NULL"                 { return NULL; }
+  "GENERATED"            { return GENERATED; }
+  "ALWAYS"               { return ALWAYS; }
   "CHECK"                { return CHECK; }
   "DEFAULT"              { return DEFAULT; }
   "FOREIGN"              { return FOREIGN; }
@@ -149,6 +152,7 @@ STRING=('([^'])*'|\"([^\"])*\")
   "AND"                  { return AND; }
   "OR"                   { return OR; }
   "DISTINCT"             { return DISTINCT; }
+  "SEPARATOR"            { return SEPARATOR; }
   "CAST"                 { return CAST; }
   "LIKE"                 { return LIKE; }
   "GLOB"                 { return GLOB; }
@@ -190,7 +194,6 @@ STRING=('([^'])*'|\"([^\"])*\")
   "VACUUM"               { return VACUUM; }
   "WITHOUT"              { return WITHOUT; }
   "ROWID"                { return ROWID; }
-  "MERGE"                { return MERGE; }
 
   {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }
