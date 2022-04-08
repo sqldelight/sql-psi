@@ -35,7 +35,7 @@ interface QueryElement : PsiElement {
     constructor(column: PsiElement) : this(columns = listOf(QueryColumn(column)))
 
     override fun toString(): String {
-      return "${table?.name} : [${columns.joinToString { it.element.text }}]"
+      return "${table?.name} : [${columns.joinToString { it.element.text }} [${synthesizedColumns.joinToString { it.acceptableValues.toString() }}]]"
     }
   }
 
