@@ -310,7 +310,8 @@ pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(
 }
 pragma_value ::= ( signed_number
                  | identifier
-                 | string_literal )
+                 | string_literal
+                 | EXCLUSIVE )
 reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ] {
   pin = 1
 }
