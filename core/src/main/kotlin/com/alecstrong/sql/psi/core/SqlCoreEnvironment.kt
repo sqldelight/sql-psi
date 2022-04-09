@@ -121,7 +121,10 @@ open class SqlCoreEnvironment(
       )
   }
 
-  fun annotate(annotationHolder: SqlAnnotationHolder) {
+  fun annotate(
+    annotationHolder: SqlAnnotationHolder,
+    extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList()
+  ) {
     val otherFailures = mutableListOf<() -> Unit>()
     val myHolder = object : SqlAnnotationHolder {
       override fun createErrorAnnotation(element: PsiElement, s: String) {
@@ -143,7 +146,7 @@ open class SqlCoreEnvironment(
         myHolder.createErrorAnnotation(error, error.errorDescription)
         return@forSourceFiles
       }
-      it.annotateRecursively(myHolder)
+      it.annotateRecursively(myHolder, extraAnnotators)
     }
     otherFailures.forEach { it.invoke() }
   }
@@ -157,9 +160,13 @@ open class SqlCoreEnvironment(
     }
   }
 
-  private fun PsiElement.annotateRecursively(annotationHolder: SqlAnnotationHolder) {
+  private fun PsiElement.annotateRecursively(
+    annotationHolder: SqlAnnotationHolder,
+    extraAnnotators: Collection<SqlCompilerAnnotator>
+  ) {
     if (this is SqlAnnotatedElement) try {
       annotate(annotationHolder)
+      extraAnnotators.forEach { it.annotate(this, annotationHolder) }
     } catch (e: AnnotationException) {
       annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
     } catch (e: Throwable) {
@@ -171,7 +178,7 @@ open class SqlCoreEnvironment(
         e
       )
     }
-    children.forEach { it.annotateRecursively(annotationHolder) }
+    children.forEach { it.annotateRecursively(annotationHolder, extraAnnotators) }
   }
 
   protected fun initializeApplication(block: CoreApplicationEnvironment.() -> Unit) {
@@ -179,6 +186,10 @@ open class SqlCoreEnvironment(
       ApplicationEnvironment.coreApplicationEnvironment.block()
     }
   }
+}
+
+fun interface SqlCompilerAnnotator {
+  fun annotate(element: PsiElement, annotationHolder: SqlAnnotationHolder)
 }
 
 private class CoreFileIndex(
