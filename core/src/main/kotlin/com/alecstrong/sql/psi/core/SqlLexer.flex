@@ -65,6 +65,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "WINDOW"               { return WINDOW; }
   "PARTITION"            { return PARTITION; }
   "MERGE"                { return MERGE; }
+  "VALUE"                { return VALUE; }
+  "LOCK"                 { return LOCK; }
   "EXPLAIN"              { return EXPLAIN; }
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }

@@ -40,6 +40,8 @@
     WINDOW='WINDOW'
     PARTITION='PARTITION'
     MERGE='MERGE'
+    VALUE='VALUE'
+    LOCK='LOCK'
 
     space='regexp:\s+'
     comment='regexp:--.*'
