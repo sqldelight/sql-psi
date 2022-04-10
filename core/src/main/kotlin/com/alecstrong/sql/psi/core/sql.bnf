@@ -370,18 +370,21 @@ compound_operator ::= ( UNION ALL
                       | INTERSECT
                       | EXCEPT )
 update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name
-  SET (( column_name '=' setter_expression update_stmt_subsequent_setter * ) | ( '(' column_name ( ',' column_name ) * ')' ) '=' ( '(' setter_expression ( ',' setter_expression ) * ')' ))
+  update_set_clause
   [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 4
 }
 update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name
-  SET (( column_name '=' setter_expression update_stmt_subsequent_setter * ) | ( '(' column_name ( ',' column_name ) * ')' ) '=' ( '(' setter_expression ( ',' setter_expression ) * ')' ))
+  update_set_clause
   [ WHERE expr ]
   [ [ ORDER BY ordering_term ( ',' ordering_term ) * ]
   LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 4
+}
+private update_set_clause ::= SET (( column_name '=' setter_expression update_stmt_subsequent_setter * ) | ( '(' column_name ( ',' column_name ) * ')' ) '=' ( '(' setter_expression ( ',' setter_expression ) * ')' )) {
+  pin(".*") = 1
 }
 update_stmt_subsequent_setter ::= ',' column_name '=' setter_expression {
   pin = 1
