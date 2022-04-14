@@ -12,7 +12,7 @@ import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.GeneratedMarkerVisitor
 import com.intellij.psi.impl.source.tree.TreeElement
 
-internal abstract class SqlNamedElementImpl(
+abstract class SqlNamedElementImpl(
   node: ASTNode
 ) : SqlCompositeElementImpl(node),
   PsiNameIdentifierOwner {
