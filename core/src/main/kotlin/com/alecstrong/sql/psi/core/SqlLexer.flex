@@ -67,6 +67,7 @@ STRING=('([^'])*'|\"([^\"])*\")
   "MERGE"                { return MERGE; }
   "VALUE"                { return VALUE; }
   "LOCK"                 { return LOCK; }
+  "USE"                  { return USE; }
   "EXPLAIN"              { return EXPLAIN; }
   "QUERY"                { return QUERY; }
   "PLAN"                 { return PLAN; }
