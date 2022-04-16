@@ -91,7 +91,7 @@ internal abstract class CreateTableMixin private constructor(
   private fun primaryKey(): List<String> {
     val compositeKey = tableConstraintList.firstOrNull { it.hasPrimaryKey() }
     if (compositeKey != null) {
-      return compositeKey.indexedColumnList.map { it.columnName.name }
+      return compositeKey.indexedColumnList.mapNotNull { it.columnName?.name }
     }
 
     return columnDefList.filter { it.columnConstraintList.any { it.hasPrimaryKey() } }
@@ -101,7 +101,7 @@ internal abstract class CreateTableMixin private constructor(
 
   private fun isCollectivelyUnique(columns: List<SqlColumnName>): Boolean {
     tableConstraintList.filter { it.hasPrimaryKey() || it.isUnique() }
-      .map { it.indexedColumnList.mapNotNull { it.columnName.name } }
+      .map { it.indexedColumnList.mapNotNull { it.columnName?.name } }
       .plus(
         listOf(
           columnDefList.filter {
@@ -117,7 +117,7 @@ internal abstract class CreateTableMixin private constructor(
     containingFile.schema<SqlCreateIndexStmt>(this)
       .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
       .forEach {
-        val indexedColumns = it.indexedColumnList.map { it.columnName.name }
+        val indexedColumns = it.indexedColumnList.mapNotNull { it.columnName?.name }
         if (columns.map { it.name }.containsAll(indexedColumns) &&
           columns.size == indexedColumns.size
         ) {
