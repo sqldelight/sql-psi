@@ -22,6 +22,6 @@ interface SqlAnnotationHolder {
 
 private class AnnotationHolderImplWrapper(val holder: AnnotationHolder) : SqlAnnotationHolder {
   override fun createErrorAnnotation(element: PsiElement, s: String) {
-    holder.newAnnotation(HighlightSeverity.ERROR, s).range(element).create()
+    holder.newAnnotation(HighlightSeverity.ERROR, s).create()
   }
 }
