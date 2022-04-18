@@ -48,7 +48,11 @@ interface QueryElement : PsiElement {
     val nullable: Boolean? = null,
     val compounded: List<QueryColumn> = emptyList(),
     val hiddenByUsing: Boolean = false
-  )
+  ) {
+    init {
+      if (!element.isValid) throw InvalidElementDetectedException()
+    }
+  }
 
   /**
    * These aren't considered part of the exposed query (ie performing a SELECT * does not return
@@ -62,3 +66,11 @@ interface QueryElement : PsiElement {
 }
 
 internal fun List<PsiElement>.asColumns() = map { QueryColumn(it) }
+
+/**
+ * This usually happens during a long running operation on a read thread when a file is rewritten
+ * and some elements are made invalid. In most cases it's safe to catch and ignore this exception
+ * since your task will be invoked again by the IDE. (And this should never happen from a headless
+ * environment).
+ */
+class InvalidElementDetectedException : IllegalStateException()
