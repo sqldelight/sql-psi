@@ -33,7 +33,12 @@ open class SqlCompositeElementImpl(
     return tablesAvailable(child).filter { it.tableName.name == name }.map { it.query }
   }
 
-  override fun getContainingFile() = super.getContainingFile() as SqlFileBase
+  override fun getContainingFile() =
+    if (!isValid) {
+      throw InvalidElementDetectedException()
+    } else {
+      super.getContainingFile() as SqlFileBase
+    }
 }
 
 internal abstract class SqlSchemaContributorImpl<SchemaType : SchemaContributor, ElementType : SqlSchemaContributorElementType<SchemaType>>(

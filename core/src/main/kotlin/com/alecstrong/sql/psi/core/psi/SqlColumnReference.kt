@@ -25,9 +25,9 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     }
   }
 
-  override fun resolve() = if (!element.isValid) throw InvalidElementDetectedException() else resolved.forFile(element.containingFile)?.element
+  override fun resolve() = if (!element.isValid) null else resolved.forFile(element.containingFile)?.element
 
-  internal fun resolveToQuery(): QueryColumn? = if (!element.isValid) throw InvalidElementDetectedException() else resolved.forFile(element.containingFile)
+  internal fun resolveToQuery(): QueryColumn? = if (!element.isValid) null else resolved.forFile(element.containingFile)
 
   internal fun unsafeResolve(): QueryColumn? {
     if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return QueryColumn(element)

@@ -48,11 +48,7 @@ interface QueryElement : PsiElement {
     val nullable: Boolean? = null,
     val compounded: List<QueryColumn> = emptyList(),
     val hiddenByUsing: Boolean = false
-  ) {
-    init {
-      if (!element.isValid) throw InvalidElementDetectedException()
-    }
-  }
+  )
 
   /**
    * These aren't considered part of the exposed query (ie performing a SELECT * does not return
