@@ -2,5 +2,11 @@
   "extends": [
     "config:base"
   ],
-  "ignoreDeps": [ "com.jetbrains.intellij.platform", "com.jetbrains.intellij.java" ]
+  "ignoreDeps": [ "com.jetbrains.intellij.platform", "com.jetbrains.intellij.java" ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    }
+  ]
 }
