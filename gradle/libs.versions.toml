@@ -1,6 +1,6 @@
 [versions]
 # 2021.2.1, matching grammarkit version
-ideaVersion = "213.6777.52"
+ideaVersion = "213.7172.48"
 kotlin = "1.6.21"
 
 [libraries]
