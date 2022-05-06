@@ -9,6 +9,7 @@ abstract class ColumnDefMixin(node: ASTNode) : SqlCompositeElementImpl(node), Sq
 
   open fun hasDefaultValue(): Boolean {
     return columnConstraintList.any { it.defaultConstraint != null } ||
-      columnConstraintList.none { it.node.findChildByType(SqlTypes.NOT) != null }
+      columnConstraintList.none { it.node.findChildByType(SqlTypes.NOT) != null } ||
+      columnConstraintList.any { it.generatedClause != null }
   }
 }

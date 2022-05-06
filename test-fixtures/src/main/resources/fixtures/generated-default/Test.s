@@ -1,0 +1,6 @@
+CREATE TABLE objects (
+    id TEXT GENERATED ALWAYS AS (2) UNIQUE NOT NULL,
+    object TEXT NOT NULL
+);
+
+INSERT INTO objects(object) VALUES (?);
