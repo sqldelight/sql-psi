@@ -37,7 +37,7 @@ internal class AlterTableStmtStubImpl<T : TableElement>(
   type: SqlSchemaContributorElementType<T>,
   name: String,
   textOffset: Int,
-  private val newTableName: String?
+  private val newTableName: String?,
 ) : SchemaContributorStubImpl<T>(parent, type, name, textOffset), AlterTableStmtStub {
   override fun newTableName() = newTableName
 }
@@ -45,7 +45,7 @@ internal class AlterTableStmtStubImpl<T : TableElement>(
 internal abstract class AlterTableMixin private constructor(
   stub: AlterTableStmtStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, AlterTableElementType>(stub, nodeType, node),
   SqlAlterTableStmt,
   TableElement {
@@ -53,7 +53,7 @@ internal abstract class AlterTableMixin private constructor(
 
   constructor(
     stub: AlterTableStmtStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun getStub() = super.getStub() as AlterTableStmtStub?
@@ -95,7 +95,7 @@ internal abstract class AlterTableMixin private constructor(
         } catch (e: AnnotationException) {
           lazyQuery
         }.query
-      }
+      },
     )
   }
 
@@ -103,7 +103,7 @@ internal abstract class AlterTableMixin private constructor(
     if (containingFile.order == null) {
       annotationHolder.createErrorAnnotation(
         this,
-        "Alter table statements are forbidden outside of migration files."
+        "Alter table statements are forbidden outside of migration files.",
       )
       return
     }
@@ -114,7 +114,7 @@ internal abstract class AlterTableMixin private constructor(
       else -> {
         annotationHolder.createErrorAnnotation(
           tableName,
-          "Attempting to alter something that is not a table."
+          "Attempting to alter something that is not a table.",
         )
         return
       }
@@ -129,11 +129,12 @@ internal abstract class AlterTableMixin private constructor(
 }
 
 open class AlterTableElementType(
-  name: String
+  name: String,
 ) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlAlterTableStmtImpl(
-    stub as AlterTableStmtStub, this
+    stub as AlterTableStmtStub,
+    this,
   )
 
   override fun serialize(stub: SchemaContributorStub, stubOutputStream: StubOutputStream) {
@@ -143,28 +144,34 @@ open class AlterTableElementType(
 
   override fun deserialize(
     stubStream: StubInputStream,
-    parentStub: StubElement<*>?
+    parentStub: StubElement<*>?,
   ): SchemaContributorStub {
     return AlterTableStmtStubImpl(
-      parentStub, this, stubStream.readNameString()!!,
-      stubStream.readInt(), stubStream.readNameString()
+      parentStub,
+      this,
+      stubStream.readNameString()!!,
+      stubStream.readInt(),
+      stubStream.readNameString(),
     )
   }
 
   override fun createStub(
     contributor: SchemaContributor,
-    parentStub: StubElement<*>?
+    parentStub: StubElement<*>?,
   ): SchemaContributorStub {
     return AlterTableStmtStubImpl(
-      parentStub, this, contributor.name(), contributor.textOffset,
-      (contributor as SqlAlterTableStmt).newTableName?.name
+      parentStub,
+      this,
+      contributor.name(),
+      contributor.textOffset,
+      (contributor as SqlAlterTableStmt).newTableName?.name,
     )
   }
 
   override fun createStub(
     tree: LighterAST,
     node: LighterASTNode,
-    parentStub: StubElement<*>
+    parentStub: StubElement<*>,
   ): SchemaContributorStub {
     val name = LightTreeUtil.firstChildOfType(tree, node, nameType()).toString()
     val newName = LightTreeUtil.firstChildOfType(tree, node, SqlTypes.NEW_TABLE_NAME)?.toString()

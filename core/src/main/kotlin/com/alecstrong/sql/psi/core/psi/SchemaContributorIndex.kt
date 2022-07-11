@@ -34,13 +34,15 @@ internal class SchemaContributorIndexImpl : SchemaContributorIndex, StringStubIn
   override fun get(
     key: String,
     project: Project,
-    scope: GlobalSearchScope
+    scope: GlobalSearchScope,
   ): Collection<SchemaContributor> {
     if (DumbService.isDumb(project)) return emptyList()
     return StubIndex.getElements<String, SchemaContributor>(
-      getKey(), key,
-      project, scope,
-      SchemaContributor::class.java
+      getKey(),
+      key,
+      project,
+      scope,
+      SchemaContributor::class.java,
     )
   }
 

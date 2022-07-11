@@ -37,7 +37,7 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
           val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
           errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
         }
-      }
+      },
     )
 
     val sourceFiles = StringBuilder()

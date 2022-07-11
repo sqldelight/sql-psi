@@ -15,14 +15,14 @@ import com.intellij.psi.tree.IElementType
 internal abstract class DropTriggerMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
   SqlDropTriggerStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name() = triggerName?.text ?: ""
@@ -41,7 +41,7 @@ internal abstract class DropTriggerMixin(
       ) {
         annotationHolder.createErrorAnnotation(
           triggerName,
-          "No trigger found with name ${triggerName.text}"
+          "No trigger found with name ${triggerName.text}",
         )
       }
     }

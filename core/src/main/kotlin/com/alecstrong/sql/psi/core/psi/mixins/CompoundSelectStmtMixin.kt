@@ -17,7 +17,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class CompoundSelectStmtMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : WithClauseContainer(node),
   SqlCompoundSelectStmt {
   private val queryExposed = ModifiableFileLazy {
@@ -35,8 +35,8 @@ internal abstract class CompoundSelectStmtMixin(
         query.first().copy(
           columns = columns.zip(compoundedColumns) { column, compounded ->
             column.copy(compounded = column.compounded + compounded)
-          }
-        )
+          },
+        ),
       )
     }
   }
@@ -88,7 +88,7 @@ internal abstract class CompoundSelectStmtMixin(
           annotationHolder.createErrorAnnotation(
             it,
             "Unexpected number of columns in compound" +
-              " statement found: $count expected: $numColumns"
+              " statement found: $count expected: $numColumns",
           )
         }
       }

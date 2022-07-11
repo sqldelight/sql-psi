@@ -47,11 +47,13 @@ private object ApplicationEnvironment {
 
       CoreApplicationEnvironment.registerExtensionPoint(
         Extensions.getRootArea(),
-        MetaLanguage.EP_NAME, MetaLanguage::class.java
+        MetaLanguage.EP_NAME,
+        MetaLanguage::class.java,
       )
       CoreApplicationEnvironment.registerExtensionPoint(
-        Extensions.getRootArea(), SmartPointerAnchorProvider.EP_NAME,
-        SmartPointerAnchorProvider::class.java
+        Extensions.getRootArea(),
+        SmartPointerAnchorProvider.EP_NAME,
+        SmartPointerAnchorProvider::class.java,
       )
     }
   }
@@ -59,30 +61,30 @@ private object ApplicationEnvironment {
 
 open class SqlCoreEnvironment(
   sourceFolders: List<File>,
-  dependencies: List<File>
+  dependencies: List<File>,
 ) {
   private val fileIndex: CoreFileIndex
 
   protected val projectEnvironment = CoreProjectEnvironment(
     ApplicationEnvironment.coreApplicationEnvironment.parentDisposable,
-    ApplicationEnvironment.coreApplicationEnvironment
+    ApplicationEnvironment.coreApplicationEnvironment,
   )
 
   protected val localFileSystem: VirtualFileSystem
 
   init {
     localFileSystem = VirtualFileManager.getInstance().getFileSystem(
-      StandardFileSystems.FILE_PROTOCOL
+      StandardFileSystems.FILE_PROTOCOL,
     )
 
     projectEnvironment.registerProjectComponent(
       ProjectRootManager::class.java,
-      ProjectRootManagerImpl(projectEnvironment.project)
+      ProjectRootManagerImpl(projectEnvironment.project),
     )
 
     projectEnvironment.project.registerService(
       DirectoryIndex::class.java,
-      DirectoryIndexImpl(projectEnvironment.project)
+      DirectoryIndexImpl(projectEnvironment.project),
     )
 
     fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project)
@@ -109,24 +111,26 @@ open class SqlCoreEnvironment(
           override fun get(
             key: String,
             project: Project,
-            scope: GlobalSearchScope
+            scope: GlobalSearchScope,
           ): Collection<SchemaContributor> {
             return contributors.filterKeys { scope.contains(it) }.flatMap { (_, values) -> values }
           }
-        }
+        },
       )
   }
 
   fun annotate(
     annotationHolder: SqlAnnotationHolder,
-    extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList()
+    extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList(),
   ) {
     val otherFailures = mutableListOf<() -> Unit>()
     val myHolder = object : SqlAnnotationHolder {
       override fun createErrorAnnotation(element: PsiElement, s: String) {
         if (PsiTreeUtil.getNonStrictParentOfType(
-            element, SqlCreateTableStmt::class.java,
-            SqlCreateVirtualTableStmt::class.java, SqlCreateViewStmt::class.java
+            element,
+            SqlCreateTableStmt::class.java,
+            SqlCreateVirtualTableStmt::class.java,
+            SqlCreateViewStmt::class.java,
           ) != null
         ) {
           annotationHolder.createErrorAnnotation(element, s)
@@ -158,7 +162,7 @@ open class SqlCoreEnvironment(
 
   private fun PsiElement.annotateRecursively(
     annotationHolder: SqlAnnotationHolder,
-    extraAnnotators: Collection<SqlCompilerAnnotator>
+    extraAnnotators: Collection<SqlCompilerAnnotator>,
   ) {
     if (this is SqlAnnotatedElement) try {
       annotate(annotationHolder)
@@ -170,8 +174,9 @@ open class SqlCoreEnvironment(
         """
         |Failed to compile ${this.containingFile.virtualFile.path}:${this.node.startOffset}:
         |  ${this.text}
-        |""".trimMargin(),
-        e
+        |
+        """.trimMargin(),
+        e,
       )
     }
     children.forEach { it.annotateRecursively(annotationHolder, extraAnnotators) }
@@ -191,7 +196,7 @@ fun interface SqlCompilerAnnotator {
 private class CoreFileIndex(
   val sourceFolders: List<File>,
   private val localFileSystem: VirtualFileSystem,
-  project: Project
+  project: Project,
 ) : ProjectFileIndexImpl(project) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
     return sourceFolders.all {

@@ -33,7 +33,7 @@ abstract class SqlSchemaContributorElementType<SchemaType : SchemaContributor>(
   /**
    * This should be the same class used when interfacing with [com.alecstrong.sql.psi.core.psi.Schema]
    */
-  private val schemaClass: Class<SchemaType>
+  private val schemaClass: Class<SchemaType>,
 ) : ILightStubElementType<SchemaContributorStub, SchemaContributor>(name, null) {
   /**
    * This should be the token type for the unique name, for example [SqlTypes.INDEX_NAME] for
@@ -52,17 +52,19 @@ abstract class SqlSchemaContributorElementType<SchemaType : SchemaContributor>(
 
   override fun deserialize(
     stubStream: StubInputStream,
-    parentStub: StubElement<*>?
+    parentStub: StubElement<*>?,
   ): SchemaContributorStub {
     return SchemaContributorStubImpl(
-      parentStub, this, stubStream.readNameString()!!,
-      stubStream.readInt()
+      parentStub,
+      this,
+      stubStream.readNameString()!!,
+      stubStream.readInt(),
     )
   }
 
   override fun createStub(
     contributor: SchemaContributor,
-    parentStub: StubElement<*>?
+    parentStub: StubElement<*>?,
   ): SchemaContributorStub {
     return SchemaContributorStubImpl(parentStub, this, contributor.name(), contributor.textOffset)
   }
@@ -74,7 +76,7 @@ abstract class SqlSchemaContributorElementType<SchemaType : SchemaContributor>(
   override fun createStub(
     tree: LighterAST,
     node: LighterASTNode,
-    parentStub: StubElement<*>
+    parentStub: StubElement<*>,
   ): SchemaContributorStub {
     val name = LightTreeUtil.firstChildOfType(tree, node, nameType()).toString()
     return SchemaContributorStubImpl(parentStub, this, name, node.startOffset)

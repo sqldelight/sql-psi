@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
 internal abstract class JoinClauseMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlJoinClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
@@ -24,7 +24,7 @@ internal abstract class JoinClauseMixin(
         .forEach { (subquery, constraint) ->
           if (child == constraint) {
             if (child.node.findChildByType(
-                SqlTypes.USING
+                SqlTypes.USING,
               ) != null
             ) {
               return listOf(
@@ -35,8 +35,8 @@ internal abstract class JoinClauseMixin(
                       column is PsiNamedElement && column.name!! in subquery.queryExposed()
                         .flatMap { it.columns }
                         .mapNotNull { (it.element as? PsiNamedElement)?.name }
-                    }
-                )
+                    },
+                ),
               )
             }
             return queryAvailable + subquery.queryExposed()
@@ -61,14 +61,14 @@ internal abstract class JoinClauseMixin(
               var synthesizedColumns = query.flatMap { it.synthesizedColumns }
 
               if (operator.node.findChildByType(
-                  SqlTypes.LEFT
+                  SqlTypes.LEFT,
                 ) != null
               ) {
                 columns = columns.map { it.copy(nullable = true) }
                 synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
               }
               if (constraint.node?.findChildByType(
-                  SqlTypes.USING
+                  SqlTypes.USING,
                 ) != null
               ) {
                 val columnNames = constraint.columnNameList.map { it.name }
@@ -80,7 +80,7 @@ internal abstract class JoinClauseMixin(
                 table = query.first().table,
                 columns = columns,
                 synthesizedColumns = synthesizedColumns,
-                joinConstraint = constraint
+                joinConstraint = constraint,
               )
             }
           }

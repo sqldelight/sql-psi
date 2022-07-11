@@ -49,7 +49,7 @@ interface SqlCompositeElement : SqlAnnotatedElement {
 
 class LazyQuery(
   val tableName: NamedElement,
-  query: () -> QueryResult
+  query: () -> QueryResult,
 ) {
   val query by lazy(query)
 }

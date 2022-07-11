@@ -18,14 +18,14 @@ import com.intellij.psi.tree.IElementType
 internal abstract class CreateTriggerMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
   SqlCreateTriggerStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -46,35 +46,39 @@ internal abstract class CreateTriggerMixin(
       if (hasElement(SqlTypes.INSERT)) {
         return listOf(
           QueryResult(
-            SingleRow(tableName!!, "new"), table.columns,
-            synthesizedColumns = table.synthesizedColumns
-          )
+            SingleRow(tableName!!, "new"),
+            table.columns,
+            synthesizedColumns = table.synthesizedColumns,
+          ),
         )
       }
       if (hasElement(SqlTypes.UPDATE)) {
         return listOf(
           QueryResult(
-            SingleRow(tableName!!, "new"), table.columns,
-            synthesizedColumns = table.synthesizedColumns
+            SingleRow(tableName!!, "new"),
+            table.columns,
+            synthesizedColumns = table.synthesizedColumns,
           ),
           QueryResult(
-            SingleRow(tableName!!, "old"), table.columns,
-            synthesizedColumns = table.synthesizedColumns
-          )
+            SingleRow(tableName!!, "old"),
+            table.columns,
+            synthesizedColumns = table.synthesizedColumns,
+          ),
         )
       }
       if (hasElement(SqlTypes.DELETE)) {
         return listOf(
           QueryResult(
-            SingleRow(tableName!!, "old"), table.columns,
-            synthesizedColumns = table.synthesizedColumns
-          )
+            SingleRow(tableName!!, "old"),
+            table.columns,
+            synthesizedColumns = table.synthesizedColumns,
+          ),
         )
       }
     }
     if (child is SqlColumnName) {
       return listOfNotNull(
-        tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query
+        tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query,
       )
     }
     return super.queryAvailable(child)
@@ -87,7 +91,7 @@ internal abstract class CreateTriggerMixin(
     ) {
       annotationHolder.createErrorAnnotation(
         triggerName,
-        "Duplicate trigger name ${triggerName.text}"
+        "Duplicate trigger name ${triggerName.text}",
       )
     }
   }

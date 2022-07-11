@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import javax.swing.Icon
 
 internal abstract class TableAliasMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlNamedElementImpl(node),
   SqlTableAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::table_alias_real

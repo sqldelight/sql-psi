@@ -15,14 +15,14 @@ import com.intellij.psi.tree.IElementType
 internal abstract class DropViewMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, DropViewElementType>(stub, nodeType, node),
   SqlDropViewStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {

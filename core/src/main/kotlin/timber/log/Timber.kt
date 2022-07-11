@@ -259,7 +259,7 @@ class Timber private constructor() {
      */
     @Suppress(
       "NOTHING_TO_INLINE", // Kotlin users should reference `Tree.Forest` directly.
-      "NON_FINAL_MEMBER_IN_OBJECT" // For japicmp check.
+      "NON_FINAL_MEMBER_IN_OBJECT", // For japicmp check.
     )
     @JvmStatic
     open inline fun asTree(): Tree = this
@@ -321,6 +321,7 @@ class Timber private constructor() {
 
     // Both fields guarded by 'trees'.
     private val trees = ArrayList<Tree>()
+
     @Volatile private var treeArray = emptyArray<Tree>()
   }
 }

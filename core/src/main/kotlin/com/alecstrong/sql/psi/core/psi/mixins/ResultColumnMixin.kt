@@ -10,7 +10,7 @@ import com.alecstrong.sql.psi.core.psi.SqlResultColumn
 import com.intellij.lang.ASTNode
 
 internal abstract class ResultColumnMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlResultColumn {
   private val queryExposed = ModifiableFileLazy lazy@{

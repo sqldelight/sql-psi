@@ -14,14 +14,14 @@ import com.intellij.psi.tree.IElementType
 internal abstract class DropTableMixin private constructor(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, DropTableElementType>(stub, nodeType, node),
   SqlDropTableStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -35,7 +35,7 @@ internal abstract class DropTableMixin private constructor(
 }
 
 internal class DropTableElementType(
-  name: String
+  name: String,
 ) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlDropTableStmtImpl(stub, this)

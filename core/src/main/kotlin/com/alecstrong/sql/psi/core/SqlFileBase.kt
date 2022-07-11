@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
-  language: Language
+  language: Language,
 ) : PsiFileBase(viewProvider, language) {
   abstract val order: Int?
 
@@ -32,7 +32,7 @@ abstract class SqlFileBase(
 
   internal inline fun <reified T : SchemaContributor> schema(
     sqlStmtElement: PsiElement? = null,
-    includeAll: Boolean = true
+    includeAll: Boolean = true,
   ): Collection<T> {
     return schema(T::class, sqlStmtElement, includeAll)
   }
@@ -40,7 +40,7 @@ abstract class SqlFileBase(
   fun <T : SchemaContributor> schema(
     type: KClass<T>,
     sqlStmtElement: PsiElement? = null,
-    includeAll: Boolean = true
+    includeAll: Boolean = true,
   ): Collection<T> {
     val schema = Schema()
     iteratePreviousStatements(type, sqlStmtElement, includeAll) { statement ->
@@ -91,7 +91,7 @@ abstract class SqlFileBase(
     type: KClass<T>,
     until: PsiElement?,
     includeAll: Boolean = true,
-    block: (SchemaContributor) -> Unit
+    block: (SchemaContributor) -> Unit,
   ) {
     if (includeAll) {
       val orderedContributors = sortedMapOf<Int, LinkedHashSet<SchemaContributor>>()

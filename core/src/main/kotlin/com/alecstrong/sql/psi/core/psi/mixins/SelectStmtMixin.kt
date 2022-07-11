@@ -25,7 +25,7 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SelectStmtMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlSelectStmt,
   FromQuery {
@@ -49,8 +49,8 @@ internal abstract class SelectStmtMixin(
               else it
             }
           }
-        }
-      )
+        },
+      ),
     )
   }
 
@@ -69,7 +69,7 @@ internal abstract class SelectStmtMixin(
               available.flatMap {
                 it.columns.mapNotNull { (it.element as? PsiNamedElement)?.name }
               }
-          }
+          },
         )
       }
 
@@ -136,7 +136,7 @@ internal abstract class SelectStmtMixin(
     if (invalidGroupByBindExpression != null) {
       annotationHolder.createErrorAnnotation(
         invalidGroupByBindExpression,
-        "Cannot bind the name of a column in a GROUP BY clause"
+        "Cannot bind the name of a column in a GROUP BY clause",
       )
     }
 
@@ -146,7 +146,7 @@ internal abstract class SelectStmtMixin(
         if (it.exprList.size != size) {
           annotationHolder.createErrorAnnotation(
             it,
-            "Unexpected number of columns in values found: ${it.exprList.size} expected: $size"
+            "Unexpected number of columns in values found: ${it.exprList.size} expected: $size",
           )
         }
       }

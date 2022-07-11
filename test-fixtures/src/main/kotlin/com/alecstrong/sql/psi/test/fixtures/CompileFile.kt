@@ -20,7 +20,7 @@ fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
       override fun createErrorAnnotation(element: PsiElement, s: String) {
         throw AssertionError("at ${element.textOffset} : $s")
       }
-    }
+    },
   )
 
   var result: SqlFileBase? = null

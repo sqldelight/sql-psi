@@ -19,7 +19,7 @@ internal open class SchemaContributorStubImpl<T : SchemaContributor>(
   parent: StubElement<*>?,
   type: SqlSchemaContributorElementType<T>,
   private val name: String,
-  private val textOffset: Int
+  private val textOffset: Int,
 ) : StubBase<SchemaContributor>(parent, type),
   SchemaContributorStub {
   override fun name() = name

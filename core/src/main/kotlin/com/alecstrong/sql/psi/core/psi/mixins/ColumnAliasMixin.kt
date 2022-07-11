@@ -11,7 +11,7 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiElement
 
 internal abstract class ColumnAliasMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlNamedElementImpl(node),
   SqlColumnAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::column_alias_real

@@ -10,12 +10,12 @@ interface AlterTableApplier : PsiElement {
 val AlterTableApplier.alterStmt
   get() = PsiTreeUtil.getParentOfType(
     this,
-    SqlAlterTableStmt::class.java
+    SqlAlterTableStmt::class.java,
   )!!
 
 internal fun LazyQuery.withAlterStatement(
   alter: SqlAlterTableStmt,
-  until: SqlAlterTableRules? = null
+  until: SqlAlterTableRules? = null,
 ): LazyQuery {
   return alter.alterTableRulesList.takeWhile { it != until }.fold(
     this,
@@ -26,7 +26,7 @@ internal fun LazyQuery.withAlterStatement(
           tableName = renameTable.newTableName,
           query = {
             lazyQuery.query.copy(table = renameTable.newTableName)
-          }
+          },
         )
       }
 
@@ -35,6 +35,6 @@ internal fun LazyQuery.withAlterStatement(
       }
 
       return@fold lazyQuery
-    }
+    },
   )
 }

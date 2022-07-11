@@ -11,7 +11,7 @@ import com.intellij.lang.PsiBuilder
 import javax.swing.Icon
 
 internal abstract class ColumnNameMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::column_name_real
 

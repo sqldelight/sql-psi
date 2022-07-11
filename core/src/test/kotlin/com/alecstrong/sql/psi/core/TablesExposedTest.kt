@@ -33,8 +33,8 @@ class TablesExposedTest {
       |CREATE TABLE test3 (
       |  id TEXT NOT NULL
       |);
-    """.trimMargin(),
-      "1.s"
+      """.trimMargin(),
+      "1.s",
     )
     val file = compileFile(
       """
@@ -45,17 +45,18 @@ class TablesExposedTest {
       |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
       |
       |ALTER TABLE test3 RENAME TO test5;
-    """.trimMargin(),
-      "2.s"
+      """.trimMargin(),
+      "2.s",
     )
 
     assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
       "test1",
       "test2",
       "test4",
-      "test5"
+      "test5",
     )
   }
+
   @Test fun `tables works correctly for include all=false`() {
     compileFile(
       """
@@ -70,8 +71,8 @@ class TablesExposedTest {
       |CREATE TABLE test3 (
       |  id TEXT NOT NULL
       |);
-    """.trimMargin(),
-      "1.s"
+      """.trimMargin(),
+      "1.s",
     )
     val file = compileFile(
       """
@@ -82,14 +83,14 @@ class TablesExposedTest {
       |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
       |
       |ALTER TABLE test3 RENAME TO test5;
-    """.trimMargin(),
-      "2.s"
+      """.trimMargin(),
+      "2.s",
     )
 
     assertThat(file.tables(includeAll = false).map { it.tableName.text }).containsExactly(
       "test2",
       "test4",
-      "test5"
+      "test5",
     )
   }
 }
