@@ -7,7 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SqlInExpr
 import com.intellij.lang.ASTNode
 
 internal abstract class InExprMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlInExpr {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
@@ -21,7 +21,7 @@ internal abstract class InExprMixin(
     if (query.flatMap { it.columns }.size > 1) {
       annotationHolder.createErrorAnnotation(
         this,
-        "Only a single result allowed for a SELECT that is part of an expression"
+        "Only a single result allowed for a SELECT that is part of an expression",
       )
     }
   }

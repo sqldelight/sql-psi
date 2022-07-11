@@ -26,7 +26,7 @@ import com.intellij.psi.util.PsiTreeUtil
 internal abstract class CreateTableMixin private constructor(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateTableElementType>(stub, nodeType, node),
   SqlCreateTableStmt,
   TableElement {
@@ -34,7 +34,7 @@ internal abstract class CreateTableMixin private constructor(
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -63,8 +63,8 @@ internal abstract class CreateTableMixin private constructor(
       listOf(
         SynthesizedColumn(
           table = this,
-          acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames }
-        )
+          acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames },
+        ),
       )
     } else {
       emptyList()
@@ -73,8 +73,8 @@ internal abstract class CreateTableMixin private constructor(
       QueryResult(
         table = tableName,
         columns = columnDefList.map { it.columnName }.asColumns(),
-        synthesizedColumns = synthesizedColumns
-      )
+        synthesizedColumns = synthesizedColumns,
+      ),
     )
   }
 
@@ -106,8 +106,8 @@ internal abstract class CreateTableMixin private constructor(
         listOf(
           columnDefList.filter {
             it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() }
-          }.mapNotNull { it.columnName.name }
-        )
+          }.mapNotNull { it.columnName.name },
+        ),
       )
       .forEach { uniqueKeys ->
         if (columns.map { it.name }.all { it in uniqueKeys }) return true
@@ -151,14 +151,14 @@ internal abstract class CreateTableMixin private constructor(
         if (columns.size == 1 && foreignKey.size != 1) {
           annotationHolder.createErrorAnnotation(
             this,
-            "Table ${foreignTable.tableName.name} has a composite primary key"
+            "Table ${foreignTable.tableName.name} has a composite primary key",
           )
         } else if (columns.size != foreignKey.size) {
           annotationHolder.createErrorAnnotation(
             this,
             "Foreign key constraint must match the" +
               " primary key of the foreign table exactly. Constraint has ${columns.size} columns" +
-              " and foreign table primary key has ${foreignKey.size} columns"
+              " and foreign table primary key has ${foreignKey.size} columns",
           )
         }
       } else {
@@ -167,13 +167,13 @@ internal abstract class CreateTableMixin private constructor(
           if (columnNameList.size == 1) {
             annotationHolder.createErrorAnnotation(
               this,
-              "Table ${foreignTable.tableName.name} does not have a unique index on column ${columnNameList.first().name}"
+              "Table ${foreignTable.tableName.name} does not have a unique index on column ${columnNameList.first().name}",
             )
           } else {
             annotationHolder.createErrorAnnotation(
               this,
               "Table ${foreignTable.tableName.name} does not have a unique index on columns" +
-                " ${columnNameList.joinToString(prefix = "[", postfix = "]") { it.name }}"
+                " ${columnNameList.joinToString(prefix = "[", postfix = "]") { it.name }}",
             )
           }
         }
@@ -187,7 +187,7 @@ internal abstract class CreateTableMixin private constructor(
           if (it.columnNameList.size > 1) {
             annotationHolder.createErrorAnnotation(
               it,
-              "Column can only reference a single foreign key"
+              "Column can only reference a single foreign key",
             )
           } else {
             it.checkCompositeForeignKey(listOf(column.columnName))
@@ -198,7 +198,7 @@ internal abstract class CreateTableMixin private constructor(
     tableConstraintList.filter { it.foreignKeyClause != null }
       .forEach { constraint ->
         constraint.foreignKeyClause!!.checkCompositeForeignKey(
-          constraint.columnNameList
+          constraint.columnNameList,
         )
       }
   }
@@ -212,7 +212,7 @@ internal abstract class CreateTableMixin private constructor(
       constraints.forEach {
         annotationHolder.createErrorAnnotation(
           it,
-          "Table ${tableName.name} can only have one primary key"
+          "Table ${tableName.name} can only have one primary key",
         )
       }
     }
@@ -223,7 +223,7 @@ internal abstract class CreateTableMixin private constructor(
       PsiTreeUtil.findChildOfType(it, SqlCompoundSelectStmt::class.java)?.let {
         annotationHolder.createErrorAnnotation(
           it,
-          "Subqueries are not permitted as part of CREATE TABLE statements"
+          "Subqueries are not permitted as part of CREATE TABLE statements",
         )
       }
     }
@@ -253,7 +253,7 @@ internal abstract class CreateTableMixin private constructor(
 }
 
 internal class CreateTableElementType(
-  name: String
+  name: String,
 ) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateTableStmtImpl(stub, this)

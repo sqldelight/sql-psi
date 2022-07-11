@@ -18,7 +18,7 @@ import com.intellij.psi.tree.IElementType
 internal abstract class CreateViewMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateViewElementType>(stub, nodeType, node),
   SqlCreateViewStmt,
   TableElement {
@@ -26,7 +26,7 @@ internal abstract class CreateViewMixin(
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -41,10 +41,11 @@ internal abstract class CreateViewMixin(
 
   override fun tableExposed() = LazyQuery(viewName) {
     val columns =
-      if (columnAliasList.isEmpty())
+      if (columnAliasList.isEmpty()) {
         compoundSelectStmt?.queryExposed()?.flatMap { it.columns }
-      else
+      } else {
         columnAliasList.asColumns()
+      }
 
     QueryResult(viewName, columns ?: emptyList())
   }
@@ -52,11 +53,12 @@ internal abstract class CreateViewMixin(
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
     if (columnAliasList.isNotEmpty()) {
-      if (columnAliasList.size != compoundSelectStmt?.queryExposed()?.map { it.columns }?.size)
+      if (columnAliasList.size != compoundSelectStmt?.queryExposed()?.map { it.columns }?.size) {
         annotationHolder.createErrorAnnotation(
           this,
-          "number of aliases is different from the number of columns"
+          "number of aliases is different from the number of columns",
         )
+      }
     }
   }
 }

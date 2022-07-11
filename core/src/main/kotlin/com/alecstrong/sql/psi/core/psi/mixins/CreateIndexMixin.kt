@@ -16,14 +16,14 @@ import com.intellij.psi.tree.IElementType
 internal abstract class CreateIndexMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<SqlCreateIndexStmt, CreateIndexElementType>(stub, nodeType, node),
   SqlCreateIndexStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -38,7 +38,7 @@ internal abstract class CreateIndexMixin(
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in indexedColumnList || child == expr) {
       return listOfNotNull(
-        tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query
+        tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query,
       )
     }
     return super.queryAvailable(child)
@@ -56,7 +56,7 @@ internal abstract class CreateIndexMixin(
 }
 
 internal class CreateIndexElementType(
-  name: String
+  name: String,
 ) : SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateIndexStmtImpl(stub, this)

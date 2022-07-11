@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 
 open class SqlCompositeElementImpl(
-  node: ASTNode
+  node: ASTNode,
 ) : ASTWrapperPsiElement(node),
   SqlCompositeElement {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
@@ -44,7 +44,7 @@ open class SqlCompositeElementImpl(
 internal abstract class SqlSchemaContributorImpl<SchemaType : SchemaContributor, ElementType : SqlSchemaContributorElementType<SchemaType>>(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : StubBasedPsiElementBase<SchemaContributorStub>(stub, nodeType, node),
   SchemaContributor {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

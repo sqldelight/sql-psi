@@ -4,7 +4,7 @@ import com.intellij.psi.PsiFile
 import java.util.concurrent.atomic.AtomicReference
 
 class ModifiableFileLazy<out T>(
-  private val initializer: () -> T
+  private val initializer: () -> T,
 ) {
   private var modifiedStamp = -1L
   private var state = AtomicReference<T>()

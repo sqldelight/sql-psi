@@ -12,13 +12,13 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class BinaryLikeExprMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlBinaryLikeExpr {
 
   private val hasMatchOperator: Boolean
     get() = binaryLikeOperator.node.findChildByType(
-      SqlTypes.MATCH
+      SqlTypes.MATCH,
     ) != null
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
@@ -52,14 +52,14 @@ internal abstract class BinaryLikeExprMixin(
     if (isMatchUsageError) {
       annotationHolder.createErrorAnnotation(
         this,
-        "Unable to use function MATCH in the requested context"
+        "Unable to use function MATCH in the requested context",
       )
     }
   }
 
   private fun isMatchUsageErrorOnSynthesizedColumn(
     expression: SqlColumnExpr,
-    table: SqlCreateVirtualTableStmt
+    table: SqlCreateVirtualTableStmt,
   ): Boolean {
     return if (table.usesFtsModule) {
       queryAvailable(expression)
@@ -72,7 +72,7 @@ internal abstract class BinaryLikeExprMixin(
 
   private fun isMatchUsageErrorOnRegularColumn(
     expression: SqlColumnExpr,
-    columnName: SqlColumnName
+    columnName: SqlColumnName,
   ): Boolean {
     val table = PsiTreeUtil.findFirstParent(columnName) { it is SqlCreateVirtualTableStmt }
       as? SqlCreateVirtualTableStmt

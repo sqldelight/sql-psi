@@ -6,7 +6,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class InsertStmtMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : MutatorMixin(node),
   SqlInsertStmt {
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {

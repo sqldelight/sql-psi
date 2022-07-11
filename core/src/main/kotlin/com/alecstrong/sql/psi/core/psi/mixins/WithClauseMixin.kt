@@ -9,7 +9,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class WithClauseMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlWithClause {
   override fun annotate(annotationHolder: SqlAnnotationHolder) {

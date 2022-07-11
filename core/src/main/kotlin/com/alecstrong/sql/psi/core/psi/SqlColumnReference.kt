@@ -13,7 +13,7 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReferenceBase
 
 internal class SqlColumnReference<T : SqlNamedElementImpl>(
-  element: T
+  element: T,
 ) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 

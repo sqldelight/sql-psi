@@ -30,7 +30,7 @@ interface QueryElement : PsiElement {
     val columns: List<QueryColumn>,
     val synthesizedColumns: List<SynthesizedColumn> = emptyList(),
     val joinConstraint: SqlJoinConstraint? = null,
-    val adjacent: Boolean = false
+    val adjacent: Boolean = false,
   ) {
     constructor(column: PsiElement) : this(columns = listOf(QueryColumn(column)))
 
@@ -47,7 +47,7 @@ interface QueryElement : PsiElement {
      */
     val nullable: Boolean? = null,
     val compounded: List<QueryColumn> = emptyList(),
-    val hiddenByUsing: Boolean = false
+    val hiddenByUsing: Boolean = false,
   )
 
   /**
@@ -57,7 +57,7 @@ interface QueryElement : PsiElement {
   data class SynthesizedColumn(
     val table: PsiElement,
     val acceptableValues: List<String>,
-    val nullable: Boolean = false
+    val nullable: Boolean = false,
   )
 }
 

@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class WithClauseContainer(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node) {
   abstract fun getWithClause(): SqlWithClause?
 
@@ -31,7 +31,7 @@ internal abstract class WithClauseContainer(
         LazyQuery(name.tableName) {
           QueryResult(
             name.tableName,
-            name.columnAliasList.asColumns().ifEmpty { queryElement.queryExposed().flatMap(QueryResult::columns) }
+            name.columnAliasList.asColumns().ifEmpty { queryElement.queryExposed().flatMap(QueryResult::columns) },
           )
         }
       }

@@ -23,8 +23,10 @@ class AnsiSqlTests(name: String, fixtureRoot: File) : FixturesTest(name, fixture
   }
 
   companion object {
-    @Suppress("unused") // Used by Parameterized JUnit runner reflectively.
+    @Suppress("unused")
+    // Used by Parameterized JUnit runner reflectively.
     @Parameters(name = "{0}")
-    @JvmStatic fun parameters() = ansiFixtures
+    @JvmStatic
+    fun parameters() = ansiFixtures
   }
 }

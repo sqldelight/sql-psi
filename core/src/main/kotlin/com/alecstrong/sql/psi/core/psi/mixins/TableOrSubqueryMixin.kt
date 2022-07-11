@@ -7,7 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SqlTableOrSubquery
 import com.intellij.lang.ASTNode
 
 internal abstract class TableOrSubqueryMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlTableOrSubquery {
   private val queryExposed = ModifiableFileLazy lazy@{

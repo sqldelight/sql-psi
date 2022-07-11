@@ -19,7 +19,7 @@ import com.intellij.psi.tree.IElementType
 internal abstract class CreateVirtualTableMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
-  node: ASTNode?
+  node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
   SqlCreateVirtualTableStmt,
   TableElement {
@@ -27,7 +27,7 @@ internal abstract class CreateVirtualTableMixin(
 
   constructor(
     stub: SchemaContributorStub,
-    nodeType: IElementType
+    nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
   override fun name(): String {
@@ -41,7 +41,7 @@ internal abstract class CreateVirtualTableMixin(
 
   override fun tableExposed(): LazyQuery {
     val columnNameElements = findChildrenByClass(
-      SqlModuleArgument::class.java
+      SqlModuleArgument::class.java,
     )
       .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
 
@@ -52,8 +52,8 @@ internal abstract class CreateVirtualTableMixin(
         SynthesizedColumn(
           table = this,
           acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
-            .filter { it !in columnNames }
-        )
+            .filter { it !in columnNames },
+        ),
       )
     } else {
       emptyList()
@@ -63,7 +63,7 @@ internal abstract class CreateVirtualTableMixin(
       QueryResult(
         table = tableName,
         columns = columnNameElements.asColumns(),
-        synthesizedColumns = synthesizedColumns
+        synthesizedColumns = synthesizedColumns,
       )
     }
   }

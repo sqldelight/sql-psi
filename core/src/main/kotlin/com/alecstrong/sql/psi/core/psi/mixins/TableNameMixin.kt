@@ -19,7 +19,7 @@ import com.intellij.psi.PsiReference
 import javax.swing.Icon
 
 internal abstract class TableNameMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean
     get() = when (this) {

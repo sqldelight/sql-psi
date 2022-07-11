@@ -7,7 +7,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
 internal abstract class ForeignKeyClauseMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlForeignKeyClause {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {

@@ -9,7 +9,7 @@ import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.intellij.lang.ASTNode
 
 internal abstract class InsertStmtValuesMixin(
-  node: ASTNode
+  node: ASTNode,
 ) : SqlCompositeElementImpl(node),
   SqlInsertStmtValues {
   override fun getParent(): SqlInsertStmt? {
@@ -22,7 +22,7 @@ internal abstract class InsertStmtValuesMixin(
     val columns = table.columns.map { (it.element as SqlColumnName).name }
     // DEFAULT VALUES clause
     val insertDefaultValues = node.findChildByType(
-      SqlTypes.DEFAULT
+      SqlTypes.DEFAULT,
     ) != null
     val setColumns =
       if (parent.columnNameList.isEmpty() && !insertDefaultValues) {
@@ -36,7 +36,7 @@ internal abstract class InsertStmtValuesMixin(
         annotationHolder.createErrorAnnotation(
           it,
           "Unexpected number of values being inserted." +
-            " found: ${it.exprList.size} expected: ${setColumns.size}"
+            " found: ${it.exprList.size} expected: ${setColumns.size}",
         )
       }
     }
@@ -47,7 +47,7 @@ internal abstract class InsertStmtValuesMixin(
         annotationHolder.createErrorAnnotation(
           select,
           "Unexpected number of values being" +
-            " inserted. found: $size expected: ${setColumns.size}"
+            " inserted. found: $size expected: ${setColumns.size}",
         )
       }
     }
@@ -60,13 +60,13 @@ internal abstract class InsertStmtValuesMixin(
       annotationHolder.createErrorAnnotation(
         parent,
         "Cannot populate default value for column " +
-          "${needsDefaultValue.first().name}, it must be specified in insert statement."
+          "${needsDefaultValue.first().name}, it must be specified in insert statement.",
       )
     } else if (needsDefaultValue.size > 1) {
       annotationHolder.createErrorAnnotation(
         parent,
         "Cannot populate default values for columns " +
-          "(${needsDefaultValue.joinToString { it.name }}), they must be specified in insert statement."
+          "(${needsDefaultValue.joinToString { it.name }}), they must be specified in insert statement.",
       )
     }
 
