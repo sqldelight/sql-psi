@@ -458,6 +458,8 @@ view_name ::= id | string {
 }
 module_name ::= id
 module_argument_name ::= id
-bind_parameter ::= '?'
+bind_parameter ::= '?' {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BindParameterMixin"
+}
 table_options ::= table_option ( [','] table_option ) *
 table_option ::= WITHOUT ROWID
