@@ -10,3 +10,8 @@ FROM posts
 WHERE (id, created_at) <= (?, ?)
 ORDER BY created_at DESC
 LIMIT 4;
+
+-- should fail.
+SELECT *
+FROM posts
+WHERE (id, ) <= (?, ?)
