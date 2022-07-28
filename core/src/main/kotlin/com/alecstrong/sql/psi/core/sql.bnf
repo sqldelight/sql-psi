@@ -205,6 +205,7 @@ expr ::= ( other_expr
          | raise_expr
          | case_expr
          | exists_expr
+         | multi_column_expr
          | paren_expr
          | binary_or_expr
          | binary_and_expr
@@ -228,7 +229,7 @@ expr ::= ( other_expr
          | bind_expr )
 
 other_expr ::= extension_expr
-extension_expr ::= NULL | multi_column_expr
+extension_expr ::= NULL
 extension_stmt ::= NULL
 multi_column_expr ::= values_expression [ ( LT | LTE | GT | GTE ) values_expression ] {
   pin = 1
