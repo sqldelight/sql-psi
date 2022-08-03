@@ -201,9 +201,11 @@ drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
-expr ::= ( raise_expr
+expr ::= ( other_expr
+         | raise_expr
          | case_expr
          | exists_expr
+         | multi_column_expr
          | paren_expr
          | binary_or_expr
          | binary_and_expr
@@ -223,13 +225,15 @@ expr ::= ( raise_expr
          | binary_pipe_expr
          | unary_expr
          | literal_expr
-         | other_expr
          | column_expr
          | bind_expr )
 
 other_expr ::= extension_expr
 extension_expr ::= NULL
 extension_stmt ::= NULL
+multi_column_expr ::= values_expression [ ( LT | LTE | GT | GTE ) values_expression ] {
+  pin = 1
+}
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
