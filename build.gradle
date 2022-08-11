@@ -54,3 +54,10 @@ allprojects {
     exclude group: 'com.jetbrains.rd'
   }
 }
+
+task printVersion {
+  doLast {
+    // to get the current version to inject it into sqldelight
+    file("version").text = project.version
+  }
+}

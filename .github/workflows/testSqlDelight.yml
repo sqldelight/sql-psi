@@ -29,10 +29,11 @@ jobs:
     - name: Publish locally
       run: ./gradlew publishAllPublicationsToInstallLocallyRepository
 
-    - run: mv build/localMaven sqldelight/build/localMaven
+    - run: mkdir -p sqldelight/build/localMaven && mv build/localMaven sqldelight/build/localMaven
 
+    - run: ./gradlew printVersion && export sqlPsiVersion=$(cat version) && rm version
     - name: Build SqlDelight
-      run: ./gradlew build
+      run: ./gradlew -PsqlPsiVersion=$sqlPsiVersion build
       working-directory: sqldelight
 
 env:
