@@ -14,3 +14,7 @@ WHERE column1 IS NOT NULL;
 -- valid.
 CREATE INDEX index_3
 ON test (_id COLLATE some_collation_name ASC);
+
+-- valid.
+CREATE INDEX index_4
+ON test (coalesce(_id) COLLATE some_collation_name ASC);
