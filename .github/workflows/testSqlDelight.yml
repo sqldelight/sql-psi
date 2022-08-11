@@ -1,4 +1,4 @@
-name: CI
+name: SQLDelight Test
 
 on: [push, pull_request]
 
@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: action/checkout@3
+    - uses: actions/checkout@v3
       with:
         repository: 'cashapp/sqldelight'
         path: 'sqldelight'
