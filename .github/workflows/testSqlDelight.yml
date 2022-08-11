@@ -29,9 +29,11 @@ jobs:
     - name: Publish locally
       run: ./gradlew publishAllPublicationsToInstallLocallyRepository
 
-    - run: mkdir -p sqldelight/build/localMaven && mv build/localMaven sqldelight/build/localMaven
+    - name: Copy sql-psi to sqldelight local repo
+      run: mkdir -p sqldelight/build/localMaven && mv build/localMaven sqldelight/build/localMaven
 
-    - run: ./gradlew printVersion && export sqlPsiVersion=$(cat version) && rm version
+    - name: Get the version of sql-psi
+      run: ./gradlew printVersion && export sqlPsiVersion=$(cat version) && rm version
     - name: Build SqlDelight
       run: ./gradlew -PsqlPsiVersion=$sqlPsiVersion build
       working-directory: sqldelight
