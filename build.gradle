@@ -58,6 +58,6 @@ allprojects {
 task printVersion {
   doLast {
     // to get the current version to inject it into sqldelight
-    file("version").text = project.version
+    file("version.version").text = "sqlPsiVersion=" + project.version + "\n"
   }
 }
