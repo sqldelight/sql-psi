@@ -32,10 +32,11 @@ jobs:
     - name: Copy sql-psi to sqldelight local repo
       run: mkdir -p sqldelight/build/localMaven && mv build/localMaven sqldelight/build/localMaven
 
-    - name: Get the version of sql-psi
-      run: ./gradlew printVersion && export sqlPsiVersion=$(cat version) && rm version
+    - name: Store the version of sql-psi in version file
+      run: ./gradlew printVersion
+
     - name: Build SqlDelight
-      run: ./gradlew -PsqlPsiVersion=$sqlPsiVersion dialects:build sqldelight-compiler:build
+      run: ./gradlew -PsqlPsiVersion=$(cat version) dialects:build sqldelight-compiler:build
       working-directory: sqldelight
       env:
         GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -XX:MetaspaceSize=1g"
