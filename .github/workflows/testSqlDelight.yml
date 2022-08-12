@@ -36,7 +36,7 @@ jobs:
       run: ./gradlew printVersion && cat version.version >> $GITHUB_ENV && rm version.version
 
     - name: Build SqlDelight
-      run: ./gradlew -PsqlPsiVersion=$sqlPsiVersion dialects:build sqldelight-compiler:build
+      run: ./gradlew -PsqlPsiVersion=$sqlPsiVersion dialects:build sqldelight-compiler:build -x sqldelight-compiler:integration-tests:build
       working-directory: sqldelight
       env:
         GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.configureondemand=true -Dkotlin.incremental=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError -XX:MetaspaceSize=1g"
