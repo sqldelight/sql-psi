@@ -54,7 +54,7 @@
   extends(".*expr")=expr
 }
 
-stmt_list ::= ( stmt ';' ) * {
+stmt_list ::= ( stmt SEMI ) * {
   mixin="com.alecstrong.sql.psi.core.psi.mixins.SqlStmtListMixin"
   pin(".*")=1
 }
@@ -65,8 +65,8 @@ stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_s
   recoverWhile=sql_stmt_recovery
   pin = 2
 }
-private sql_stmt_recovery ::= !( ';' )
-alter_table_stmt ::= ALTER TABLE [ database_name '.' ] table_name alter_table_rules ( ',' alter_table_rules )* {
+private sql_stmt_recovery ::= !( SEMI )
+alter_table_stmt ::= ALTER TABLE [ database_name DOT ] table_name alter_table_rules ( COMMA alter_table_rules )* {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableElementType"
@@ -78,7 +78,7 @@ alter_table_add_column ::= ADD [ COLUMN ] column_def {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.AlterTableAddColumnMixin"
 }
 alter_table_rename_table ::= RENAME TO new_table_name
-analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name '.' table_or_index_name ] {
+analyze_stmt ::= ANALYZE [ database_name | table_or_index_name | database_name DOT table_or_index_name ] {
   pin = 1
 }
 attach_stmt ::= ATTACH [ DATABASE ] expr AS database_name {
@@ -99,7 +99,7 @@ savepoint_stmt ::= SAVEPOINT savepoint_name {
 release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name {
   pin = 1
 }
-create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name '.' ] index_name ON table_name '(' indexed_column ( ',' indexed_column ) * ')' [ WHERE expr ] {
+create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name DOT ] index_name ON table_name LP indexed_column ( COMMA indexed_column ) * RP [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexElementType"
@@ -107,7 +107,7 @@ create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name 
   pin = 6
 }
 indexed_column ::= expr [ COLLATE collation_name ] [ ASC | DESC ]
-create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name ( '(' column_def ( ',' column_def ) * ( ',' table_constraint ) * ')' [ table_options ] | AS compound_select_stmt ) {
+create_table_stmt ::= CREATE [ TEMP | TEMPORARY ] TABLE [ IF NOT EXISTS ] [ database_name DOT ] table_name ( LP column_def ( COMMA column_def ) * ( COMMA table_constraint ) * RP [ table_options ] | AS compound_select_stmt ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateTableElementType"
@@ -118,25 +118,25 @@ column_def ::= [ javadoc ] column_name column_type ( column_constraint ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ColumnDefMixin"
 }
 column_type ::= type_name
-type_name ::= identifier [ '(' signed_number ')' | '(' signed_number ',' signed_number ')' ]
+type_name ::= identifier [ LP signed_number RP | LP signed_number COMMA signed_number RP ]
 column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | check_constraint | default_constraint | COLLATE collation_name | foreign_key_clause | generated_clause )
-generated_clause ::= [ GENERATED ] ALWAYS AS '(' expr ')'
-check_constraint ::= CHECK '(' expr ')'
-default_constraint ::= DEFAULT ( signed_number | literal_value | '(' expr ')' )
-signed_number ::= [ '+' | '-' ] numeric_literal
-table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) '(' indexed_column ( ',' indexed_column ) * ')' conflict_clause | CHECK '(' expr ')' | FOREIGN KEY '(' column_name ( ',' column_name ) * ')' foreign_key_clause )
-foreign_key_clause ::= REFERENCES foreign_table [ '(' column_name ( ',' column_name ) * ')' ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) * ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ] {
+generated_clause ::= [ GENERATED ] ALWAYS AS LP expr RP
+check_constraint ::= CHECK LP expr RP
+default_constraint ::= DEFAULT ( signed_number | literal_value | LP expr RP )
+signed_number ::= [ PLUS | MINUS ] numeric_literal
+table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) LP indexed_column ( COMMA indexed_column ) * RP conflict_clause | CHECK LP expr RP | FOREIGN KEY LP column_name ( COMMA column_name ) * RP foreign_key_clause )
+foreign_key_clause ::= REFERENCES foreign_table [ LP column_name ( COMMA column_name ) * RP ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) * ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ForeignKeyClauseMixin"
 }
 conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
-create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name '.' ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( ',' column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) ';' ) + END {
+create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name DOT ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( COMMA column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) SEMI ) + END {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerElementType"
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
 }
-create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name '.' ] view_name[ '(' column_alias ( ',' column_alias ) * ')' ] AS compound_select_stmt {
+create_view_stmt ::= CREATE [ TEMP | TEMPORARY ] VIEW [ IF NOT EXISTS ] [ database_name DOT ] view_name[ LP column_alias ( COMMA column_alias ) * RP ] AS compound_select_stmt {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateViewMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateViewElementType"
@@ -147,8 +147,8 @@ module_column_def ::= [ javadoc ] column_name [ column_type ] ( column_constrain
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ModuleColumnDefMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
 }
-module_argument_def ::= ( module_argument_name '=' (string_literal | identifier) ) | column_def | module_column_def
-create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name '.' ] table_name USING module_name [ '(' <<custom_module_argument module_argument_def>> ( ',' <<custom_module_argument module_argument_def>> ) * ')' ] {
+module_argument_def ::= ( module_argument_name EQ (string_literal | identifier) ) | column_def | module_column_def
+create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name DOT ] table_name USING module_name [ LP <<custom_module_argument module_argument_def>> ( COMMA <<custom_module_argument module_argument_def>> ) * RP ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableElementType"
@@ -156,45 +156,45 @@ create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_
   pin = 6
 }
 module_argument ::= [ module_argument_def ]
-with_clause ::= WITH [ RECURSIVE ] cte_table_name AS '(' with_clause_auxiliary_stmt ')' ( ',' cte_table_name AS '(' with_clause_auxiliary_stmt ')' ) * {
+with_clause ::= WITH [ RECURSIVE ] cte_table_name AS LP with_clause_auxiliary_stmt RP ( COMMA cte_table_name AS LP with_clause_auxiliary_stmt RP ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.WithClauseMixin"
   pin = 1
 }
 with_clause_auxiliary_stmt ::= compound_select_stmt
-cte_table_name ::= table_name [ '(' column_alias ( ',' column_alias ) * ')' ]
+cte_table_name ::= table_name [ LP column_alias ( COMMA column_alias ) * RP ]
 delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
-delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( ',' ordering_term ) * ] LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ] LIMIT expr [ ( OFFSET | COMMA ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
 detach_stmt ::= DETACH [ DATABASE ] database_name {
   pin = 1
 }
-drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name '.' ] index_name {
+drop_index_stmt ::= DROP INDEX [ IF EXISTS ] [ database_name DOT ] index_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropIndexElementType"
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
-drop_table_stmt ::= DROP ( TABLE | VIEW ) [ IF EXISTS ] [ database_name '.' ] table_name {
+drop_table_stmt ::= DROP ( TABLE | VIEW ) [ IF EXISTS ] [ database_name DOT ] table_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropTableElementType"
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
-drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name '.' ] trigger_name {
+drop_trigger_stmt ::= DROP TRIGGER [ IF EXISTS ] [ database_name DOT ] trigger_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropTriggerMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropTriggerElementType"
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
-drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name '.' ] view_name {
+drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name DOT ] view_name {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.DropViewMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.DropViewElementType"
@@ -236,25 +236,25 @@ multi_column_expr ::= values_expression [ ( LT | LTE | GT | GTE ) values_express
 }
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
-column_expr ::= [ database_name '.' table_name '.' | table_name '.' ] column_name
-unary_expr ::= ('+' | '-' | '~' ) expr
-binary_pipe_expr ::= expr '||' expr {
+column_expr ::= [ database_name DOT table_name DOT | table_name DOT ] column_name
+unary_expr ::= (PLUS | MINUS | BITWISE_NOT ) expr
+binary_pipe_expr ::= expr CONCAT expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-binary_mult_expr ::= expr ( '*' | '/' | '%' ) expr {
+binary_mult_expr ::= expr ( MULTIPLY | DIVIDE | MOD ) expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-binary_add_expr ::= expr ( '+' | '-' ) expr {
+binary_add_expr ::= expr ( PLUS | MINUS ) expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-binary_bitwise_expr ::= expr ( '<<' |  '>>' | '&' | '|' ) expr {
+binary_bitwise_expr ::= expr ( SHIFT_LEFT | SHIFT_RIGHT | BITWISE_AND | BITWISE_OR ) expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-binary_boolean_expr ::= expr (  '<' | '<=' | '>' | '>=' ) expr {
+binary_boolean_expr ::= expr (  LT | LTE | GT | GTE ) expr {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-binary_equality_expr ::= expr ( '=' | '==' | '!=' | '<>' ) expr {
+binary_equality_expr ::= expr ( EQ | EQ2 | NEQ | NEQ2 ) expr {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
@@ -264,11 +264,11 @@ binary_and_expr ::= expr AND expr {
 binary_or_expr ::= expr OR expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-function_expr ::= function_name '(' [ [ DISTINCT ] expr ( ( ',' | FROM | FOR | SEPARATOR ) expr ) * | '*' ] ')'
-paren_expr ::= '(' expr ')' {
+function_expr ::= function_name LP [ [ DISTINCT ] expr ( ( COMMA | FROM | FOR | SEPARATOR ) expr ) * | MULTIPLY ] RP
+paren_expr ::= LP expr RP {
   pin = 1
 }
-cast_expr ::= CAST '(' expr AS type_name ')'
+cast_expr ::= CAST LP expr AS type_name RP
 collate_expr ::= expr COLLATE collation_name
 binary_like_operator ::= ( LIKE | GLOB | REGEXP | MATCH )
 binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] {
@@ -281,16 +281,16 @@ is_expr ::= expr IS [ NOT ] expr {
 between_expr ::= expr [ NOT ] BETWEEN expr AND <<expr '6'>> {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
 }
-in_expr ::= expr [ NOT ] IN ( '(' [ compound_select_stmt | expr ( ',' expr ) * ] ')' | [ database_name '.' ] table_name | bind_expr ) {
+in_expr ::= expr [ NOT ] IN ( LP [ compound_select_stmt | expr ( COMMA expr ) * ] RP | [ database_name DOT ] table_name | bind_expr ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.InExprMixin"
   pin = 3
 }
-exists_expr ::= [ [ NOT ] EXISTS ] '(' compound_select_stmt ')'
+exists_expr ::= [ [ NOT ] EXISTS ] LP compound_select_stmt RP
 case_expr ::= CASE [ expr ] WHEN expr THEN expr ( WHEN expr THEN expr )* [ ELSE expr ] END {
   pin = 1
 }
 raise_expr ::= raise_function
-raise_function ::= RAISE '(' ( IGNORE | ( ROLLBACK | ABORT | FAIL ) ',' error_message ) ')'
+raise_function ::= RAISE LP ( IGNORE | ( ROLLBACK | ABORT | FAIL ) COMMA error_message ) RP
 literal_value ::= ( numeric_literal
                   | string_literal
                   | blob_literal
@@ -300,29 +300,29 @@ literal_value ::= ( numeric_literal
                   | CURRENT_TIMESTAMP ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.LiteralValueMixin"
 }
-numeric_literal ::= ( ( digit [ '.' ( digit ) * ] | '.' digit )
+numeric_literal ::= ( ( digit [ DOT ( digit ) * ] | DOT digit )
                       | TRUE
                       | FALSE
-                    ) [ E [ '+' | '-' ] digit ]
-insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name '.' ] table_name [ AS table_alias ] [ '(' column_name ( ',' column_name ) * ')' ] insert_stmt_values {
+                    ) [ E [ PLUS | MINUS ] digit ]
+insert_stmt ::= [ with_clause ] ( INSERT OR REPLACE | REPLACE | INSERT OR ROLLBACK | INSERT OR ABORT | INSERT OR FAIL | INSERT OR IGNORE | INSERT ) INTO [ database_name DOT ] table_name [ AS table_alias ] [ LP column_name ( COMMA column_name ) * RP ] insert_stmt_values {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.InsertStmtMixin"
   pin = 5
 }
-insert_stmt_values ::= VALUES values_expression ( ',' values_expression ) * | compound_select_stmt | DEFAULT VALUES {
+insert_stmt_values ::= VALUES values_expression ( COMMA values_expression ) * | compound_select_stmt | DEFAULT VALUES {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.InsertStmtValuesMixin"
   pin = 1
 }
-pragma_stmt ::= PRAGMA [ database_name '.' ] pragma_name [ '=' pragma_value | '(' pragma_value ')' ] {
+pragma_stmt ::= PRAGMA [ database_name DOT ] pragma_name [ EQ pragma_value | LP pragma_value RP ] {
   pin = 1
 }
 pragma_value ::= ( signed_number
                  | identifier
                  | string_literal
                  | EXCLUSIVE )
-reindex_stmt ::= REINDEX [ collation_name | [ database_name '.' ] ( table_name | index_name ) ] {
+reindex_stmt ::= REINDEX [ collation_name | [ database_name DOT ] ( table_name | index_name ) ] {
   pin = 1
 }
-compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( ',' ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | ',' ) limiting_term ] ] {
+compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( COMMA ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | COMMA ) limiting_term ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
@@ -330,7 +330,7 @@ compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select
   ]
 }
 limiting_term ::= expr
-select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( ',' expr ) * [ HAVING expr ] ] | VALUES values_expression ( ',' values_expression ) * {
+select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( COMMA expr ) * [ HAVING expr ] ] | VALUES values_expression ( COMMA values_expression ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SelectStmtMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
@@ -338,7 +338,7 @@ select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( ',' result_column ) * 
   ]
   pin = 1
 }
-values_expression ::= '(' expr ( ',' expr ) * ')'
+values_expression ::= LP expr ( COMMA expr ) * RP
 join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.JoinClauseMixin"
   implements = [
@@ -346,17 +346,17 @@ join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constra
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-table_or_subquery ::= ( [ database_name '.' ] table_name [ [ AS ] table_alias ] [ INDEXED BY index_name | NOT INDEXED ]
-                      | '(' ( table_or_subquery ( ',' table_or_subquery ) * | join_clause ) ')'
-                      | '(' compound_select_stmt ')' [ [ AS ] table_alias ] ) {
+table_or_subquery ::= ( [ database_name DOT ] table_name [ [ AS ] table_alias ] [ INDEXED BY index_name | NOT INDEXED ]
+                      | LP ( table_or_subquery ( COMMA table_or_subquery ) * | join_clause ) RP
+                      | LP compound_select_stmt RP [ [ AS ] table_alias ] ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableOrSubqueryMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-result_column ::= ( '*'
-                  | table_name '.' '*'
+result_column ::= ( MULTIPLY
+                  | table_name DOT MULTIPLY
                   | expr [ [ AS ] column_alias ] ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ResultColumnMixin"
   implements = [
@@ -364,9 +364,9 @@ result_column ::= ( '*'
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
-join_operator ::= ( ','
+join_operator ::= ( COMMA
                   | [ NATURAL ] [ LEFT [ OUTER ] | INNER | CROSS ] JOIN )
-join_constraint ::= [ ON expr | USING '(' column_name ( ',' column_name ) * ')' ]
+join_constraint ::= [ ON expr | USING LP column_name ( COMMA column_name ) * RP ]
 ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.OrderByMixin"
 }
@@ -383,19 +383,19 @@ update_stmt ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | O
 update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REPLACE | OR FAIL | OR IGNORE ] qualified_table_name
   update_set_clause
   [ WHERE expr ]
-  [ [ ORDER BY ordering_term ( ',' ordering_term ) * ]
-  LIMIT expr [ ( OFFSET | ',' ) expr ] ] {
+  [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ]
+  LIMIT expr [ ( OFFSET | COMMA ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 4
 }
-private update_set_clause ::= SET (( column_name '=' setter_expression update_stmt_subsequent_setter * ) | ( '(' column_name ( ',' column_name ) * ')' ) '=' ( '(' setter_expression ( ',' setter_expression ) * ')' )) {
+private update_set_clause ::= SET (( column_name EQ setter_expression update_stmt_subsequent_setter * ) | ( LP column_name ( COMMA column_name ) * RP ) EQ ( LP setter_expression ( COMMA setter_expression ) * RP )) {
   pin(".*") = 1
 }
-update_stmt_subsequent_setter ::= ',' column_name '=' setter_expression {
+update_stmt_subsequent_setter ::= COMMA column_name EQ setter_expression {
   pin = 1
 }
 setter_expression ::= expr
-qualified_table_name ::= [ database_name '.' ] table_name [ INDEXED BY index_name | NOT INDEXED ]
+qualified_table_name ::= [ database_name DOT ] table_name [ INDEXED BY index_name | NOT INDEXED ]
 vacuum_stmt ::= VACUUM
 table_name ::= id | string {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.TableNameMixin"
@@ -463,5 +463,5 @@ view_name ::= id | string {
 module_name ::= id
 module_argument_name ::= id
 bind_parameter ::= '?'
-table_options ::= table_option ( [','] table_option ) *
+table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
