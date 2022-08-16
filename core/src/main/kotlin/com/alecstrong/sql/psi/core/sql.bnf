@@ -60,7 +60,7 @@ stmt_list ::= ( stmt SEMI ) * {
 }
 stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
                                           create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt | drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt |
-                                          pragma_stmt | reindex_stmt | release_stmt | rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt | extension_stmt
+                                          pragma_stmt | reindex_stmt | release_stmt | rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt | set_stmt | extension_stmt
                                         ) {
   recoverWhile=sql_stmt_recovery
   pin = 2
@@ -468,3 +468,12 @@ module_argument_name ::= id
 bind_parameter ::= '?'
 table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
+
+set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( (expr ( COMMA expr ) * ) | ([with_clause] select_stmt) ) {
+  pin = 1
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.SetStmtMixin"
+  implements = [
+    "com.alecstrong.sql.psi.core.psi.QueryElement";
+    "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  ]
+}

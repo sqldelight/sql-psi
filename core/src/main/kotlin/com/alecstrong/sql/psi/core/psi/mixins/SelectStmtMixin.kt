@@ -23,6 +23,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.parentOfType
 
 internal abstract class SelectStmtMixin(
   node: ASTNode,
@@ -60,7 +61,7 @@ internal abstract class SelectStmtMixin(
         super.queryAvailable(this).map { it.copy(adjacent = false) }
       if (ignoreParentProjection) return available
 
-      val projection = (parent as CompoundSelectStmtMixin).queryExposed().map { selectStmt ->
+      val projection = parentOfType<CompoundSelectStmtMixin>()?.queryExposed()?.map { selectStmt ->
         selectStmt.copy(
           adjacent = false,
           columns = selectStmt.columns.filter { projectionColumn ->
@@ -71,7 +72,7 @@ internal abstract class SelectStmtMixin(
               }
           },
         )
-      }
+      } ?: emptyList()
 
       return available + projection
     }
