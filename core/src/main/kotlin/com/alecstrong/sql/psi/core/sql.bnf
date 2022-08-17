@@ -201,8 +201,7 @@ drop_view_stmt ::= DROP VIEW [ IF EXISTS ] [ database_name DOT ] view_name {
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 2
 }
-expr ::= ( other_expr
-         | raise_expr
+expr ::= ( raise_expr
          | case_expr
          | exists_expr
          | multi_column_expr
@@ -225,6 +224,7 @@ expr ::= ( other_expr
          | binary_pipe_expr
          | unary_expr
          | literal_expr
+         | other_expr
          | column_expr
          | bind_expr )
 
