@@ -231,7 +231,9 @@ expr ::= ( raise_expr
 other_expr ::= extension_expr
 extension_expr ::= NULL
 extension_stmt ::= NULL
-multi_column_expr ::= values_expression ( LT | LTE | GT | GTE ) values_expression
+multi_column_expr ::= values_expression ( LT | LTE | GT | GTE ) values_expression {
+  pin = 2
+}
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name DOT table_name DOT | table_name DOT ] column_name
