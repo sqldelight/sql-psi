@@ -1,1 +1,1 @@
-Test.s line 17:9 - '(', ')', ',', '.', <binary like operator real>, BETWEEN or IN expected, got ','
+Test.s line 17:9 - '(', ')', '.', <binary like operator real>, BETWEEN or IN expected, got ','
