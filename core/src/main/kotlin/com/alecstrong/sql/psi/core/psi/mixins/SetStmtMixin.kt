@@ -1,8 +1,9 @@
 package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
-import com.alecstrong.sql.psi.core.psi.*
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
+import com.alecstrong.sql.psi.core.psi.SqlSetStmt
+import com.alecstrong.sql.psi.core.psi.SqlWithClause
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
