@@ -469,7 +469,7 @@ bind_parameter ::= '?'
 table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
 
-set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( (expr ( COMMA expr ) * ) | compound_select_stmt ) {
+set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( set_setter_clause | compound_select_stmt ) {
   pin = 1
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SetStmtMixin"
   implements = [
@@ -477,3 +477,4 @@ set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( (expr ( COMMA expr ) * ) |
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
+set_setter_clause ::= expr ( COMMA expr ) *

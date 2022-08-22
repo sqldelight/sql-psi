@@ -13,7 +13,7 @@ internal abstract class SetStmtMixin(
   SqlSetStmt {
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    val compoundSelectStmt = compoundSelectStmt ?: return exprList.map {
+    val compoundSelectStmt = compoundSelectStmt ?: return setSetterClause!!.exprList.map {
       QueryResult(it)
     }
     return if (child in compoundSelectStmt.children) {
@@ -23,10 +23,13 @@ internal abstract class SetStmtMixin(
 
   override fun getWithClause(): SqlWithClause? = compoundSelectStmt?.withClause
 
-  override fun queryExposed(): Collection<QueryResult> = compoundSelectStmt?.queryExposed() ?: emptyList()
+  override fun queryExposed(): Collection<QueryResult> = compoundSelectStmt?.queryExposed() ?: setSetterClause!!.exprList.map {
+    QueryResult(it)
+  }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
     compoundSelectStmt?.annotate(annotationHolder)
+    setSetterClause?.annotate(annotationHolder)
   }
 }
