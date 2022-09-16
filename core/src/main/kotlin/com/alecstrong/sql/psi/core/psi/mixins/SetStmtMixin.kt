@@ -31,5 +31,16 @@ internal abstract class SetStmtMixin(
     super.annotate(annotationHolder)
     compoundSelectStmt?.annotate(annotationHolder)
     setSetterClause?.annotate(annotationHolder)
+
+    val hostVariables = hostVariableList.size
+    val setColumns = setSetterClause?.exprList?.size
+    val selectColumns = compoundSelectStmt?.selectStmtList?.singleOrNull()?.resultColumnList?.size
+    val resultColumns = setColumns ?: selectColumns
+    if (resultColumns != null && hostVariables > resultColumns) {
+      annotationHolder.createErrorAnnotation(
+        this,
+        "Cannot bind $hostVariables host variables to $resultColumns result columns",
+      )
+    }
   }
 }

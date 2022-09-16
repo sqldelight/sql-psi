@@ -1,0 +1,1 @@
+Test.s line 11:11 - Cannot bind 2 host variables to 1 result columns

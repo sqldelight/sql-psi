@@ -235,7 +235,7 @@ multi_column_expr ::= values_expression ( LT | LTE | GT | GTE ) values_expressio
   pin = 2
 }
 literal_expr ::= literal_value
-bind_expr ::= bind_parameter
+bind_expr ::= bind_parameter | host_variable
 column_expr ::= [ database_name DOT table_name DOT | table_name DOT ] column_name
 unary_expr ::= (PLUS | MINUS | BITWISE_NOT ) expr
 binary_pipe_expr ::= expr CONCAT expr {
@@ -338,7 +338,7 @@ select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) 
   ]
   pin = 1
 }
-select_into_clause ::= INTO bind_expr ( COMMA bind_expr ) * {
+select_into_clause ::= INTO host_variable ( COMMA host_variable ) * {
   pin = 1
 }
 values_expression ::= LP expr ( COMMA expr ) * RP
@@ -469,7 +469,7 @@ bind_parameter ::= '?'
 table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
 
-set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( set_setter_clause | compound_select_stmt ) {
+set_stmt ::= SET host_variable ( COMMA host_variable ) * EQ ( set_setter_clause | compound_select_stmt ) {
   pin = 1
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SetStmtMixin"
   implements = [
@@ -478,3 +478,16 @@ set_stmt ::= SET bind_expr ( COMMA bind_expr ) * EQ ( set_setter_clause | compou
   ]
 }
 set_setter_clause ::= expr ( COMMA expr ) *
+
+host_variable ::= host_variable_binding host_variable_id {
+ pin = 1
+}
+host_variable_id ::= identifier {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.HostVariableMixin"
+  implements = [
+    "com.alecstrong.sql.psi.core.psi.NamedElement";
+    "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  ]
+}
+
+host_variable_binding ::= ':'

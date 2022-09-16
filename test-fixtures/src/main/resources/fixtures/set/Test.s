@@ -4,7 +4,13 @@ CREATE TABLE hockey_player (
   last_name TEXT
 );
 
-SET ? = 42;
-SET ?, ? = ABS(42), 42;
+SET :FOO = 42;
+SET :FOO, :BAR = ABS(42), :A;
 
-SET ?, ? = SELECT first_name, last_name FROM hockey_player WHERE _id = ?;
+SET :FOO, :BAR = SELECT first_name, last_name FROM hockey_player WHERE _id = :A;
+
+-- More columns than binding, stupid, but okay
+SET :FOO = SELECT first_name, last_name FROM hockey_player WHERE _id = :A;
+
+-- Failing
+SET :FOO, :BAR = SELECT first_name FROM hockey_player WHERE _id = :A;

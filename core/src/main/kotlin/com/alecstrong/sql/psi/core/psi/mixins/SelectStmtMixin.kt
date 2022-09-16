@@ -152,5 +152,16 @@ internal abstract class SelectStmtMixin(
         }
       }
     }
+    val into = selectIntoClause
+    if (into != null) {
+      val hostVariables = into.hostVariableList.size
+      val resultColumns = resultColumnList.size
+      if (hostVariables > resultColumns) {
+        annotationHolder.createErrorAnnotation(
+          into,
+          "Cannot bind $hostVariables host variables to $resultColumns result columns",
+        )
+      }
+    }
   }
 }
