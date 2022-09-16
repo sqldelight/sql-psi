@@ -482,7 +482,7 @@ set_setter_clause ::= expr ( COMMA expr ) *
 host_variable ::= host_variable_binding host_variable_id {
  pin = 1
 }
-host_variable_id ::= identifier {
+host_variable_id ::= id {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.HostVariableMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.NamedElement";
