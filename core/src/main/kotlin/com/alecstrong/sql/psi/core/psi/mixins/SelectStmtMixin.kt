@@ -155,7 +155,7 @@ internal abstract class SelectStmtMixin(
     val into = selectIntoClause
     if (into != null) {
       val hostVariables = into.hostVariableList.size
-      val resultColumns = resultColumnList.size
+      val resultColumns = queryExposed().sumBy { it.columns.size + it.synthesizedColumns.size }
       if (hostVariables > resultColumns) {
         annotationHolder.createErrorAnnotation(
           into,

@@ -1,11 +1,15 @@
 CREATE TABLE test (
-  _id INTEGER NOT NULL
+  id INTEGER GENERATED ALWAYS AS (42) NOT NULL,
+  bar INTEGER NOT NULL
 );
 
-SELECT _id, _id INTO :FOO, :BAR FROM test;
+SELECT id, bar INTO :FOO, :BAR FROM test;
 
--- More columns than binding, stupid, but okay
-SELECT _id, _id, _id INTO :FOO, :BAR FROM test;
+-- More columns than bindings, stupid, but okay
+SELECT id, bar, bar INTO :FOO, :BAR FROM test;
 
 -- Failing, bar is not defined
-SELECT _id INTO :FOO, :BAR FROM test;
+SELECT id INTO :FOO, :BAR FROM test;
+
+-- test contains 2 columns, should work
+SELECT * INTO :FOO, :BAR FROM test;
