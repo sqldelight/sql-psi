@@ -5,7 +5,7 @@ CREATE TABLE hockey_player (
 );
 
 SET :FOO = 42;
-SET :FOO, :BAR = ABS(42), :A;
+SET :FOO, :BAR = ABS(?), :A;
 
 SET :FOO, :BAR = SELECT first_name, last_name FROM hockey_player WHERE _id = :A;
 
