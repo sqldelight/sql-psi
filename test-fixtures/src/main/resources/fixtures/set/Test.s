@@ -17,3 +17,6 @@ SET :FOO, :BAR = SELECT first_name FROM hockey_player WHERE _id = :A;
 
 -- hockey_player contains 3 columns, should work
 SET :FOO, :BAR = SELECT * FROM hockey_player;
+
+-- Should fail
+SET :FOO = SELECT 42 INTO :BAR;

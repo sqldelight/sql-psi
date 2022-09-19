@@ -29,7 +29,19 @@ internal abstract class SetStmtMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
-    compoundSelectStmt?.annotate(annotationHolder)
+    val select = compoundSelectStmt
+    if (select != null) {
+      select.annotate(annotationHolder)
+      for (sqlSelectStmt in select.selectStmtList) {
+        val selectInto = sqlSelectStmt.selectIntoClause
+        if (selectInto != null) {
+          annotationHolder.createErrorAnnotation(
+            selectInto,
+            "Cannot use SET with SELECT INTO",
+          )
+        }
+      }
+    }
     setSetterClause?.annotate(annotationHolder)
 
     val hostVariables = hostVariableList.size

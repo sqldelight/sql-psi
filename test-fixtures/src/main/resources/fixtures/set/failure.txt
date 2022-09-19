@@ -1,1 +1,2 @@
 Test.s line 16:0 - Cannot bind 2 host variables to 1 result columns
+Test.s line 22:21 - Cannot use SET with SELECT INTO
