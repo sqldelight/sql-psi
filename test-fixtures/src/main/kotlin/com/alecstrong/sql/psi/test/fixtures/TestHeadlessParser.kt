@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.test.fixtures
 
+import com.alecstrong.sql.psi.core.PredefinedTable
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlCoreEnvironment
 import com.alecstrong.sql.psi.core.SqlFileBase
@@ -14,10 +15,12 @@ import java.io.File
 class TestHeadlessParser {
   private val parserDefinition = TestParserDefinition()
 
-  fun build(root: String, annotator: SqlAnnotationHolder): SqlCoreEnvironment {
+  fun build(root: String, annotator: SqlAnnotationHolder, predefinedTables: List<PredefinedTable>): SqlCoreEnvironment {
     val environment = object : SqlCoreEnvironment(
       sourceFolders = listOf(File(root)),
       dependencies = emptyList(),
+      predefinedTables = predefinedTables,
+      language = parserDefinition.getLanguage(),
     ) {
       init {
         initializeApplication {
