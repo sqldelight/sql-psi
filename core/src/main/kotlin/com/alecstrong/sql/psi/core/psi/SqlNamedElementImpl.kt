@@ -1,9 +1,9 @@
 package com.alecstrong.sql.psi.core.psi
 
 import com.alecstrong.sql.psi.core.SqlParser
-import com.alecstrong.sql.psi.core.SqlParserDefinition
 import com.intellij.lang.ASTNode
 import com.intellij.lang.LanguageParserDefinitions
+import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiBuilderFactory
 import com.intellij.lang.parser.GeneratedParserUtilBase
@@ -34,7 +34,7 @@ abstract class SqlNamedElementImpl(
     // is implemented since it's inspired by that, which is documented online in IntelliJ's
     // official documentation for writing a language plugin. Good luck!
 
-    val parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language) as SqlParserDefinition
+    val parserDefinition: ParserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language)
     var builder = PsiBuilderFactory.getInstance().createBuilder(
       project,
       parent.node,
