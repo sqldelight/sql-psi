@@ -22,7 +22,7 @@ open class SqlAnnotator : Annotator {
 
 class AnnotationException(val msg: String, val element: PsiElement? = null) : IllegalStateException(msg)
 
-interface SqlAnnotationHolder {
+fun interface SqlAnnotationHolder {
   fun createErrorAnnotation(element: PsiElement, s: String)
 }
 
