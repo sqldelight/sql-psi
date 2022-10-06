@@ -1,6 +1,5 @@
 package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.junit.Test
@@ -27,18 +26,15 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
     }
 
     val environment = parser.build(
-      newRoot.path,
-      object : SqlAnnotationHolder {
-        override fun createErrorAnnotation(element: PsiElement, s: String) {
-          val documentManager = PsiDocumentManager.getInstance(element.project)
-          val name = element.containingFile.name
-          val document = documentManager.getDocument(element.containingFile)!!
-          val lineNum = document.getLineNumber(element.textOffset)
-          val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
-          errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
-        }
-      },
-    )
+      root = newRoot.path,
+    ) { element, s ->
+      val documentManager = PsiDocumentManager.getInstance(element.project)
+      val name = element.containingFile.name
+      val document = documentManager.getDocument(element.containingFile)!!
+      val lineNum = document.getLineNumber(element.textOffset)
+      val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
+      errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
+    }
 
     val sourceFiles = StringBuilder()
     environment.forSourceFiles {
