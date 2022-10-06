@@ -7,22 +7,8 @@ grammarKit {
   intellijRelease.set(libs.versions.ideaVersion)
 }
 
-configurations {
-  grammar {
-    canBeResolved = true
-    canBeConsumed = false
-  }
-}
-
 dependencies {
-  grammar libs.coroutines
-
   compileOnly libs.bundles.intelliJ
 
   implementation project(':core')
-}
-
-// https://youtrack.jetbrains.com/issue/IDEA-301677
-generatecom_alecstrong_sql_psi_sample_core_SampleSqliteParser {
-  classpath = (classpath + configurations.grammar)
 }

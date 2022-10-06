@@ -34,7 +34,12 @@ allprojects {
   group = GROUP
   version = VERSION_NAME
 
-  tasks.withType(KotlinCompile) {
+  tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+  }
+
+  tasks.withType(KotlinCompile).configureEach {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 
@@ -44,14 +49,14 @@ allprojects {
     }
   }
 
-  tasks.withType(Test) {
+  tasks.withType(Test).configureEach {
     testLogging {
       events = ["failed", "skipped", "passed"]
       exceptionFormat "full"
     }
   }
 
-  configurations.all {
+  configurations.configureEach {
     exclude group: 'com.jetbrains.rd'
     exclude group: 'com.github.jetbrains', module: 'jetCheck'
     exclude group: 'com.jetbrains.infra'
