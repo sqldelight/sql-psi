@@ -330,15 +330,12 @@ compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select
   ]
 }
 limiting_term ::= expr
-select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [select_into_clause] [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( COMMA expr ) * [ HAVING expr ] ] | VALUES values_expression ( COMMA values_expression ) * {
+select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( COMMA expr ) * [ HAVING expr ] ] | VALUES values_expression ( COMMA values_expression ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SelectStmtMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
-  pin = 1
-}
-select_into_clause ::= INTO bind_expr ( COMMA bind_expr ) * {
   pin = 1
 }
 values_expression ::= LP expr ( COMMA expr ) * RP
