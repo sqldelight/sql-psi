@@ -1,7 +1,7 @@
 [versions]
 # 2021.2.1, matching grammarkit version
 ideaVersion = "213.6777.52"
-kotlin = "1.7.20"
+kotlin = "1.7.21"
 
 [libraries]
 intellijCore = { module = "com.jetbrains.intellij.platform:core-impl", version.ref = "ideaVersion" }
