@@ -13,9 +13,17 @@ sourceSets {
   main.java.srcDir "gen"
 }
 
+configurations {
+  grammar {
+    canBeResolved = true
+    canBeConsumed = false
+  }
+}
+
 dependencies {
-  compileOnly libs.intellijLang
-  compileOnly libs.intellijCore
+  grammar libs.coroutines
+
+  compileOnly libs.bundles.intelliJ
 
   testImplementation libs.junit
   testImplementation libs.truth
@@ -27,6 +35,11 @@ generateLexer {
   targetDir.set('gen/com/alecstrong/sql/psi/core/lexer/')
   targetClass.set('SqlLexer')
   purgeOldFiles.set(true)
+}
+
+// https://youtrack.jetbrains.com/issue/IDEA-301677
+generatecom_alecstrong_sql_psi_core_sqlParser {
+  classpath = (classpath + configurations.grammar)
 }
 
 compileKotlin.dependsOn generateLexer
