@@ -25,7 +25,6 @@ import static com.alecstrong.sql.psi.core.psi.SqlTypes.*;
 EOL=\R
 WHITE_SPACE=\s+
 
-SPACE=[ \t\n\x0B\f\r]+
 COMMENT=--.*
 JAVADOC="/"\*\*([^*]|\*+[^/*])*\*"/"
 DIGIT=[0-9]+(\.[0-9]*)?
@@ -198,7 +197,6 @@ STRING=('([^'])*'|\"([^\"])*\")
   "WITHOUT"              { return WITHOUT; }
   "ROWID"                { return ROWID; }
 
-  {SPACE}                { return SPACE; }
   {COMMENT}              { return COMMENT; }
   {JAVADOC}              { return JAVADOC; }
   {DIGIT}                { return DIGIT; }

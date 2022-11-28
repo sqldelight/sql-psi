@@ -8,7 +8,10 @@ import java.io.File
 class SampleHeadlessParser {
   fun parseSqlite() {
     val parserDefinition = SampleParserDefinition()
-    val environment = object : SqlCoreEnvironment(listOf(File("sample-headless")), emptyList()) {
+    val environment = object : SqlCoreEnvironment(
+      sourceFolders = listOf(File("sample-headless")),
+      dependencies = emptyList(),
+    ) {
       init {
         initializeApplication {
           registerFileType(SampleFileType, SampleFileType.defaultExtension)
@@ -16,10 +19,12 @@ class SampleHeadlessParser {
         }
       }
     }
-    environment.annotate(SampleHeadlessAnnotator())
+    environment.annotate { _, message ->
+      System.err.println(message)
+    }
   }
 }
 
-fun main(args: Array<String>) {
+fun main() {
   SampleHeadlessParser().parseSqlite()
 }
