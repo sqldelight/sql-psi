@@ -11,7 +11,9 @@ open class SqlAnnotator : Annotator {
   override fun annotate(element: PsiElement, holder: AnnotationHolder) {
     try {
       if (element is SqlCompositeElement) {
-        element.annotate(AnnotationHolderImplWrapper(holder))
+        element.annotate { _, message ->
+          holder.newAnnotation(HighlightSeverity.ERROR, message).create()
+        }
       }
     } catch (_: InvalidElementDetectedException) {
       // We can avoid annotating entirely if we encounter an invalid element and wait for the next
@@ -23,11 +25,5 @@ open class SqlAnnotator : Annotator {
 class AnnotationException(val msg: String, val element: PsiElement? = null) : IllegalStateException(msg)
 
 fun interface SqlAnnotationHolder {
-  fun createErrorAnnotation(element: PsiElement, s: String)
-}
-
-private class AnnotationHolderImplWrapper(val holder: AnnotationHolder) : SqlAnnotationHolder {
-  override fun createErrorAnnotation(element: PsiElement, s: String) {
-    holder.newAnnotation(HighlightSeverity.ERROR, s).create()
-  }
+  fun createErrorAnnotation(element: PsiElement, message: String)
 }

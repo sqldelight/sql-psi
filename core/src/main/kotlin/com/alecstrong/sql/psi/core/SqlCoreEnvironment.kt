@@ -120,24 +120,22 @@ open class SqlCoreEnvironment(
   }
 
   fun annotate(
-    annotationHolder: SqlAnnotationHolder,
     extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList(),
+    annotationHolder: SqlAnnotationHolder,
   ) {
     val otherFailures = mutableListOf<() -> Unit>()
-    val myHolder = object : SqlAnnotationHolder {
-      override fun createErrorAnnotation(element: PsiElement, s: String) {
-        if (PsiTreeUtil.getNonStrictParentOfType(
-            element,
-            SqlCreateTableStmt::class.java,
-            SqlCreateVirtualTableStmt::class.java,
-            SqlCreateViewStmt::class.java,
-          ) != null
-        ) {
+    val myHolder = SqlAnnotationHolder { element, s ->
+      if (PsiTreeUtil.getNonStrictParentOfType(
+          element,
+          SqlCreateTableStmt::class.java,
+          SqlCreateVirtualTableStmt::class.java,
+          SqlCreateViewStmt::class.java,
+        ) != null
+      ) {
+        annotationHolder.createErrorAnnotation(element, s)
+      } else {
+        otherFailures.add {
           annotationHolder.createErrorAnnotation(element, s)
-        } else {
-          otherFailures.add {
-            annotationHolder.createErrorAnnotation(element, s)
-          }
         }
       }
     }
