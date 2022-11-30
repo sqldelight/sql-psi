@@ -91,32 +91,31 @@ open class SqlCoreEnvironment(
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
     val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
-    projectEnvironment.project.picoContainer
-      .registerComponentInstance(
-        SchemaContributorIndex::class.java.name,
-        object : SchemaContributorIndex {
-          private val contributors by lazy {
-            val manager = PsiManager.getInstance(projectEnvironment.project)
-            val map = linkedMapOf<VirtualFile, Collection<SchemaContributor>>()
-            contributorIndex.iterateContent { file ->
-              map[file] = (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
-                ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
-              return@iterateContent true
-            }
-            map
+    projectEnvironment.project.registerService(
+      SchemaContributorIndex::class.java,
+      object : SchemaContributorIndex {
+        private val contributors by lazy {
+          val manager = PsiManager.getInstance(projectEnvironment.project)
+          val map = linkedMapOf<VirtualFile, Collection<SchemaContributor>>()
+          contributorIndex.iterateContent { file ->
+            map[file] = (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
+              ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
+            return@iterateContent true
           }
+          map
+        }
 
-          override fun getKey() = SchemaContributorIndex.KEY
+        override fun getKey() = SchemaContributorIndex.KEY
 
-          override fun get(
-            key: String,
-            project: Project,
-            scope: GlobalSearchScope,
-          ): Collection<SchemaContributor> {
-            return contributors.filterKeys { scope.contains(it) }.flatMap { (_, values) -> values }
-          }
-        },
-      )
+        override fun get(
+          key: String,
+          project: Project,
+          scope: GlobalSearchScope,
+        ): Collection<SchemaContributor> {
+          return contributors.filterKeys { scope.contains(it) }.flatMap { (_, values) -> values }
+        }
+      },
+    )
   }
 
   fun annotate(
