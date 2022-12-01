@@ -24,7 +24,7 @@ fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
   )
 
   var result: SqlFileBase? = null
-  environment.forSourceFiles {
+  environment.forSourceFiles<SqlFileBase> {
     if (it.name == fileName) result = it
   }
   return result!!
