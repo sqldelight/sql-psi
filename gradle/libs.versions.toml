@@ -7,7 +7,6 @@ intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", versi
 intellijProjectModelImpl = { module = "com.jetbrains.intellij.platform:project-model-impl", version.ref = "ideaVersion" }
 intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl", version.ref = "ideaVersion" }
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 junit = "junit:junit:4.13.2"
 truth = "com.google.truth:truth:1.1.3"
 
