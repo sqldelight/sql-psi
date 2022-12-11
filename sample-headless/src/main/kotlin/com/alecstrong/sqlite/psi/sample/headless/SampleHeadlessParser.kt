@@ -19,9 +19,11 @@ class SampleHeadlessParser {
         }
       }
     }
-    environment.annotate { _, message ->
-      System.err.println(message)
-    }
+    environment.annotate(
+      { _, message ->
+        System.err.println(message)
+      },
+    )
   }
 }
 

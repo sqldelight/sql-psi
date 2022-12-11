@@ -119,8 +119,8 @@ open class SqlCoreEnvironment(
   }
 
   fun annotate(
-    extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList(),
     annotationHolder: SqlAnnotationHolder,
+    extraAnnotators: Collection<SqlCompilerAnnotator> = emptyList(),
   ) {
     val otherFailures = mutableListOf<() -> Unit>()
     val myHolder = SqlAnnotationHolder { element, s ->
