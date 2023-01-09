@@ -7,6 +7,5 @@ apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 dependencies {
   api project(":core")
   api libs.junit
-  api libs.intellijLang
-  api libs.intellijCore
+  api libs.bundles.intelliJ
 }

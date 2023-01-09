@@ -6,6 +6,5 @@ dependencies {
   implementation project(':sample-core')
   implementation project(':core')
 
-  implementation libs.intellijCore
-  implementation libs.intellijLang
+  implementation libs.bundles.intelliJ
 }
