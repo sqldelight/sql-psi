@@ -31,4 +31,3 @@ generateLexer {
 }
 
 compileKotlin.dependsOn generateLexer
-dokkaHtml.dependsOn generateLexer

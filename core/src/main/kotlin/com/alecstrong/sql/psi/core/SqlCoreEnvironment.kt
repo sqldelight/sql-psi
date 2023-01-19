@@ -12,7 +12,6 @@ import com.intellij.lang.MetaLanguage
 import com.intellij.openapi.diagnostic.DefaultLogger
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.Extensions
-import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -54,9 +53,6 @@ private object ApplicationEnvironment {
         Extensions.getRootArea(), SmartPointerAnchorProvider.EP_NAME,
         SmartPointerAnchorProvider::class.java
       )
-
-      val fileRegistry = FileTypeRegistry.ourInstanceGetter
-      FileTypeRegistry.ourInstanceGetter = fileRegistry
     }
   }
 }
