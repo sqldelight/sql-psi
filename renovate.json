@@ -2,7 +2,8 @@
   "extends": [
     "config:base"
   ],
-  "ignoreDeps": [ "com.jetbrains.intellij.platform", "com.jetbrains.intellij.java", "com.jetbrains.intellij.platform:lang-impl", "com.jetbrains.intellij.platform:core-impl" ],
+  "ignoreDeps": [ "com.jetbrains.intellij.platform", "com.jetbrains.intellij.java", "com.jetbrains.intellij.platform:lang-impl", "com.jetbrains.intellij.platform:core-impl",
+                  "com.jetbrains.intellij.platform:indexing", "com.jetbrains.intellij.platform:analysis-impl", "com.jetbrains.intellij.platform:project-model-impl"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
