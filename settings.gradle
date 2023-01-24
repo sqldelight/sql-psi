@@ -1,9 +1,11 @@
 pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
 }
+
+rootProject.name = "sql-psi"
 
 include ':core'
 include ':test-fixtures'
