@@ -28,15 +28,14 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
 
     val environment = parser.build(
       root = newRoot.path,
-      annotator = { element, s ->
-        val documentManager = PsiDocumentManager.getInstance(element.project)
-        val name = element.containingFile.name
-        val document = documentManager.getDocument(element.containingFile)!!
-        val lineNum = document.getLineNumber(element.textOffset)
-        val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
-        errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
-      },
-    )
+    ) { element, s ->
+      val documentManager = PsiDocumentManager.getInstance(element.project)
+      val name = element.containingFile.name
+      val document = documentManager.getDocument(element.containingFile)!!
+      val lineNum = document.getLineNumber(element.textOffset)
+      val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
+      errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
+    }
 
     val sourceFiles = StringBuilder()
     environment.forSourceFiles<SqlFileBase> {

@@ -14,8 +14,7 @@ sourceSets {
 }
 
 dependencies {
-  compileOnly libs.intellijLang
-  compileOnly libs.intellijCore
+  compileOnly libs.bundles.intelliJ
 
   testImplementation libs.junit
   testImplementation libs.truth

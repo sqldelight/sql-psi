@@ -8,8 +8,7 @@ grammarKit {
 }
 
 dependencies {
-  compileOnly libs.intellijCore
-  compileOnly libs.intellijLang
+  compileOnly libs.bundles.intelliJ
 
   implementation project(':core')
 }

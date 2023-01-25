@@ -1,8 +1,6 @@
 package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlFileBase
-import com.intellij.psi.PsiElement
 import java.io.File
 
 fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
@@ -15,13 +13,10 @@ fun compileFile(text: String, fileName: String = "temp.s"): SqlFileBase {
 
   val parser = TestHeadlessParser()
   val environment = parser.build(
-    directory.path,
-    object : SqlAnnotationHolder {
-      override fun createErrorAnnotation(element: PsiElement, s: String) {
-        throw AssertionError("at ${element.textOffset} : $s")
-      }
-    },
-  )
+    root = directory.path,
+  ) { element, message ->
+    throw AssertionError("at ${element.textOffset} : $message")
+  }
 
   var result: SqlFileBase? = null
   environment.forSourceFiles<SqlFileBase> {
