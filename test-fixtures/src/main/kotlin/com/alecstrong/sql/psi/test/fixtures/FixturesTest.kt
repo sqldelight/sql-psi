@@ -1,5 +1,6 @@
 package com.alecstrong.sql.psi.test.fixtures
 
+import com.alecstrong.sql.psi.core.SqlFileBase
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.junit.Test
@@ -37,7 +38,7 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
     }
 
     val sourceFiles = StringBuilder()
-    environment.forSourceFiles {
+    environment.forSourceFiles<SqlFileBase> {
       sourceFiles.append("${it.name}:\n")
       it.printTree {
         sourceFiles.append("  ")
@@ -53,7 +54,7 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
       expectedFailures += expectedFailuresFile.readText().splitLines().filter { it.isNotEmpty() }
     }
 
-    environment.forSourceFiles { file ->
+    environment.forSourceFiles<SqlFileBase> { file ->
       val inlineErrors = inlineErrorRegex.findAll(file.text)
       val document = PsiDocumentManager.getInstance(file.project).getDocument(file.containingFile)!!
 

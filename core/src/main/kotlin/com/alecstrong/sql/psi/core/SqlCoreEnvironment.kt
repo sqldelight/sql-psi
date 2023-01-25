@@ -27,12 +27,14 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.smartPointers.SmartPointerAnchorProvider
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.reflect.KClass
 
 private object ApplicationEnvironment {
   private val logger = object : DefaultLogger("") {
@@ -138,7 +140,7 @@ open class SqlCoreEnvironment(
         }
       }
     }
-    forSourceFiles {
+    forSourceFiles<SqlFileBase> {
       PsiTreeUtil.findChildOfType(it, PsiErrorElement::class.java)?.let { error ->
         myHolder.createErrorAnnotation(error, error.errorDescription)
         return@forSourceFiles
@@ -148,11 +150,17 @@ open class SqlCoreEnvironment(
     otherFailures.forEach { it.invoke() }
   }
 
-  open fun forSourceFiles(action: (SqlFileBase) -> Unit) {
+  inline fun<reified T : PsiFile> forSourceFiles(noinline action: (T) -> Unit) {
+    forSourceFiles(T::class, action)
+  }
+
+  fun<T : PsiFile> forSourceFiles(klass: KClass<T>, action: (T) -> Unit) {
     val psiManager = PsiManager.getInstance(projectEnvironment.project)
     fileIndex.iterateContent { file ->
-      val psiFile = psiManager.findFile(file) as? SqlFileBase ?: return@iterateContent true
-      action(psiFile)
+      val psiFile = psiManager.findFile(file) ?: return@iterateContent true
+      if (klass.isInstance(psiFile)) {
+        action(psiFile as T)
+      }
       return@iterateContent true
     }
   }
