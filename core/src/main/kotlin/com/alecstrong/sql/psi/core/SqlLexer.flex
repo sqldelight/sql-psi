@@ -160,8 +160,6 @@ STRING=('([^'])*'|\"([^\"])*\")
   "GLOB"                 { return GLOB; }
   "REGEXP"               { return REGEXP; }
   "ESCAPE"               { return ESCAPE; }
-  "IS DISTINCT FROM"     { return IS_DISTINCT_FROM; }
-  "IS NOT DISTINCT FROM" { return IS_NOT_DISTINCT_FROM; }
   "ISNULL"               { return ISNULL; }
   "NOTNULL"              { return NOTNULL; }
   "IS"                   { return IS; }

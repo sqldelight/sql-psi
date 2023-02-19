@@ -43,8 +43,6 @@
     VALUE='VALUE'
     LOCK='LOCK'
     USE='USE'
-    IS_DISTINCT_FROM='IS DISTINCT FROM'
-    IS_NOT_DISTINCT_FROM='IS NOT DISTINCT FROM'
 
     space='regexp:\s+'
     comment='regexp:--.*'
@@ -261,7 +259,7 @@ binary_equality_expr ::= expr ( EQ | EQ2 | NEQ | NEQ2 ) expr {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
-is_distinct_from_expr ::= expr ( IS_DISTINCT_FROM | IS_NOT_DISTINCT_FROM ) expr {
+is_distinct_from_expr ::= expr IS [NOT] DISTINCT FROM expr {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
