@@ -3,9 +3,6 @@ CREATE TABLE is_distinct_from_test (
   value2 TEXT
 );
 
-SELECT * FROM is_distinct_from_test WHERE value ISNULL;
-
-
 SELECT *
 FROM is_distinct_from_test
 WHERE value IS DISTINCT FROM value2;
