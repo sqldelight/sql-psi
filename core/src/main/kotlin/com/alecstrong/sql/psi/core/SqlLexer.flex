@@ -22,7 +22,6 @@ import static com.alecstrong.sql.psi.core.psi.SqlTypes.*;
 %type IElementType
 %unicode
 
-EOL=\R
 WHITE_SPACE=\s+
 
 COMMENT=--.*
