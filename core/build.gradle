@@ -11,6 +11,7 @@ grammarKit {
 
 sourceSets {
   main.java.srcDir "gen"
+  main.java.srcDirs("$buildDir/generated/lexer/main/java", "$buildDir/generated/parser/main/java")
 }
 
 dependencies {
@@ -28,4 +29,10 @@ generateLexer {
   purgeOldFiles.set(true)
 }
 
-compileKotlin.dependsOn generateLexer
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+  dependsOn(generatecom_alecstrong_sql_psi_core_sqlParser, createComposablecom_alecstrong_sql_psi_core_sqlGrammar, generateLexer)
+}
+
+tasks.named("kotlinSourcesJar") {
+  dependsOn(generatecom_alecstrong_sql_psi_core_sqlParser, createComposablecom_alecstrong_sql_psi_core_sqlGrammar, generateLexer)
+}
