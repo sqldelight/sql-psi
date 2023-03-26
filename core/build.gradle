@@ -22,10 +22,11 @@ dependencies {
 }
 
 generateLexer {
-  source.set('src/main/kotlin/com/alecstrong/sql/psi/core/SqlLexer.flex')
+  sourceFile.set(project.file('src/main/kotlin/com/alecstrong/sql/psi/core/SqlLexer.flex'))
   targetDir.set('gen/com/alecstrong/sql/psi/core/lexer/')
   targetClass.set('SqlLexer')
   purgeOldFiles.set(true)
 }
 
 compileKotlin.dependsOn generateLexer
+kotlinSourcesJar.dependsOn generateLexer
