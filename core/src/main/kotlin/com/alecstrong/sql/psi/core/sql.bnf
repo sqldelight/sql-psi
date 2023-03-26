@@ -210,6 +210,7 @@ expr ::= ( raise_expr
          | binary_and_expr
          | between_expr
          | binary_like_expr
+         | is_distinct_from_expr // needs to go before is_expr because it starts the same
          | is_expr
          | null_expr
          | collate_expr
@@ -258,6 +259,11 @@ binary_equality_expr ::= expr ( EQ | EQ2 | NEQ | NEQ2 ) expr {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
+is_distinct_from_expr ::= expr IS [NOT] DISTINCT FROM expr {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryComparisonExprMixin"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
+}
+
 binary_and_expr ::= expr AND expr {
   implements = "com.alecstrong.sql.psi.core.psi.SqlBinaryExpr"
 }
