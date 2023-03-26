@@ -172,7 +172,7 @@ open class SqlCoreEnvironment(
     forSourceFiles(T::class, action)
   }
 
-  fun<T : PsiFile> forSourceFiles(klass: KClass<T>, action: (T) -> Unit) {
+  open fun <T : PsiFile> forSourceFiles(klass: KClass<T>, action: (T) -> Unit) {
     val psiManager = PsiManager.getInstance(projectEnvironment.project)
     fileIndex.iterateContent { file ->
       val psiFile = psiManager.findFile(file) ?: return@iterateContent true
