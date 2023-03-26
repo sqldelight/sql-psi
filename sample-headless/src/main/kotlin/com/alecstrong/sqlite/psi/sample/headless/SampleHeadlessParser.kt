@@ -11,6 +11,8 @@ class SampleHeadlessParser {
     val environment = object : SqlCoreEnvironment(
       sourceFolders = listOf(File("sample-headless")),
       dependencies = emptyList(),
+      predefinedTables = emptyList(),
+      language = parserDefinition.getLanguage(),
     ) {
       init {
         initializeApplication {

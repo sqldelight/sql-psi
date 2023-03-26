@@ -35,6 +35,17 @@ class TablesExposedTest {
       |);
       """.trimMargin(),
       "1.s",
+      predefined = listOf(
+        PredefinedTable(
+          "predefined",
+          "1.predefined",
+          """
+      |CREATE TABLE predefined (
+      |  id TEXT NOT NULL
+      |);
+          """.trimMargin(),
+        ),
+      ),
     )
     val file = compileFile(
       """
@@ -73,6 +84,17 @@ class TablesExposedTest {
       |);
       """.trimMargin(),
       "1.s",
+      predefined = listOf(
+        PredefinedTable(
+          "predefined",
+          "1.predefined",
+          """
+      |CREATE TABLE predefined (
+      |  id TEXT NOT NULL
+      |);
+          """.trimMargin(),
+        ),
+      ),
     )
     val file = compileFile(
       """
