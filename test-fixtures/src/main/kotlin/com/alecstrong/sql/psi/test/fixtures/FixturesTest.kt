@@ -10,7 +10,11 @@ import java.util.Enumeration
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
-abstract class FixturesTest(val name: String, val fixtureRoot: File) {
+abstract class FixturesTest(
+  val name: String,
+  val fixtureRoot: File,
+  val predefinedTables: List<PredefinedTable> = emptyList(),
+) {
   protected open val replaceRules: Array<Pair<String, String>> = emptyArray()
 
   abstract fun setupDialect()
@@ -37,11 +41,13 @@ abstract class FixturesTest(val name: String, val fixtureRoot: File) {
         val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
         errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
       },
-      predefinedTables = newRoot.listFiles { _, name ->
-        name.endsWith(".predefined")
-      }?.map {
-        PredefinedTable("", it.nameWithoutExtension, it.readText())
-      } ?: emptyList(),
+      predefinedTables = (
+        newRoot.listFiles { _, name ->
+          name.endsWith(".predefined")
+        }?.map {
+          PredefinedTable("", it.nameWithoutExtension, it.readText())
+        } ?: emptyList()
+        ) + predefinedTables,
     )
 
     val sourceFiles = StringBuilder()
