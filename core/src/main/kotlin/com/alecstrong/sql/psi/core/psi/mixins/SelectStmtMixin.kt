@@ -100,13 +100,16 @@ internal abstract class SelectStmtMixin(
     return when (whereExpr) {
       is SqlParenExpr -> nonNullIn(whereExpr.expr ?: return false)
       is SqlIsExpr -> {
+        if (whereExpr.exprList.size != 2) return false
         val (lhs, rhs) = whereExpr.exprList
         (lhs is SqlColumnExpr && lhs.columnName.isSameAs(this)) &&
           (rhs is SqlLiteralExpr && rhs.literalValue.node.findChildByType(SqlTypes.NULL) != null) &&
           whereExpr.node.findChildByType(SqlTypes.NOT) != null
       }
-      is SqlBinaryAndExpr -> nonNullIn(whereExpr.getExprList()[0]) || nonNullIn(whereExpr.getExprList()[1])
-      is SqlBinaryOrExpr -> nonNullIn(whereExpr.getExprList()[0]) && nonNullIn(whereExpr.getExprList()[1])
+      is SqlBinaryAndExpr -> nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) ||
+        nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
+      is SqlBinaryOrExpr -> nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) &&
+        nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
       else -> false
     }
   }
