@@ -35,17 +35,6 @@ class TablesExposedTest {
       |);
       """.trimMargin(),
       "1.s",
-      predefined = listOf(
-        PredefinedTable(
-          "predefined",
-          "1.predefined",
-          """
-      |CREATE TABLE predefined (
-      |  id TEXT NOT NULL
-      |);
-          """.trimMargin(),
-        ),
-      ),
     )
     val file = compileFile(
       """
@@ -58,6 +47,17 @@ class TablesExposedTest {
       |ALTER TABLE test3 RENAME TO test5;
       """.trimMargin(),
       "2.s",
+      predefined = listOf(
+        PredefinedTable(
+          "predefined",
+          "1.predefined",
+          """
+      |CREATE TABLE predefined (
+      |  id TEXT NOT NULL
+      |);
+          """.trimMargin(),
+        ),
+      ),
     )
 
     assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
@@ -65,6 +65,7 @@ class TablesExposedTest {
       "test2",
       "test4",
       "test5",
+      "predefined",
     )
   }
 

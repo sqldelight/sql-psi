@@ -13,6 +13,7 @@ import com.intellij.extapi.psi.PsiFileBase
 import com.intellij.lang.Language
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import kotlin.reflect.KClass
@@ -20,6 +21,7 @@ import kotlin.reflect.KClass
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
   language: Language,
+  predefinedTables: Collection<PredefinedTable>,
 ) : PsiFileBase(viewProvider, language) {
   abstract val order: Int?
 
@@ -37,12 +39,26 @@ abstract class SqlFileBase(
     return schema(T::class, sqlStmtElement, includeAll)
   }
 
+  private val systemTables: List<SchemaContributor> by lazy {
+    val psiFactory = PsiFileFactory.getInstance(project)
+    predefinedTables.flatMap { predefinedTable ->
+      val sqlFile = psiFactory.createFileFromText(predefinedTable.fileName, language, predefinedTable.content) as SqlFileBase
+      val stmts = sqlFile.sqlStmtList!!
+      stmts.stmtList.mapNotNull {
+        it.firstChild as? SchemaContributor
+      }
+    }
+  }
+
   fun <T : SchemaContributor> schema(
     type: KClass<T>,
     sqlStmtElement: PsiElement? = null,
     includeAll: Boolean = true,
   ): Collection<T> {
     val schema = Schema()
+    for (systemTable in systemTables) {
+      systemTable.modifySchema(schema)
+    }
     iteratePreviousStatements(type, sqlStmtElement, includeAll) { statement ->
       if (sqlStmtElement != null && PsiTreeUtil.isAncestor(sqlStmtElement, statement, false)) {
         if (order == null && (statement is TableElement && statement !is SqlCreateTableStmt)) {

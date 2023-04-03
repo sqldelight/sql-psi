@@ -7,22 +7,27 @@ import com.alecstrong.sql.psi.core.SqlFileBase
 import com.alecstrong.sql.psi.core.SqlParserDefinition
 import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
+import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.tree.IFileElementType
 import java.io.File
 
-class TestHeadlessParser {
-  private val parserDefinition = TestParserDefinition()
-
+object TestHeadlessParser {
   fun build(root: String, annotator: SqlAnnotationHolder, predefinedTables: List<PredefinedTable>): SqlCoreEnvironment {
+    val parserDefinition = TestParserDefinition(predefinedTables)
+
     val environment = object : SqlCoreEnvironment(
       sourceFolders = listOf(File(root)),
       dependencies = emptyList(),
-      predefinedTables = predefinedTables,
-      language = parserDefinition.getLanguage(),
     ) {
       init {
+        // We need to update the new parser definition to get the new system tables.
+        // Otherwise, the old parser is used without the updated content.
+        updateApplication {
+          LanguageParserDefinitions.INSTANCE.removeExplicitExtension(parserDefinition.getLanguage(), LanguageParserDefinitions.INSTANCE.forLanguage(parserDefinition.getLanguage()))
+          registerParserDefinition(parserDefinition)
+        }
         initializeApplication {
           registerFileType(TestFileType, TestFileType.defaultExtension)
           registerParserDefinition(parserDefinition)
@@ -42,8 +47,8 @@ private object TestFileType : LanguageFileType(TestLanguage) {
   override fun getDescription() = "Test SQLite Language File"
 }
 
-private class TestParserDefinition : SqlParserDefinition() {
-  override fun createFile(viewProvider: FileViewProvider) = TestFile(viewProvider)
+private class TestParserDefinition(private val predefinedTables: List<PredefinedTable>) : SqlParserDefinition() {
+  override fun createFile(viewProvider: FileViewProvider) = TestFile(viewProvider, predefinedTables)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = TestLanguage
 
@@ -52,7 +57,7 @@ private class TestParserDefinition : SqlParserDefinition() {
   }
 }
 
-private class TestFile(viewProvider: FileViewProvider) : SqlFileBase(viewProvider, TestLanguage) {
+private class TestFile(viewProvider: FileViewProvider, predefinedTables: List<PredefinedTable>) : SqlFileBase(viewProvider, TestLanguage, predefinedTables) {
   override fun getFileType() = TestFileType
   override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
     if (name.all { it in '0'..'9' }) name.toInt()
