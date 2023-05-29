@@ -12,6 +12,7 @@ import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlExpr
+import com.alecstrong.sql.psi.core.psi.SqlGroupBy
 import com.alecstrong.sql.psi.core.psi.SqlIsExpr
 import com.alecstrong.sql.psi.core.psi.SqlLiteralExpr
 import com.alecstrong.sql.psi.core.psi.SqlParenExpr
@@ -23,6 +24,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.siblings
 
 internal abstract class SelectStmtMixin(
   node: ASTNode,
@@ -134,7 +136,7 @@ internal abstract class SelectStmtMixin(
       child is SqlBindExpr &&
         PsiTreeUtil.findSiblingBackward(child, SqlTypes.HAVING, null) == null &&
         PsiTreeUtil.findSiblingBackward(child, SqlTypes.BY, null) != null &&
-        PsiTreeUtil.findSiblingBackward(child, SqlTypes.GROUP, null) != null
+        child.siblings(forward = false).singleOrNull { it is SqlGroupBy } != null
     }
     if (invalidGroupByBindExpression != null) {
       annotationHolder.createErrorAnnotation(
