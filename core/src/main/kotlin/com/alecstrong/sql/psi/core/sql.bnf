@@ -43,7 +43,6 @@
     VALUE='VALUE'
     LOCK='LOCK'
     USE='USE'
-    WITHIN='WITHIN'
 
     space='regexp:\s+'
     comment='regexp:--.*'
