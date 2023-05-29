@@ -6,13 +6,11 @@ import com.alecstrong.sql.psi.core.psi.FromQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlBinaryAndExpr
 import com.alecstrong.sql.psi.core.psi.SqlBinaryOrExpr
-import com.alecstrong.sql.psi.core.psi.SqlBindExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnAlias
 import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlExpr
-import com.alecstrong.sql.psi.core.psi.SqlGroupBy
 import com.alecstrong.sql.psi.core.psi.SqlIsExpr
 import com.alecstrong.sql.psi.core.psi.SqlLiteralExpr
 import com.alecstrong.sql.psi.core.psi.SqlParenExpr
@@ -23,8 +21,6 @@ import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
-import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.siblings
 
 internal abstract class SelectStmtMixin(
   node: ASTNode,
@@ -57,7 +53,7 @@ internal abstract class SelectStmtMixin(
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    if (child in exprList) {
+    if (child in exprList + (groupBy?.exprList ?: emptyList())) {
       val available = fromQuery().map { it.copy(adjacent = true) } +
         super.queryAvailable(this).map { it.copy(adjacent = false) }
       if (ignoreParentProjection) return available
@@ -131,19 +127,6 @@ internal abstract class SelectStmtMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
-
-    val invalidGroupByBindExpression = exprList.find { child ->
-      child is SqlBindExpr &&
-        PsiTreeUtil.findSiblingBackward(child, SqlTypes.HAVING, null) == null &&
-        PsiTreeUtil.findSiblingBackward(child, SqlTypes.BY, null) != null &&
-        child.siblings(forward = false).singleOrNull { it is SqlGroupBy } != null
-    }
-    if (invalidGroupByBindExpression != null) {
-      annotationHolder.createErrorAnnotation(
-        invalidGroupByBindExpression,
-        "Cannot bind the name of a column in a GROUP BY clause",
-      )
-    }
 
     if (valuesExpressionList.isNotEmpty()) {
       val size = valuesExpressionList[0].exprList.size

@@ -345,7 +345,9 @@ select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) 
   pin = 1
 }
 
-group_by ::= GROUP BY expr ( COMMA expr ) *
+group_by ::= GROUP BY expr ( COMMA expr ) * {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.GroupByMixing"
+}
 
 values_expression ::= LP expr ( COMMA expr ) * RP
 join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
