@@ -336,7 +336,7 @@ compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select
   ]
 }
 limiting_term ::= expr
-select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [ FROM join_clause ] [ WHERE expr ] [ GROUP BY expr ( COMMA expr ) * [ HAVING expr ] ] | VALUES values_expression ( COMMA values_expression ) * {
+select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [ FROM join_clause ] [ WHERE expr ] [group_by] [HAVING expr] | VALUES values_expression ( COMMA values_expression ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SelectStmtMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
@@ -344,6 +344,11 @@ select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) 
   ]
   pin = 1
 }
+
+group_by ::= GROUP BY expr ( COMMA expr ) * {
+  mixin = "com.alecstrong.sql.psi.core.psi.mixins.GroupByMixing"
+}
+
 values_expression ::= LP expr ( COMMA expr ) * RP
 join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.JoinClauseMixin"

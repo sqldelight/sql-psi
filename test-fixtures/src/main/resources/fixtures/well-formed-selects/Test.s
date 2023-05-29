@@ -117,3 +117,5 @@ LIMIT 1;
 SELECT hockey_player.*
 FROM hockey_player
 INNER JOIN team ON hockey_player.team = team._id;
+
+SELECT 1 FROM hockey_player HAVING 1 = 1;
