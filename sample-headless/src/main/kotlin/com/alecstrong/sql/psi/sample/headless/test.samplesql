@@ -1,0 +1,10 @@
+CREATE TABLE test (
+  sample_column TEXT AS "java.util.List" NOT NULL
+);
+
+SELECT *
+FROM test
+WHERE sample_column = "foo";
+
+SELECT * FROM test WHERE (1 = 1) FOO;
+SELECT * FROM test WHERE (1 = 1);
