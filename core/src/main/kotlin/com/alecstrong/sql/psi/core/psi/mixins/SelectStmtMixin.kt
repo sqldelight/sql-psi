@@ -53,7 +53,7 @@ internal abstract class SelectStmtMixin(
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
-    if (child in exprList + (groupBy?.exprList ?: emptyList())) {
+    if (child in exprList || child in (groupBy?.exprList ?: emptyList())) {
       val available = fromQuery().map { it.copy(adjacent = true) } +
         super.queryAvailable(this).map { it.copy(adjacent = false) }
       if (ignoreParentProjection) return available
