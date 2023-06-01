@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 abstract class SqlFileBase(
   viewProvider: FileViewProvider,
   language: Language,
-  predefinedTables: Collection<PredefinedTable>,
+  predefinedTables: Collection<PredefinedTable> = emptyList(),
 ) : PsiFileBase(viewProvider, language) {
   abstract val order: Int?
 
