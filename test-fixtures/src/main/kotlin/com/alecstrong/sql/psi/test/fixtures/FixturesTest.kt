@@ -22,7 +22,6 @@ abstract class FixturesTest(
   @Test fun execute() {
     setupDialect()
 
-    val parser = TestHeadlessParser()
     val errors = ArrayList<String>()
 
     val newRoot = File("build/fixtureCopies/${fixtureRoot.name}Copy")
@@ -31,7 +30,7 @@ abstract class FixturesTest(
       newRoot.replaceKeywords()
     }
 
-    val environment = parser.build(
+    val environment = TestHeadlessParser.build(
       root = newRoot.path,
       annotator = { element, s ->
         val documentManager = PsiDocumentManager.getInstance(element.project)
@@ -92,9 +91,11 @@ abstract class FixturesTest(
       missingList.isNotEmpty() && extrasList.isNotEmpty() -> {
         throw AssertionError("Test failed because the compile output is missing $missingStr and unexpectedly has $extrasStr. $assertionMsgEnd")
       }
+
       missingList.isNotEmpty() -> {
         throw AssertionError("Test failed because the compile output is missing $missingStr. $assertionMsgEnd")
       }
+
       extrasList.isNotEmpty() -> {
         throw AssertionError("Test failed because the compile output unexpectedly has $extrasStr. $assertionMsgEnd")
       }

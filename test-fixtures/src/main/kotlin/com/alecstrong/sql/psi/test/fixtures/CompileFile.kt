@@ -12,8 +12,7 @@ fun compileFile(text: String, fileName: String = "temp.s", predefined: List<Pred
   }
   file.writeText(text)
 
-  val parser = TestHeadlessParser()
-  val environment = parser.build(
+  val environment = TestHeadlessParser.build(
     root = directory.path,
     annotator = { element, message ->
       throw AssertionError("at ${element.textOffset} : $message")

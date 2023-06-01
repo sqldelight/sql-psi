@@ -8,7 +8,6 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
-import com.intellij.lang.Language
 import com.intellij.lang.MetaLanguage
 import com.intellij.openapi.diagnostic.DefaultLogger
 import com.intellij.openapi.diagnostic.Logger
@@ -29,7 +28,6 @@ import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.smartPointers.SmartPointerAnchorProvider
 import com.intellij.psi.search.GlobalSearchScope
@@ -43,7 +41,7 @@ private object ApplicationEnvironment {
     override fun warn(message: String?, t: Throwable?) = Unit
     override fun error(message: Any?) = Unit
   }
-  var initialized = AtomicBoolean(false)
+  val initialized = AtomicBoolean(false)
 
   val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
@@ -70,8 +68,6 @@ data class PredefinedTable(val packageName: String, val simpleFileName: String, 
 open class SqlCoreEnvironment(
   sourceFolders: List<File>,
   dependencies: List<File>,
-  predefinedTables: List<PredefinedTable>,
-  language: Language,
 ) {
   private val fileIndex: CoreFileIndex
 
@@ -81,8 +77,6 @@ open class SqlCoreEnvironment(
   )
 
   protected val localFileSystem: VirtualFileSystem
-
-  protected val predefinedTablesVirtualFiles: Lazy<List<VirtualFile>>
 
   init {
     localFileSystem = VirtualFileManager.getInstance().getFileSystem(
@@ -99,18 +93,10 @@ open class SqlCoreEnvironment(
       DirectoryIndexImpl(projectEnvironment.project),
     )
 
-    fileIndex = CoreFileIndex(sourceFolders, lazyOf(emptyList()), localFileSystem, projectEnvironment.project)
+    fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
-    predefinedTablesVirtualFiles = lazy {
-      val psiFactory = PsiFileFactory.getInstance(projectEnvironment.project)
-      predefinedTables.map { content ->
-        val sqlFile = psiFactory.createFileFromText(content.fileName, language, content.content) as SqlFileBase
-        sqlFile.virtualFile
-      }
-    }
-
-    val contributorIndex = CoreFileIndex(sourceFolders + dependencies, predefinedTablesVirtualFiles, localFileSystem, projectEnvironment.project)
+    val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
     projectEnvironment.project.registerService(
       SchemaContributorIndex::class.java,
       object : SchemaContributorIndex {
@@ -205,8 +191,20 @@ open class SqlCoreEnvironment(
     children.forEach { it.annotateRecursively(annotationHolder, extraAnnotators) }
   }
 
+  /**
+   * The [block] is only called once when the application is not initialized.
+   */
   protected fun initializeApplication(block: CoreApplicationEnvironment.() -> Unit) {
     if (!ApplicationEnvironment.initialized.getAndSet(true)) {
+      ApplicationEnvironment.coreApplicationEnvironment.block()
+    }
+  }
+
+  /**
+   * The [block] is called when the application is initialized only.
+   */
+  protected fun updateApplication(block: CoreApplicationEnvironment.() -> Unit) {
+    if (ApplicationEnvironment.initialized.get()) {
       ApplicationEnvironment.coreApplicationEnvironment.block()
     }
   }
@@ -218,7 +216,6 @@ fun interface SqlCompilerAnnotator {
 
 private class CoreFileIndex(
   val sourceFolders: List<File>,
-  val predefinedTables: Lazy<List<VirtualFile>>,
   private val localFileSystem: VirtualFileSystem,
   project: Project,
 ) : ProjectFileIndexImpl(project) {
@@ -227,8 +224,6 @@ private class CoreFileIndex(
       val file = localFileSystem.findFileByPath(it.absolutePath)
         ?: throw NullPointerException("File ${it.absolutePath} not found")
       iterateContentUnderDirectory(file, iterator)
-    } && predefinedTables.value.all {
-      iterator.processFile(it)
     }
   }
 
