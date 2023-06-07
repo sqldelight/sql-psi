@@ -60,7 +60,10 @@ private class TestParserDefinition(private val predefinedTables: List<Predefined
 private class TestFile(viewProvider: FileViewProvider, predefinedTables: List<PredefinedTable>) : SqlFileBase(viewProvider, TestLanguage, predefinedTables) {
   override fun getFileType() = TestFileType
   override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
-    if (name.all { it in '0'..'9' }) name.toInt()
-    else null
+    if (name.all { it in '0'..'9' }) {
+      name.toInt()
+    } else {
+      null
+    }
   }
 }

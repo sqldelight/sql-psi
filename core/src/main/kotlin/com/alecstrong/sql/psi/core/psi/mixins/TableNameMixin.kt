@@ -47,7 +47,9 @@ internal abstract class TableNameMixin(
     } else if (references == null) {
       if ((parent is SqlDropTableStmt || parent is SqlDropViewStmt) &&
         parent.node.findChildByType(SqlTypes.EXISTS) != null
-      ) return
+      ) {
+        return
+      }
       annotationHolder.createErrorAnnotation(this, "No table found with name $name")
     }
     super.annotate(annotationHolder)
