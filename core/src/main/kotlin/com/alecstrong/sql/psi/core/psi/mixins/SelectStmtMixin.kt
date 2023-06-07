@@ -43,8 +43,11 @@ internal abstract class SelectStmtMixin(
         columns = resultColumnList.flatMap { resultColumn ->
           resultColumn.queryExposed().flatMap { queryResult ->
             queryResult.columns.map {
-              if (exprList.size > 0 && it.element.nonNullIn(exprList[0])) it.copy(nullable = false)
-              else it
+              if (exprList.size > 0 && it.element.nonNullIn(exprList[0])) {
+                it.copy(nullable = false)
+              } else {
+                it
+              }
             }
           }
         },

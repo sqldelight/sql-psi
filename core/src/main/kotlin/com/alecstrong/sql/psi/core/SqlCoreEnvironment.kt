@@ -173,20 +173,22 @@ open class SqlCoreEnvironment(
     annotationHolder: SqlAnnotationHolder,
     extraAnnotators: Collection<SqlCompilerAnnotator>,
   ) {
-    if (this is SqlAnnotatedElement) try {
-      annotate(annotationHolder)
-      extraAnnotators.forEach { it.annotate(this, annotationHolder) }
-    } catch (e: AnnotationException) {
-      annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
-    } catch (e: Throwable) {
-      throw IllegalStateException(
-        """
+    if (this is SqlAnnotatedElement) {
+      try {
+        annotate(annotationHolder)
+        extraAnnotators.forEach { it.annotate(this, annotationHolder) }
+      } catch (e: AnnotationException) {
+        annotationHolder.createErrorAnnotation(e.element ?: this, e.msg)
+      } catch (e: Throwable) {
+        throw IllegalStateException(
+          """
         |Failed to compile ${this.containingFile.virtualFile.path}:${this.node.startOffset}:
         |  ${this.text}
         |
-        """.trimMargin(),
-        e,
-      )
+          """.trimMargin(),
+          e,
+        )
+      }
     }
     children.forEach { it.annotateRecursively(annotationHolder, extraAnnotators) }
   }

@@ -117,10 +117,13 @@ abstract class SqlFileBase(
       index.get(type.java.name, project, searchScope()).forEach {
         val file = it.containingFile
 
-        if (file == originalFile) return@forEach
-        else if (order != null && file.order == null) return@forEach
-        else if (order == null && file.order == null) topContributors.add(it)
-        else if (order == null || (file.order != null && file.order!! < order!!)) {
+        if (file == originalFile) {
+          return@forEach
+        } else if (order != null && file.order == null) {
+          return@forEach
+        } else if (order == null && file.order == null) {
+          topContributors.add(it)
+        } else if (order == null || (file.order != null && file.order!! < order!!)) {
           orderedContributors.getOrPut(file.order!!, { linkedSetOf() }).add(it)
         }
       }
