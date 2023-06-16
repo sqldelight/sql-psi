@@ -7,14 +7,17 @@
   parserImports=[
     // If you want to use a token from the core grammar it must be statically imported.
     "static com.alecstrong.sql.psi.core.psi.SqlTypes.STRING"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.AS"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.LP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RP"
   ]
 }
 // The grammar still needs to be well formed and so should contain a root element that is not
 // part of the generated psi.
-root ::= column_def
+root ::= column_def | extension_expr
 
 // An overriden rule.
-column_def ::= {column_name} sqlite_type [ 'AS' java_type ] ( {column_constraint} ) * {
+column_def ::= {column_name} {literal_expr} sqlite_type [ AS java_type ] ( {column_constraint} ) * {
   // In order for the core to function properly, when you override a rule it should still implement
   // the core interface for that rule.
   implements="com.alecstrong.sql.psi.core.psi.SqlColumnDef"
@@ -25,3 +28,13 @@ column_def ::= {column_name} sqlite_type [ 'AS' java_type ] ( {column_constraint
 // Rules that your grammar uses.
 sqlite_type ::= ( 'TEXT' | 'BLOB' | 'INTEGER' | 'REAL' )
 java_type ::= string
+
+extension_expr ::= custom_expr {
+// Custom expr overwriting existing paren_expr to test overwriting expr
+  extends = "com.alecstrong.sql.psi.core.psi.impl.SqlExtensionExprImpl"
+  implements = "com.alecstrong.sql.psi.core.psi.SqlExtensionExpr"
+  override = true
+}
+
+custom_expr ::= LP <<expr '-1'>> RP foo_rule
+foo_rule ::= 'FOO' {literal_expr}

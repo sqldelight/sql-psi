@@ -7,4 +7,5 @@ dependencies {
   implementation project(':core')
 
   implementation libs.bundles.intelliJ
+  testImplementation "org.jetbrains.kotlin:kotlin-test"
 }
