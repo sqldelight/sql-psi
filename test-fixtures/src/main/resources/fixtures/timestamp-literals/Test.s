@@ -22,4 +22,4 @@ UPDATE test
 SET date1 = CURRENT_TIMESTAMP,
     date2 = CURRENT_TIME,
     date3 = CURRENT_TIMESTAMP
-WHERE date1 > CURRENT_TIME; -- Fails because it is an expression.
+WHERE date1 > CURRENT_TIME;
