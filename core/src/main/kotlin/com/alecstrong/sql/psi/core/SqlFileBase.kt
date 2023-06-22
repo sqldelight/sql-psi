@@ -23,7 +23,7 @@ abstract class SqlFileBase(
   language: Language,
   predefinedTables: Collection<PredefinedTable> = emptyList(),
 ) : PsiFileBase(viewProvider, language) {
-  abstract val order: Int?
+  abstract val order: Long?
 
   val sqlStmtList
     get() = findChildByClass(SqlStmtList::class.java)
