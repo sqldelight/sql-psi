@@ -110,7 +110,7 @@ abstract class SqlFileBase(
     block: (SchemaContributor) -> Unit,
   ) {
     if (includeAll) {
-      val orderedContributors = sortedMapOf<Int, LinkedHashSet<SchemaContributor>>()
+      val orderedContributors = sortedMapOf<Long, LinkedHashSet<SchemaContributor>>()
       val topContributors = LinkedHashSet<SchemaContributor>()
       val index = SchemaContributorIndex.getInstance(project)
 
