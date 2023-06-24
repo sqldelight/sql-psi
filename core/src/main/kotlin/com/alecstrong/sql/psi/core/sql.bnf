@@ -48,7 +48,7 @@
     comment='regexp:--.*'
     javadoc='regexp:/\*\*([^*]|\*+[^/*])*\*/'
     digit='regexp:\d+(\.\d*)?'
-    id='regexp:([a-zA-Z_][a-zA-Z_0-9]*)|(`[a-zA-Z_0-9 ]+`)|(\[[a-zA-Z_0-9 ]+\])'
+    id='regexp:([a-zA-Z_][a-zA-Z_0-9]*)|(`[a-zA-Z_0-9 ]+`)|(\[[a-zA-Z_0-9 ]+])'
     string="regexp:('([^'])*'|\"([^\"])*\")"
   ]
   extends(".*expr")=expr
@@ -232,9 +232,10 @@ expr ::= ( other_expr
 other_expr ::= extension_expr
 extension_expr ::= NULL
 extension_stmt ::= NULL
-multi_column_expr ::= values_expression ( LT | LTE | GT | GTE ) values_expression {
+multi_column_expr ::= multi_column_expression ( LT | LTE | GT | GTE ) multi_column_expression {
   pin = 2
 }
+multi_column_expression ::= LP expr ( COMMA expr ) + RP
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name DOT table_name DOT | table_name DOT ] column_name
