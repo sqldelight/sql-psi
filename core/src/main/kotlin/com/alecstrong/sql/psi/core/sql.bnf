@@ -44,6 +44,8 @@
     LOCK='LOCK'
     USE='USE'
 
+    FAKE_EXTENSION='___'
+
     space='regexp:\s+'
     comment='regexp:--.*'
     javadoc='regexp:/\*\*([^*]|\*+[^/*])*\*/'
@@ -58,9 +60,9 @@ stmt_list ::= ( stmt SEMI ) * {
   mixin="com.alecstrong.sql.psi.core.psi.mixins.SqlStmtListMixin"
   pin(".*")=1
 }
-stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
+stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( extension_stmt | alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
                                           create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt | drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt |
-                                          pragma_stmt | reindex_stmt | release_stmt | rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt | extension_stmt
+                                          pragma_stmt | reindex_stmt | release_stmt | rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt
                                         ) {
   recoverWhile=sql_stmt_recovery
   pin = 2
@@ -230,8 +232,8 @@ expr ::= ( other_expr
          | bind_expr )
 
 other_expr ::= extension_expr
-extension_expr ::= NULL
-extension_stmt ::= NULL
+extension_expr ::= FAKE_EXTENSION
+extension_stmt ::= FAKE_EXTENSION
 multi_column_expr ::= values_expression ( LT | LTE | GT | GTE ) values_expression {
   pin = 2
 }
