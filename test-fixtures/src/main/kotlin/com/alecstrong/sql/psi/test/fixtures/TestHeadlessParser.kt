@@ -61,7 +61,7 @@ private class TestFile(viewProvider: FileViewProvider, predefinedTables: List<Pr
   override fun getFileType() = TestFileType
   override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
     if (name.all { it in '0'..'9' }) {
-      name.toInt()
+      name.toLong()
     } else {
       null
     }

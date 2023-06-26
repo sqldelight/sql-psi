@@ -23,7 +23,7 @@ abstract class SqlFileBase(
   language: Language,
   predefinedTables: Collection<PredefinedTable> = emptyList(),
 ) : PsiFileBase(viewProvider, language) {
-  abstract val order: Int?
+  abstract val order: Long?
 
   val sqlStmtList
     get() = findChildByClass(SqlStmtList::class.java)
@@ -110,7 +110,7 @@ abstract class SqlFileBase(
     block: (SchemaContributor) -> Unit,
   ) {
     if (includeAll) {
-      val orderedContributors = sortedMapOf<Int, LinkedHashSet<SchemaContributor>>()
+      val orderedContributors = sortedMapOf<Long, LinkedHashSet<SchemaContributor>>()
       val topContributors = LinkedHashSet<SchemaContributor>()
       val index = SchemaContributorIndex.getInstance(project)
 
