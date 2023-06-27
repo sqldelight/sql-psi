@@ -1,6 +1,6 @@
 CREATE TABLE Item(
-    gross INT NOT NULL,
-    tare INT NOT NULL
+    gross INTEGER NOT NULL,
+    tare INTEGER NOT NULL
 );
 
 -- This expr should match parenExpr and not multi column expr.
