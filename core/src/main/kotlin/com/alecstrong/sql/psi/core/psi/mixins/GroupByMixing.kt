@@ -3,7 +3,6 @@ package com.alecstrong.sql.psi.core.psi.mixins
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.psi.QueryElement
 import com.alecstrong.sql.psi.core.psi.SqlBindExpr
-import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlGroupBy
 import com.alecstrong.sql.psi.core.psi.SqlSelectStmt
@@ -15,11 +14,7 @@ internal abstract class GroupByMixing(
 ) : SqlCompositeElementImpl(node),
   SqlGroupBy {
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
-    return if (child is SqlColumnExpr) {
-      (parent as SqlSelectStmt).queryAvailable(child)
-    } else {
-      super.queryAvailable(child)
-    }
+    return (parent as SqlSelectStmt).queryAvailable(child)
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
