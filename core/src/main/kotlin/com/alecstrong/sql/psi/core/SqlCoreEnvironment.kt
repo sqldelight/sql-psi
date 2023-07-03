@@ -61,10 +61,6 @@ private object ApplicationEnvironment {
   }
 }
 
-data class PredefinedTable(val packageName: String, val simpleFileName: String, val content: String) {
-  val fileName = "$packageName.$simpleFileName"
-}
-
 open class SqlCoreEnvironment(
   sourceFolders: List<File>,
   dependencies: List<File>,

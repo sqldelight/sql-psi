@@ -45,9 +45,18 @@ abstract class SqlFileBase(
       val sqlFile = psiFactory.createFileFromText(predefinedTable.fileName, language, predefinedTable.content) as SqlFileBase
       val stmts = sqlFile.sqlStmtList!!
       stmts.stmtList.mapNotNull {
-        it.firstChild as? SchemaContributor
+        val predefinedSchemaContributor = it.firstChild as? SchemaContributor ?: return@mapNotNull null
+        if (predefinedSchemaContributor is TableElement) {
+          HiddenTableElement(predefinedSchemaContributor)
+        } else {
+          predefinedSchemaContributor
+        }
       }
     }
+  }
+
+  private class HiddenTableElement(table: TableElement) : TableElement by table {
+    override val synthesized = true
   }
 
   fun <T : SchemaContributor> schema(

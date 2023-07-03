@@ -49,7 +49,6 @@ class TablesExposedTest {
       "2.s",
       predefined = listOf(
         PredefinedTable(
-          "predefined",
           "1.predefined",
           """
       |CREATE TABLE predefined (
@@ -87,7 +86,6 @@ class TablesExposedTest {
       "1.s",
       predefined = listOf(
         PredefinedTable(
-          "predefined",
           "1.predefined",
           """
       |CREATE TABLE predefined (

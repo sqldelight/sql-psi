@@ -44,7 +44,7 @@ abstract class FixturesTest(
         newRoot.listFiles { _, name ->
           name.endsWith(".predefined")
         }?.map {
-          PredefinedTable("", it.nameWithoutExtension, it.readText())
+          PredefinedTable(it.nameWithoutExtension, it.readText())
         } ?: emptyList()
         ) + predefinedTables,
     )
