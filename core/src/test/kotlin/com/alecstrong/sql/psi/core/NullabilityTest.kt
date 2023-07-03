@@ -7,7 +7,7 @@ import org.junit.Test
 class NullabilityTest {
   @Test
   fun outerJoin() {
-    val file = compileFile(
+    compileFile(
       """
       |CREATE TABLE car (
       |  _id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -27,19 +27,20 @@ class NullabilityTest {
       |      LEFT OUTER JOIN car ON owner.carId = car.id)
       |WHERE carBrand = ?;
       """.trimMargin(),
-    )
+    ) { file ->
 
-    val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
-    val projection = select.queryExposed().flatMap { it.columns }
+      val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
+      val projection = select.queryExposed().flatMap { it.columns }
 
-    assertThat(projection[0].nullable).isNull()
-    assertThat(projection[1].nullable).isTrue()
-    assertThat(projection[2].nullable).isTrue()
+      assertThat(projection[0].nullable).isNull()
+      assertThat(projection[1].nullable).isTrue()
+      assertThat(projection[2].nullable).isTrue()
+    }
   }
 
   @Test
   fun leftJoinGroupBy() {
-    val file = compileFile(
+    compileFile(
       """
       |CREATE TABLE target (
       |  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -69,19 +70,20 @@ class NullabilityTest {
       |  ORDER BY target.name COLLATE NOCASE ASC
       |;
       """.trimMargin(),
-    )
+    ) { file ->
 
-    val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
-    val projection = select.queryExposed().flatMap { it.columns }
+      val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
+      val projection = select.queryExposed().flatMap { it.columns }
 
-    assertThat(projection[0].nullable).isNull()
-    assertThat(projection[1].nullable).isNull()
-    assertThat(projection[2].nullable).isTrue()
+      assertThat(projection[0].nullable).isNull()
+      assertThat(projection[1].nullable).isNull()
+      assertThat(projection[2].nullable).isTrue()
+    }
   }
 
   @Test
   fun checkNotNull() {
-    val file = compileFile(
+    compileFile(
       """
       |CREATE TABLE target (
       |  name TEXT,
@@ -92,13 +94,14 @@ class NullabilityTest {
       |FROM target
       |WHERE name IS NOT NULL AND thing IS NOT NULL;
       """.trimMargin(),
-    )
+    ) { file ->
 
-    val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
-    val projection = select.queryExposed().flatMap { it.columns }
+      val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
+      val projection = select.queryExposed().flatMap { it.columns }
 
-    assertThat(projection[0].nullable).isFalse()
-    assertThat(projection[1].nullable).isFalse()
-    assertThat(projection[2].nullable).isFalse()
+      assertThat(projection[0].nullable).isFalse()
+      assertThat(projection[1].nullable).isFalse()
+      assertThat(projection[2].nullable).isFalse()
+    }
   }
 }

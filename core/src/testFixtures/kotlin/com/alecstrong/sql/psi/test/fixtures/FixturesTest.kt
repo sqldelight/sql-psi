@@ -20,8 +20,6 @@ abstract class FixturesTest(
   abstract fun setupDialect()
 
   @Test fun execute() {
-    setupDialect()
-
     val errors = ArrayList<String>()
 
     val newRoot = File("build/fixtureCopies/${fixtureRoot.name}Copy")
@@ -32,6 +30,9 @@ abstract class FixturesTest(
 
     val environment = TestHeadlessParser.build(
       root = newRoot.path,
+      customInit = {
+        setupDialect()
+      },
       annotator = { element, s ->
         val documentManager = PsiDocumentManager.getInstance(element.project)
         val name = element.containingFile.name
@@ -102,6 +103,7 @@ abstract class FixturesTest(
     }
 
     newRoot.deleteRecursively()
+    environment.close()
   }
 
   private fun File.replaceKeywords() {

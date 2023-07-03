@@ -32,29 +32,27 @@ import com.intellij.psi.impl.smartPointers.SmartPointerAnchorProvider
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
-private object ApplicationEnvironment {
+private class ApplicationEnvironment {
   private val logger = object : DefaultLogger("") {
     override fun warn(message: String?, t: Throwable?) = Unit
     override fun error(message: Any?) = Unit
   }
-  val initialized = AtomicBoolean(false)
 
-  val coreApplicationEnvironment: CoreApplicationEnvironment by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
-    CoreApplicationEnvironment(Disposer.newDisposable()).apply {
-      Logger.setFactory { logger }
+  val disposable = Disposer.newDisposable()
 
-      CoreApplicationEnvironment.registerApplicationExtensionPoint(
-        MetaLanguage.EP_NAME,
-        MetaLanguage::class.java,
-      )
-      CoreApplicationEnvironment.registerApplicationExtensionPoint(
-        SmartPointerAnchorProvider.EP_NAME,
-        SmartPointerAnchorProvider::class.java,
-      )
-    }
+  val coreApplicationEnvironment: CoreApplicationEnvironment = CoreApplicationEnvironment(disposable).apply {
+    Logger.setFactory { logger }
+
+    CoreApplicationEnvironment.registerApplicationExtensionPoint(
+      MetaLanguage.EP_NAME,
+      MetaLanguage::class.java,
+    )
+    CoreApplicationEnvironment.registerApplicationExtensionPoint(
+      SmartPointerAnchorProvider.EP_NAME,
+      SmartPointerAnchorProvider::class.java,
+    )
   }
 }
 
@@ -65,12 +63,13 @@ data class PredefinedTable(val packageName: String, val simpleFileName: String, 
 open class SqlCoreEnvironment(
   sourceFolders: List<File>,
   dependencies: List<File>,
-) {
+) : AutoCloseable {
   private val fileIndex: CoreFileIndex
 
+  private val env = ApplicationEnvironment()
   protected val projectEnvironment = CoreProjectEnvironment(
-    ApplicationEnvironment.coreApplicationEnvironment.parentDisposable,
-    ApplicationEnvironment.coreApplicationEnvironment,
+    env.disposable,
+    env.coreApplicationEnvironment,
   )
 
   protected val localFileSystem: VirtualFileSystem = VirtualFileManager.getInstance().getFileSystem(
@@ -188,22 +187,12 @@ open class SqlCoreEnvironment(
     children.forEach { it.annotateRecursively(annotationHolder, extraAnnotators) }
   }
 
-  /**
-   * The [block] is only called once when the application is not initialized.
-   */
   protected fun initializeApplication(block: CoreApplicationEnvironment.() -> Unit) {
-    if (!ApplicationEnvironment.initialized.getAndSet(true)) {
-      ApplicationEnvironment.coreApplicationEnvironment.block()
-    }
+    env.coreApplicationEnvironment.block()
   }
 
-  /**
-   * The [block] is called when the application is initialized only.
-   */
-  protected fun updateApplication(block: CoreApplicationEnvironment.() -> Unit) {
-    if (ApplicationEnvironment.initialized.get()) {
-      ApplicationEnvironment.coreApplicationEnvironment.block()
-    }
+  override fun close() {
+    Disposer.dispose(env.disposable)
   }
 }
 
