@@ -1,6 +1,8 @@
 package com.alecstrong.sql.psi.core
 
 data class PredefinedTable(
-  val fileName: String,
+  val name: String,
   val content: String,
-)
+) {
+  val fileName = "___predefined/$name"
+}
