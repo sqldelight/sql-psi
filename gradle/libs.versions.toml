@@ -1,6 +1,6 @@
 [versions]
 ideaVersion = "222.4459.24" # Flamingo | 2022.2.1 (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
-kotlin = "1.8.22"
+kotlin = "1.9.0"
 
 [libraries]
 intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", version.ref = "ideaVersion" }
