@@ -10,9 +10,10 @@ class SampleFile(viewProvider: FileViewProvider) : SqlFileBase(
   predefinedTables = listOf(
     PredefinedTable(
       "Answer.samplesql",
+      // language=sql
       """
-        CREATE TABLE ANSWER(
-          answer INT NOT NULL
+        CREATE TABLE answer(
+          answer 42 INTEGER NOT NULL
         );
       """.trimIndent(),
     ),
