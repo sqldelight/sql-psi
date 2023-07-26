@@ -56,6 +56,9 @@ internal abstract class AlterTableMixin private constructor(
     nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
+  override val synthesized: Boolean = false
+  override val virtual: Boolean = false
+
   override fun getStub() = super.getStub() as AlterTableStmtStub?
 
   fun newTableName(): String? {

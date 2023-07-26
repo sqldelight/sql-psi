@@ -38,6 +38,9 @@ internal abstract class CreateTableMixin private constructor(
     nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
+  override val synthesized: Boolean = false
+  override val virtual: Boolean = false
+
   override fun name(): String {
     stub?.let { return it.name() }
     return tableName.name

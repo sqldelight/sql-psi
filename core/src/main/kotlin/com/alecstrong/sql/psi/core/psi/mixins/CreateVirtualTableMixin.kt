@@ -29,6 +29,7 @@ internal abstract class CreateVirtualTableMixin(
     nodeType: IElementType,
   ) : this(stub, nodeType, null)
 
+  override val synthesized: Boolean = false
   override val virtual: Boolean = true
 
   override fun name(): String {
