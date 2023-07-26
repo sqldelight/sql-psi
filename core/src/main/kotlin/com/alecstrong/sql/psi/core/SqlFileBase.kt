@@ -47,7 +47,7 @@ abstract class SqlFileBase(
       stmts.stmtList.mapNotNull {
         val predefinedSchemaContributor = it.firstChild as? SchemaContributor ?: return@mapNotNull null
         if (predefinedSchemaContributor is TableElement) {
-          HiddenTableElement(predefinedSchemaContributor)
+          SystemTableElement(predefinedSchemaContributor)
         } else {
           predefinedSchemaContributor
         }
@@ -55,8 +55,9 @@ abstract class SqlFileBase(
     }
   }
 
-  private class HiddenTableElement(table: TableElement) : TableElement by table {
+  private class SystemTableElement(table: TableElement) : TableElement by table {
     override val synthesized = true
+    override val virtual = true
   }
 
   fun <T : SchemaContributor> schema(

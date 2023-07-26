@@ -20,8 +20,7 @@ internal abstract class CreateViewMixin(
   nodeType: IElementType?,
   node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateViewElementType>(stub, nodeType, node),
-  SqlCreateViewStmt,
-  TableElement {
+  SqlCreateViewStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(

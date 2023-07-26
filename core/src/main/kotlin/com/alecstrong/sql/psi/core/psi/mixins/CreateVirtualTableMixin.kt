@@ -21,14 +21,15 @@ internal abstract class CreateVirtualTableMixin(
   nodeType: IElementType?,
   node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
-  SqlCreateVirtualTableStmt,
-  TableElement {
+  SqlCreateVirtualTableStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
     stub: SchemaContributorStub,
     nodeType: IElementType,
   ) : this(stub, nodeType, null)
+
+  override val virtual: Boolean = true
 
   override fun name(): String {
     stub?.let { return it.name() }
