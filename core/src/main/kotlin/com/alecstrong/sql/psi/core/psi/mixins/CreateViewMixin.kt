@@ -20,7 +20,8 @@ internal abstract class CreateViewMixin(
   nodeType: IElementType?,
   node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateViewElementType>(stub, nodeType, node),
-  SqlCreateViewStmt {
+  SqlCreateViewStmt,
+  TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
   override val synthesized: Boolean = false
