@@ -21,7 +21,9 @@ internal abstract class CreateVirtualTableMixin(
   nodeType: IElementType?,
   node: ASTNode?,
 ) : SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
-  SqlCreateVirtualTableStmt {
+  SqlCreateVirtualTableStmt,
+  TableElement
+{
   constructor(node: ASTNode) : this(null, null, node)
 
   constructor(
