@@ -208,6 +208,7 @@ expr ::= ( other_expr
          | case_expr
          | exists_expr
          | multi_column_expr
+         | multi_column_in_expr
          | paren_expr
          | binary_or_expr
          | binary_and_expr
@@ -235,6 +236,9 @@ other_expr ::= extension_expr
 extension_expr ::= FAKE_EXTENSION
 extension_stmt ::= FAKE_EXTENSION
 multi_column_expr ::= multi_column_expression ( LT | LTE | GT | GTE ) multi_column_expression {
+  pin = 2
+}
+multi_column_in_expr ::= multi_column_expression IN [LP expr ( COMMA expr ) * RP | bind_expr] {
   pin = 2
 }
 multi_column_expression ::= LP expr ( COMMA expr ) + RP
