@@ -238,7 +238,7 @@ extension_stmt ::= FAKE_EXTENSION
 multi_column_expr ::= multi_column_expression ( LT | LTE | GT | GTE ) multi_column_expression {
   pin = 2
 }
-multi_column_in_expr ::= multi_column_expression IN [ bind_expr | LP compound_select_stmt RP ] {
+multi_column_in_expr ::= multi_column_expression IN ( bind_expr | LP compound_select_stmt RP ) {
   pin = 2
 }
 multi_column_expression ::= LP expr ( COMMA expr ) + RP
