@@ -1,20 +1,10 @@
 name: Bug Report
-description: Valid SQL syntax is not supported
+description: Valid ANSI SQL syntax is not supported
 labels: [bug]
 body:
-  - type: dropdown
-    attributes:
-      label: Dialect
-      multiple: true
-      options:
-        - SQLite
-        - MySQL
-        - PostgreSQL
-    validations:
-      required: true
   - type: textarea
     attributes:
-      label: Failing SQL
+      label: Failing ANSI SQL
       render: sql
       placeholder: "SELECT * FROM abc;"
     validations:
