@@ -126,7 +126,8 @@ generated_clause ::= [ GENERATED ] ALWAYS AS LP expr RP
 check_constraint ::= CHECK LP expr RP
 default_constraint ::= DEFAULT ( signed_number | literal_value | LP expr RP )
 signed_number ::= [ PLUS | MINUS ] numeric_literal
-table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) LP indexed_column ( COMMA indexed_column ) * RP conflict_clause | CHECK LP expr RP | FOREIGN KEY LP column_name ( COMMA column_name ) * RP foreign_key_clause )
+table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) LP indexed_column ( COMMA indexed_column ) * RP conflict_clause | CHECK LP expr RP | foreign_table_clause )
+foreign_table_clause ::= FOREIGN KEY LP column_name ( COMMA column_name ) * RP foreign_key_clause
 foreign_key_clause ::= REFERENCES foreign_table [ LP column_name ( COMMA column_name ) * RP ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) * ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ForeignKeyClauseMixin"
 }

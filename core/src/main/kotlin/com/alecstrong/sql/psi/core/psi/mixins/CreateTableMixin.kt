@@ -207,10 +207,11 @@ internal abstract class CreateTableMixin private constructor(
         }
     }
 
-    tableConstraintList.filter { it.foreignKeyClause != null }
+    tableConstraintList.filter { it.foreignTableClause != null }
       .forEach { constraint ->
-        constraint.foreignKeyClause!!.checkCompositeForeignKey(
-          constraint.columnNameList,
+        val foreignTableClause = constraint.foreignTableClause!!
+        foreignTableClause.foreignKeyClause.checkCompositeForeignKey(
+          foreignTableClause.columnNameList,
         )
       }
   }

@@ -3,11 +3,15 @@ package com.alecstrong.sql.psi.core.psi.mixins
 import com.alecstrong.sql.psi.core.AnnotationException
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlParser
+import com.alecstrong.sql.psi.core.psi.SqlColumnDef
+import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlColumnReference
+import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlNamedElementImpl
 import com.intellij.icons.AllIcons
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
+import com.intellij.psi.util.parentOfType
 import javax.swing.Icon
 
 internal abstract class ColumnNameMixin(
@@ -31,4 +35,18 @@ internal abstract class ColumnNameMixin(
   override fun getIcon(flags: Int): Icon {
     return AllIcons.Nodes.DataColumn
   }
+}
+
+fun SqlColumnName.getColumnDefOrNull(): SqlColumnDef? {
+  val tables = tablesAvailable(this)
+  for (table in tables) {
+    val tableDef = table.tableName.parentOfType<SqlCreateTableStmt>() ?: continue
+    for (columnDef in tableDef.columnDefList) {
+      val name = columnDef.columnName.name
+      if (name == this.name) {
+        return columnDef
+      }
+    }
+  }
+  return null
 }
