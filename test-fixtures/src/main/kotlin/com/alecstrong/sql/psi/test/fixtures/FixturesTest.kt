@@ -104,13 +104,6 @@ abstract class FixturesTest(
     newRoot.deleteRecursively()
   }
 
-  private fun PsiElement.printTree(printer: (String) -> Unit) {
-    printer("$this\n")
-    children.forEach { child ->
-      child.printTree { printer("  $it") }
-    }
-  }
-
   private fun File.replaceKeywords() {
     if (isDirectory) {
       listFiles()?.forEach { it.replaceKeywords() }
@@ -171,3 +164,10 @@ private fun formatErrorList(errors: List<String>): String {
 private val inlineErrorRegex = "^--\\s*error\\[col (\\d+)]:(.+)$".toRegex(RegexOption.MULTILINE)
 
 private fun String.splitLines() = split("\\r?\\n".toRegex())
+
+internal fun PsiElement.printTree(printer: (String) -> Unit) {
+  printer("$this\n")
+  children.forEach { child ->
+    child.printTree { printer("  $it") }
+  }
+}
