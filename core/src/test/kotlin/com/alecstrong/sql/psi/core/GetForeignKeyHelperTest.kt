@@ -5,9 +5,23 @@ import com.alecstrong.sql.psi.core.psi.mixins.getColumnDefOrNull
 import com.alecstrong.sql.psi.core.psi.mixins.isForeignKey
 import com.alecstrong.sql.psi.test.fixtures.compileFile
 import com.google.common.truth.Truth.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import java.io.File
 
 class GetForeignKeyHelperTest {
+  @Before
+  fun before() {
+    File("build/tmp").deleteRecursively()
+  }
+
+  @After
+  fun after() {
+    SqlParserUtil.reset()
+    File("build/tmp").deleteRecursively()
+  }
+
   @Test
   fun columnConstraint() {
     val sqlFile = compileFile(
