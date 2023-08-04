@@ -21,7 +21,7 @@ fun compileFile(text: String, fileName: String = "temp.s", predefined: List<Pred
           append(it)
         }
       }
-      throw AssertionError("at ${element.textOffset} : $message\n${tree}")
+      throw AssertionError("at ${element.textOffset} : $message\n$tree")
     },
     predefinedTables = predefined,
   )
