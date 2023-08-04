@@ -35,7 +35,7 @@ fun SqlColumnDef.isForeignKey(): Boolean {
       if (foreignTableClause != null) {
         val columns = foreignTableClause.columnNameList
         for (column in columns) {
-          if (column.name == columnName.name) {
+          if (column.reference?.resolve() == columnName) {
             return true
           }
         }

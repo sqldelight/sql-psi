@@ -38,12 +38,13 @@ internal abstract class ColumnNameMixin(
 }
 
 fun SqlColumnName.getColumnDefOrNull(): SqlColumnDef? {
+  val ref = reference?.resolve() ?: return null
   val tables = tablesAvailable(this)
   for (table in tables) {
     val tableDef = table.tableName.parentOfType<SqlCreateTableStmt>() ?: continue
     for (columnDef in tableDef.columnDefList) {
-      val name = columnDef.columnName.name
-      if (name == this.name) {
+      val columnRef = columnDef.columnName.reference
+      if (columnRef != null && columnRef.resolve() == ref) {
         return columnDef
       }
     }
