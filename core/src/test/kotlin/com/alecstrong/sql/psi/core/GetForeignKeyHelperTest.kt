@@ -40,7 +40,7 @@ class GetForeignKeyHelperTest {
                 |);
                 |
                 |CREATE TABLE bar (
-                |a TEXT,
+                |a INT,
                 |FOREIGN KEY (a) REFERENCES foo(id)
                 |);
                 |
@@ -48,6 +48,38 @@ class GetForeignKeyHelperTest {
       """.trimMargin(),
     )
     val select = sqlFile.sqlStmtList!!.stmtList.last()
+    val a = (select.compoundSelectStmt!!.selectStmtList.single().resultColumnList.single().expr as SqlColumnExpr).columnName
+
+    val columnDef = a.getColumnDefOrNull()
+    assertThat(columnDef).isNotNull()
+    assertThat(columnDef!!.isForeignKey()).isTrue()
+  }
+
+  @Test
+  fun alterTable() {
+    compileFile(
+      """
+                |CREATE TABLE foo (
+                | id INT PRIMARY KEY
+                |);
+                |
+                |CREATE TABLE bar (
+                |b TEXT
+                |);
+      """.trimMargin(),
+      fileName = "1.s",
+    )
+    val alterFile = compileFile(
+      """
+                |ALTER TABLE bar
+                | ADD COLUMN a INT REFERENCES foo(id)
+                |;
+                |
+                |SELECT a FROM bar;
+      """.trimMargin(),
+      fileName = "2.s",
+    )
+    val select = alterFile.sqlStmtList!!.stmtList.last()
     val a = (select.compoundSelectStmt!!.selectStmtList.single().resultColumnList.single().expr as SqlColumnExpr).columnName
 
     val columnDef = a.getColumnDefOrNull()

@@ -6,12 +6,10 @@ import com.alecstrong.sql.psi.core.SqlParser
 import com.alecstrong.sql.psi.core.psi.SqlColumnDef
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlColumnReference
-import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlNamedElementImpl
 import com.intellij.icons.AllIcons
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
-import com.intellij.psi.util.parentOfType
 import javax.swing.Icon
 
 internal abstract class ColumnNameMixin(
@@ -38,16 +36,5 @@ internal abstract class ColumnNameMixin(
 }
 
 fun SqlColumnName.getColumnDefOrNull(): SqlColumnDef? {
-  val ref = reference?.resolve() ?: return null
-  val tables = tablesAvailable(this)
-  for (table in tables) {
-    val tableDef = table.tableName.parentOfType<SqlCreateTableStmt>() ?: continue
-    for (columnDef in tableDef.columnDefList) {
-      val columnRef = columnDef.columnName.reference
-      if (columnRef != null && columnRef.resolve() == ref) {
-        return columnDef
-      }
-    }
-  }
-  return null
+  return reference?.resolve()?.parent as? SqlColumnDef
 }
