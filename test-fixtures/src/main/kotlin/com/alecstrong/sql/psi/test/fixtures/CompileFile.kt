@@ -15,7 +15,13 @@ fun compileFile(text: String, fileName: String = "temp.s", predefined: List<Pred
   val environment = TestHeadlessParser.build(
     root = directory.path,
     annotator = { element, message ->
-      throw AssertionError("at ${element.textOffset} : $message")
+      val tree = buildString {
+        element.containingFile.printTree {
+          append("  ")
+          append(it)
+        }
+      }
+      throw AssertionError("at ${element.textOffset} : $message\n${tree}")
     },
     predefinedTables = predefined,
   )
