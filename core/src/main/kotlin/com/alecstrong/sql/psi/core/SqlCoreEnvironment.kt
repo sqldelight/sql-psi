@@ -11,7 +11,6 @@ import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
 import com.intellij.openapi.diagnostic.DefaultLogger
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -47,13 +46,11 @@ private object ApplicationEnvironment {
     CoreApplicationEnvironment(Disposer.newDisposable()).apply {
       Logger.setFactory { logger }
 
-      CoreApplicationEnvironment.registerExtensionPoint(
-        Extensions.getRootArea(),
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
         MetaLanguage.EP_NAME,
         MetaLanguage::class.java,
       )
-      CoreApplicationEnvironment.registerExtensionPoint(
-        Extensions.getRootArea(),
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
         SmartPointerAnchorProvider.EP_NAME,
         SmartPointerAnchorProvider::class.java,
       )
@@ -76,13 +73,11 @@ open class SqlCoreEnvironment(
     ApplicationEnvironment.coreApplicationEnvironment,
   )
 
-  protected val localFileSystem: VirtualFileSystem
+  protected val localFileSystem: VirtualFileSystem = VirtualFileManager.getInstance().getFileSystem(
+    StandardFileSystems.FILE_PROTOCOL,
+  )
 
   init {
-    localFileSystem = VirtualFileManager.getInstance().getFileSystem(
-      StandardFileSystems.FILE_PROTOCOL,
-    )
-
     projectEnvironment.registerProjectComponent(
       ProjectRootManager::class.java,
       ProjectRootManagerImpl(projectEnvironment.project),
@@ -182,8 +177,8 @@ open class SqlCoreEnvironment(
       } catch (e: Throwable) {
         throw IllegalStateException(
           """
-        |Failed to compile ${this.containingFile.virtualFile.path}:${this.node.startOffset}:
-        |  ${this.text}
+        |Failed to compile ${containingFile.virtualFile.path}:${node.startOffset}:
+        |  $text
         |
           """.trimMargin(),
           e,
