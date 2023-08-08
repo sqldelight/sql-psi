@@ -128,8 +128,13 @@ abstract class SqlFileBase(
         }
       }
 
-      baseContributorFile()?.contributors()?.let { contributors ->
-        orderedContributors[0] = linkedSetOf(*contributors.toTypedArray())
+      val baseContributorFiles = baseContributorFiles()
+      for ((baseContributorIndex, baseContributor) in baseContributorFiles.withIndex()) {
+        // Put the last file to index 0, and the previous files to previous index.
+        val orderedIndex = -baseContributorFiles.lastIndex + baseContributorIndex.toLong()
+        baseContributor.contributors()?.let { contributors ->
+          orderedContributors[orderedIndex] = linkedSetOf(elements = contributors.toTypedArray())
+        }
       }
 
       orderedContributors.forEach { (_, contributors) ->
@@ -147,9 +152,10 @@ abstract class SqlFileBase(
   private fun contributors() = sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
 
   /**
-   * An optional file which can be used for extra Schema Contributors that are unindexed.
+   * Optional files which can be used for extra Schema Contributors that are unindexed.
+   * The files are added to the schema in the provided order.
    */
-  protected open fun baseContributorFile(): SqlFileBase? = null
+  protected open fun baseContributorFiles(): List<SqlFileBase> = emptyList()
 
   protected open fun searchScope(): GlobalSearchScope {
     return GlobalSearchScope.everythingScope(project)
