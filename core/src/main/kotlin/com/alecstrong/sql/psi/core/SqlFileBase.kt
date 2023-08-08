@@ -129,7 +129,7 @@ abstract class SqlFileBase(
       }
 
       baseContributorFile()?.contributors()?.let { contributors ->
-        orderedContributors[0] = linkedSetOf(*contributors.toTypedArray())
+        orderedContributors[-1] = linkedSetOf(elements = contributors.toTypedArray())
       }
 
       orderedContributors.forEach { (_, contributors) ->
