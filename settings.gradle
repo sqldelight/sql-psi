@@ -8,7 +8,7 @@ pluginManagement {
 rootProject.name = "sql-psi"
 
 include ':core'
-include ':test-fixtures'
+
 include ':sample-core'
 include ':sample-headless'
 include ':sample-plugin'
