@@ -19,10 +19,11 @@ dependencies {
 
   testFixturesApi project(":core")
   testFixturesApi libs.junit
-  testFixturesApi libs.bundles.intelliJ
+  testFixturesCompileOnly libs.bundles.intelliJ
 
   testImplementation libs.junit
   testImplementation libs.truth
+  testImplementation(libs.bundles.intelliJ)
 }
 
 generateLexer {
