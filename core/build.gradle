@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.grammarKitComposer)
+  id("java-test-fixtures")
 }
 
 apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
@@ -16,9 +17,13 @@ sourceSets {
 dependencies {
   compileOnly libs.bundles.intelliJ
 
+  testFixturesApi project(":core")
+  testFixturesApi libs.junit
+  testFixturesCompileOnly libs.bundles.intelliJ
+
   testImplementation libs.junit
   testImplementation libs.truth
-  testImplementation project(":test-fixtures")
+  testImplementation(libs.bundles.intelliJ)
 }
 
 generateLexer {
