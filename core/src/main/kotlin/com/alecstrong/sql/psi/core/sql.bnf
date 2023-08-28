@@ -168,7 +168,7 @@ delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] 
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
-delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ] LIMIT expr [ ( OFFSET | COMMA ) expr ] ] {
+delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ] LIMIT limiting_term [ ( OFFSET | COMMA ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
@@ -402,7 +402,7 @@ update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REP
   update_set_clause
   [ WHERE expr ]
   [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ]
-  LIMIT expr [ ( OFFSET | COMMA ) expr ] ] {
+  LIMIT limiting_term [ ( OFFSET | COMMA ) expr ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 4
 }
