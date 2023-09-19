@@ -118,7 +118,7 @@ abstract class FixturesTest(
 
   companion object {
     init {
-      loadFolderFromResources("fixtures")
+      loadFolderFromResources("fixtures", target = File("build"))
     }
 
     @JvmStatic
@@ -128,10 +128,9 @@ abstract class FixturesTest(
   }
 }
 
-private fun Any.loadFolderFromResources(path: String) {
+fun Any.loadFolderFromResources(path: String, target: File) {
   val jarFile = File(javaClass.protectionDomain.codeSource.location.path)
-  val parentFile = File("build")
-  File(parentFile, path).apply { if (exists()) deleteRecursively() }
+  File(target, path).apply { if (exists()) deleteRecursively() }
 
   assert(jarFile.isFile)
 
@@ -142,9 +141,9 @@ private fun Any.loadFolderFromResources(path: String) {
     val name: String = entry.name
     if (name.startsWith("$path/")) { // filter according to the path
       if (entry.isDirectory) {
-        File(parentFile, entry.name).mkdir()
+        File(target, entry.name).mkdir()
       } else {
-        File(parentFile, entry.name).apply {
+        File(target, entry.name).apply {
           createNewFile()
           jar.getInputStream(entry).use {
             it.copyTo(outputStream())
