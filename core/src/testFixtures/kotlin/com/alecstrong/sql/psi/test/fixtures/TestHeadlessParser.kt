@@ -5,32 +5,41 @@ import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlCoreEnvironment
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.alecstrong.sql.psi.core.SqlParserDefinition
+import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
-import com.intellij.lang.LanguageParserDefinitions
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.tree.IFileElementType
 import java.io.File
 
 object TestHeadlessParser {
-  fun build(root: String, annotator: SqlAnnotationHolder, predefinedTables: List<PredefinedTable>): SqlCoreEnvironment {
+  fun build(
+    root: String,
+    annotator: SqlAnnotationHolder,
+    predefinedTables: List<PredefinedTable> = emptyList(),
+    customInit: CoreApplicationEnvironment.() -> Unit = { },
+  ): SqlCoreEnvironment {
+    return build(listOf(File(root)), annotator, predefinedTables, customInit)
+  }
+
+  fun build(
+    sourceFolders: List<File>,
+    annotator: SqlAnnotationHolder,
+    predefinedTables: List<PredefinedTable> = emptyList(),
+    customInit: CoreApplicationEnvironment.() -> Unit = { },
+  ): SqlCoreEnvironment {
     val parserDefinition = TestParserDefinition(predefinedTables)
 
     val environment = object : SqlCoreEnvironment(
-      sourceFolders = listOf(File(root)),
+      sourceFolders = sourceFolders,
       dependencies = emptyList(),
     ) {
       init {
-        // We need to update the new parser definition to get the new system tables.
-        // Otherwise, the old parser is used without the updated content.
-        updateApplication {
-          LanguageParserDefinitions.INSTANCE.removeExplicitExtension(parserDefinition.getLanguage(), LanguageParserDefinitions.INSTANCE.forLanguage(parserDefinition.getLanguage()))
-          registerParserDefinition(parserDefinition)
-        }
         initializeApplication {
           registerFileType(TestFileType, TestFileType.defaultExtension)
           registerParserDefinition(parserDefinition)
+          customInit()
         }
       }
     }

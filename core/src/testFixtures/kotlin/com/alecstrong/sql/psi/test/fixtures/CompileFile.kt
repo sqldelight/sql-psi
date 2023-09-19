@@ -2,20 +2,41 @@ package com.alecstrong.sql.psi.test.fixtures
 
 import com.alecstrong.sql.psi.core.PredefinedTable
 import com.alecstrong.sql.psi.core.SqlFileBase
+import com.intellij.core.CoreApplicationEnvironment
 import java.io.File
+import java.nio.file.Files
 
-fun compileFile(text: String, fileName: String = "temp.s", predefined: List<PredefinedTable> = emptyList()): SqlFileBase {
-  val directory = File("build/tmp").apply { mkdirs() }
-  val file = File(directory, fileName).apply {
-    createNewFile()
-    deleteOnExit()
+fun compileFile(
+  // language=sql
+  text: String,
+  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  predefined: List<PredefinedTable> = emptyList(),
+  action: (SqlFileBase) -> Unit,
+) {
+  compileFiles(text, predefined = predefined, customInit = customInit) {
+    action(it.single())
   }
-  file.writeText(text)
+}
+
+fun compileFiles(
+  vararg files: String,
+  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  predefined: List<PredefinedTable> = emptyList(),
+  action: (List<SqlFileBase>) -> Unit,
+) {
+  val directory = Files.createTempDirectory("sql-psi").toFile()
+  for ((index, content) in files.withIndex()) {
+    val file = File(directory, "$index.s")
+    file.writeText(content)
+  }
 
   val environment = TestHeadlessParser.build(
-    root = directory.path,
+    sourceFolders = listOf(directory),
+    customInit = customInit,
     annotator = { element, message ->
       val tree = buildString {
+        appendLine(element.containingFile.name)
+        appendLine(element.containingFile.text)
         element.containingFile.printTree {
           append("  ")
           append(it)
@@ -26,9 +47,15 @@ fun compileFile(text: String, fileName: String = "temp.s", predefined: List<Pred
     predefinedTables = predefined,
   )
 
-  var result: SqlFileBase? = null
-  environment.forSourceFiles<SqlFileBase> {
-    if (it.name == fileName) result = it
+  val sqlFilesMap = buildMap {
+    environment.forSourceFiles<SqlFileBase> { sqlFile ->
+      val index = sqlFile.name.removeSuffix(".s").toInt()
+      put(index, sqlFile)
+    }
   }
-  return result!!
+  val sqlFiles = List(sqlFilesMap.size) {
+    sqlFilesMap[it]!!
+  }
+  action(sqlFiles)
+  environment.close()
 }

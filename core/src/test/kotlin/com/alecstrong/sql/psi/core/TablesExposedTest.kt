@@ -1,26 +1,12 @@
 package com.alecstrong.sql.psi.core
 
-import com.alecstrong.sql.psi.test.fixtures.compileFile
+import com.alecstrong.sql.psi.test.fixtures.compileFiles
 import com.google.common.truth.Truth.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
-import java.io.File
 
 class TablesExposedTest {
-  @Before
-  fun before() {
-    File("build/tmp").deleteRecursively()
-  }
-
-  @After
-  fun after() {
-    SqlParserUtil.reset()
-    File("build/tmp").deleteRecursively()
-  }
-
   @Test fun `tables works correctly for include all`() {
-    compileFile(
+    compileFiles(
       """
       |CREATE TABLE test1 (
       |  id TEXT NOT NULL
@@ -34,9 +20,6 @@ class TablesExposedTest {
       |  id TEXT NOT NULL
       |);
       """.trimMargin(),
-      "1.s",
-    )
-    val file = compileFile(
       """
       |CREATE TABLE test4 (
       |  id TEXT NOT NULL
@@ -46,7 +29,6 @@ class TablesExposedTest {
       |
       |ALTER TABLE test3 RENAME TO test5;
       """.trimMargin(),
-      "2.s",
       predefined = listOf(
         PredefinedTable(
           "predefined",
@@ -58,19 +40,20 @@ class TablesExposedTest {
           """.trimMargin(),
         ),
       ),
-    )
+    ) { (_, file) ->
 
-    assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
-      "test1",
-      "test2",
-      "test4",
-      "test5",
-      "predefined",
-    )
+      assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
+        "predefined",
+        "test1",
+        "test2",
+        "test4",
+        "test5",
+      )
+    }
   }
 
   @Test fun `tables works correctly for include all=false`() {
-    compileFile(
+    compileFiles(
       """
       |CREATE TABLE test1 (
       |  id TEXT NOT NULL
@@ -84,7 +67,15 @@ class TablesExposedTest {
       |  id TEXT NOT NULL
       |);
       """.trimMargin(),
-      "1.s",
+      """
+      |CREATE TABLE test4 (
+      |  id TEXT NOT NULL
+      |);
+      |
+      |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
+      |
+      |ALTER TABLE test3 RENAME TO test5;
+      """.trimMargin(),
       predefined = listOf(
         PredefinedTable(
           "predefined",
@@ -96,24 +87,13 @@ class TablesExposedTest {
           """.trimMargin(),
         ),
       ),
-    )
-    val file = compileFile(
-      """
-      |CREATE TABLE test4 (
-      |  id TEXT NOT NULL
-      |);
-      |
-      |ALTER TABLE test2 ADD COLUMN id2 TEXT NOT NULL;
-      |
-      |ALTER TABLE test3 RENAME TO test5;
-      """.trimMargin(),
-      "2.s",
-    )
+    ) { (_, file) ->
 
-    assertThat(file.tables(includeAll = false).map { it.tableName.text }).containsExactly(
-      "test2",
-      "test4",
-      "test5",
-    )
+      assertThat(file.tables(includeAll = false).map { it.tableName.text }).containsExactly(
+        "test2",
+        "test4",
+        "test5",
+      )
+    }
   }
 }
