@@ -6,6 +6,9 @@ dependencies {
   implementation project(':sample-core')
   implementation project(':core')
 
-  implementation libs.bundles.intelliJ
+  implementation(libs.bundles.intelliJ) {
+    exclude(group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core")
+  }
+  testImplementation libs.coroutines.core
   testImplementation "org.jetbrains.kotlin:kotlin-test"
 }

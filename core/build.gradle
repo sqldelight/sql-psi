@@ -23,7 +23,10 @@ dependencies {
 
   testImplementation libs.junit
   testImplementation libs.truth
-  testImplementation(libs.bundles.intelliJ)
+  testImplementation(libs.bundles.intelliJ) {
+    exclude(group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core")
+  }
+  testImplementation libs.coroutines.core
 }
 
 generateLexer {

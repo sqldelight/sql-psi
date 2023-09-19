@@ -83,6 +83,7 @@ open class SqlCoreEnvironment(
       ProjectRootManagerImpl(projectEnvironment.project),
     )
 
+    System.setProperty("platform.projectModel.workspace.model.file.index", "false")
     projectEnvironment.project.registerService(
       DirectoryIndex::class.java,
       DirectoryIndexImpl(projectEnvironment.project),

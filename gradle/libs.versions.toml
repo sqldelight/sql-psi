@@ -1,5 +1,8 @@
 [versions]
-ideaVersion = "222.4459.24" # Flamingo | 2022.2.1 (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
+# AS releases: https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html
+# IC sources: https://www.jetbrains.com/intellij-repository/releases
+# choose a matching/similar build
+ideaVersion = "223.8836.41" # AS Giraffe | IC-2022.3.3
 kotlin = "1.9.10"
 
 [libraries]
@@ -7,11 +10,14 @@ intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", versi
 intellijProjectModelImpl = { module = "com.jetbrains.intellij.platform:project-model-impl", version.ref = "ideaVersion" }
 intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl", version.ref = "ideaVersion" }
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
+intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
+coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
 junit = "junit:junit:4.13.2"
 truth = "com.google.truth:truth:1.1.5"
 
 [bundles]
-intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing"]
+intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi"]
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
