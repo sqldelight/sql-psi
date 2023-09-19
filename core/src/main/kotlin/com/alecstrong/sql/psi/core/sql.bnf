@@ -375,7 +375,7 @@ table_or_subquery ::= ( [ database_name DOT ] table_name [ [ AS ] table_alias ] 
 }
 result_column ::= ( MULTIPLY
                   | table_name DOT MULTIPLY
-                  | expr [ [ AS ] column_alias ] ) {
+                  | expr [ AS column_alias | column_alias ] ) {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ResultColumnMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
