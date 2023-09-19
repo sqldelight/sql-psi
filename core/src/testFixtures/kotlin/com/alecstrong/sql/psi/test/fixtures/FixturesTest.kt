@@ -20,8 +20,6 @@ abstract class FixturesTest(
   abstract fun setupDialect()
 
   @Test fun execute() {
-    setupDialect()
-
     val errors = ArrayList<String>()
 
     val newRoot = File("build/fixtureCopies/${fixtureRoot.name}Copy")
@@ -32,6 +30,9 @@ abstract class FixturesTest(
 
     val environment = TestHeadlessParser.build(
       root = newRoot.path,
+      customInit = {
+        setupDialect()
+      },
       annotator = { element, s ->
         val documentManager = PsiDocumentManager.getInstance(element.project)
         val name = element.containingFile.name
@@ -102,6 +103,7 @@ abstract class FixturesTest(
     }
 
     newRoot.deleteRecursively()
+    environment.close()
   }
 
   private fun File.replaceKeywords() {
@@ -116,7 +118,7 @@ abstract class FixturesTest(
 
   companion object {
     init {
-      loadFolderFromResources("fixtures")
+      loadFolderFromResources("fixtures", target = File("build"))
     }
 
     @JvmStatic
@@ -126,10 +128,9 @@ abstract class FixturesTest(
   }
 }
 
-private fun Any.loadFolderFromResources(path: String) {
+fun Any.loadFolderFromResources(path: String, target: File) {
   val jarFile = File(javaClass.protectionDomain.codeSource.location.path)
-  val parentFile = File("build")
-  File(parentFile, path).apply { if (exists()) deleteRecursively() }
+  File(target, path).apply { if (exists()) deleteRecursively() }
 
   assert(jarFile.isFile)
 
@@ -140,9 +141,9 @@ private fun Any.loadFolderFromResources(path: String) {
     val name: String = entry.name
     if (name.startsWith("$path/")) { // filter according to the path
       if (entry.isDirectory) {
-        File(parentFile, entry.name).mkdir()
+        File(target, entry.name).mkdir()
       } else {
-        File(parentFile, entry.name).apply {
+        File(target, entry.name).apply {
           createNewFile()
           jar.getInputStream(entry).use {
             it.copyTo(outputStream())

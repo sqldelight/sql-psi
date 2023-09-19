@@ -1,3 +1,0 @@
-CREATE TABLE dual (
-  DUMMY VARCHAR(1) NOT NULL
-);

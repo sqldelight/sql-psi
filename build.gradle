@@ -26,7 +26,6 @@ allprojects {
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
     maven { url "https://cache-redirector.jetbrains.com/maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies" }
-    maven { url "https://maven.pkg.jetbrains.space/public/p/ktor/eap" }
   }
 
   group = GROUP
@@ -36,7 +35,7 @@ allprojects {
 subprojects {
   apply(plugin: "org.jetbrains.kotlin.jvm")
 
-  kotlin.jvmToolchain(11)
+  kotlin.jvmToolchain(17)
 
   tasks.withType(Test).configureEach {
     testLogging {
@@ -53,5 +52,6 @@ subprojects {
     exclude group: 'ai.grazie.spell'
     exclude group: 'ai.grazie.utils'
     exclude group: 'ai.grazie.nlp'
+    exclude group: 'ai.grazie.model'
   }
 }

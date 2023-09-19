@@ -1,22 +1,28 @@
 [versions]
-ideaVersion = "222.4459.24" # Flamingo | 2022.2.1 (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
-kotlin = "1.9.0"
+# AS releases: https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html
+# IC sources: https://www.jetbrains.com/intellij-repository/releases
+# choose a matching/similar build
+ideaVersion = "223.8836.41" # AS Giraffe | IC-2022.3.3
+kotlin = "1.9.10"
 
 [libraries]
 intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", version.ref = "ideaVersion" }
 intellijProjectModelImpl = { module = "com.jetbrains.intellij.platform:project-model-impl", version.ref = "ideaVersion" }
 intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl", version.ref = "ideaVersion" }
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
+intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
+coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+
 junit = "junit:junit:4.13.2"
 truth = "com.google.truth:truth:1.1.5"
 
 [bundles]
-intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing"]
+intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi"]
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 grammarKitComposer = { id = "com.alecstrong.grammar.kit.composer", version = "0.1.12" }
-spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
+spotless = { id = "com.diffplug.spotless", version = "6.21.0" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
-dokka = { id = "org.jetbrains.dokka", version = "1.8.20" }
+dokka = { id = "org.jetbrains.dokka", version = "1.9.0" }
 intellij = { id = "org.jetbrains.intellij", version = "1.15.0" }

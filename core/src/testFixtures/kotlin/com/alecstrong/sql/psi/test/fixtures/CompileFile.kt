@@ -1,0 +1,61 @@
+package com.alecstrong.sql.psi.test.fixtures
+
+import com.alecstrong.sql.psi.core.PredefinedTable
+import com.alecstrong.sql.psi.core.SqlFileBase
+import com.intellij.core.CoreApplicationEnvironment
+import java.io.File
+import java.nio.file.Files
+
+fun compileFile(
+  // language=sql
+  text: String,
+  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  predefined: List<PredefinedTable> = emptyList(),
+  action: (SqlFileBase) -> Unit,
+) {
+  compileFiles(text, predefined = predefined, customInit = customInit) {
+    action(it.single())
+  }
+}
+
+fun compileFiles(
+  vararg files: String,
+  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  predefined: List<PredefinedTable> = emptyList(),
+  action: (List<SqlFileBase>) -> Unit,
+) {
+  val directory = Files.createTempDirectory("sql-psi").toFile()
+  for ((index, content) in files.withIndex()) {
+    val file = File(directory, "$index.s")
+    file.writeText(content)
+  }
+
+  val environment = TestHeadlessParser.build(
+    sourceFolders = listOf(directory),
+    customInit = customInit,
+    annotator = { element, message ->
+      val tree = buildString {
+        appendLine(element.containingFile.name)
+        appendLine(element.containingFile.text)
+        element.containingFile.printTree {
+          append("  ")
+          append(it)
+        }
+      }
+      throw AssertionError("at ${element.textOffset} : $message\n$tree")
+    },
+    predefinedTables = predefined,
+  )
+
+  val sqlFilesMap = buildMap {
+    environment.forSourceFiles<SqlFileBase> { sqlFile ->
+      val index = sqlFile.name.removeSuffix(".s").toInt()
+      put(index, sqlFile)
+    }
+  }
+  val sqlFiles = List(sqlFilesMap.size) {
+    sqlFilesMap[it]!!
+  }
+  action(sqlFiles)
+  environment.close()
+}
