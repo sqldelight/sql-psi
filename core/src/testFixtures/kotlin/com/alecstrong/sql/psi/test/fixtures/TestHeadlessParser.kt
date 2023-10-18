@@ -8,7 +8,6 @@ import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
-import com.intellij.openapi.util.Key
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.tree.IFileElementType
@@ -30,8 +29,6 @@ object TestHeadlessParser {
     predefinedTables: List<String> = emptyList(),
     customInit: CoreApplicationEnvironment.() -> Unit = { },
   ): SqlCoreEnvironment {
-    val parserDefinition = TestParserDefinition(predefinedTables)
-
     val environment = object : SqlCoreEnvironment(
       sourceFolders = sourceFolders,
       dependencies = emptyList(),
@@ -39,6 +36,14 @@ object TestHeadlessParser {
       init {
         initializeApplication {
           registerFileType(TestFileType, TestFileType.defaultExtension)
+          val parserDefinition = TestParserDefinition(
+            lazy {
+              val factory = PsiFileFactory.getInstance(projectEnvironment.project)
+              predefinedTables.map {
+                factory.createFileFromText(TestLanguage, it) as SqlFileBase
+              }
+            },
+          )
           registerParserDefinition(parserDefinition)
 
           customInit()
@@ -58,7 +63,7 @@ private object TestFileType : LanguageFileType(TestLanguage) {
   override fun getDescription() = "Test SQLite Language File"
 }
 
-private class TestParserDefinition(private val predefinedTables: List<String>) : SqlParserDefinition() {
+private class TestParserDefinition(private val predefinedTables: Lazy<List<SqlFileBase>>) : SqlParserDefinition() {
   override fun createFile(viewProvider: FileViewProvider) = TestFile(viewProvider, predefinedTables)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = TestLanguage
@@ -68,7 +73,7 @@ private class TestParserDefinition(private val predefinedTables: List<String>) :
   }
 }
 
-private class TestFile(viewProvider: FileViewProvider, private val predefinedTables: List<String>) : SqlFileBase(viewProvider, TestLanguage) {
+private class TestFile(viewProvider: FileViewProvider, private val predefinedTables: Lazy<List<SqlFileBase>>) : SqlFileBase(viewProvider, TestLanguage) {
   override fun getFileType() = TestFileType
   override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
     if (name.all { it in '0'..'9' }) {
@@ -80,18 +85,6 @@ private class TestFile(viewProvider: FileViewProvider, private val predefinedTab
 
   override fun baseContributorFiles(): List<SqlFileBase> {
     val base = super.baseContributorFiles()
-    if (getUserData(isPredefined) == Unit) {
-      return base
-    }
-    val factory = PsiFileFactory.getInstance(project)
-    return base + predefinedTables.map {
-      val file = factory.createFileFromText(TestLanguage, it) as SqlFileBase
-      file.putUserData(isPredefined, Unit)
-      file
-    }
-  }
-
-  companion object {
-    val isPredefined = Key.create<Unit>("isPredefined")
+    return base + predefinedTables.value
   }
 }
