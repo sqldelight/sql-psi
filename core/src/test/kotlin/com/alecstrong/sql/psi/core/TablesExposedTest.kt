@@ -30,15 +30,11 @@ class TablesExposedTest {
       |ALTER TABLE test3 RENAME TO test5;
       """.trimMargin(),
       predefined = listOf(
-        PredefinedTable(
-          "predefined",
-          "1.predefined",
-          """
-      |CREATE TABLE predefined (
-      |  id TEXT NOT NULL
-      |);
-          """.trimMargin(),
-        ),
+        """
+        |CREATE TABLE predefined (
+        |  id TEXT NOT NULL
+        |);
+        """.trimMargin(),
       ),
     ) { (_, file) ->
 
@@ -77,15 +73,11 @@ class TablesExposedTest {
       |ALTER TABLE test3 RENAME TO test5;
       """.trimMargin(),
       predefined = listOf(
-        PredefinedTable(
-          "predefined",
-          "1.predefined",
-          """
-      |CREATE TABLE predefined (
-      |  id TEXT NOT NULL
-      |);
-          """.trimMargin(),
-        ),
+        """
+        |CREATE TABLE predefined (
+        |  id TEXT NOT NULL
+        |);
+        """.trimMargin(),
       ),
     ) { (_, file) ->
 

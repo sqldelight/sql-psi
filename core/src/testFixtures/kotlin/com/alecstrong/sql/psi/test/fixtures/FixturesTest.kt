@@ -1,6 +1,5 @@
 package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.core.PredefinedTable
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -13,7 +12,7 @@ import java.util.jar.JarFile
 abstract class FixturesTest(
   val name: String,
   val fixtureRoot: File,
-  val predefinedTables: List<PredefinedTable> = emptyList(),
+  val predefinedTables: List<String> = emptyList(),
 ) {
   protected open val replaceRules: Array<Pair<String, String>> = emptyArray()
 
@@ -41,13 +40,7 @@ abstract class FixturesTest(
         val offsetInLine = element.textOffset - document.getLineStartOffset(lineNum)
         errors.add("$name line ${lineNum + 1}:$offsetInLine - $s")
       },
-      predefinedTables = (
-        newRoot.listFiles { _, name ->
-          name.endsWith(".predefined")
-        }?.map {
-          PredefinedTable("", it.nameWithoutExtension, it.readText())
-        } ?: emptyList()
-        ) + predefinedTables,
+      predefinedTables = predefinedTables,
     )
 
     val sourceFiles = StringBuilder()

@@ -1,6 +1,5 @@
 package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.core.PredefinedTable
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.intellij.core.CoreApplicationEnvironment
 import java.io.File
@@ -10,7 +9,7 @@ fun compileFile(
   // language=sql
   text: String,
   customInit: CoreApplicationEnvironment.() -> Unit = { },
-  predefined: List<PredefinedTable> = emptyList(),
+  predefined: List<String> = emptyList(),
   action: (SqlFileBase) -> Unit,
 ) {
   compileFiles(text, predefined = predefined, customInit = customInit) {
@@ -21,7 +20,7 @@ fun compileFile(
 fun compileFiles(
   vararg files: String,
   customInit: CoreApplicationEnvironment.() -> Unit = { },
-  predefined: List<PredefinedTable> = emptyList(),
+  predefined: List<String> = emptyList(),
   action: (List<SqlFileBase>) -> Unit,
 ) {
   val directory = Files.createTempDirectory("sql-psi").toFile()

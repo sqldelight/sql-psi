@@ -1,6 +1,5 @@
 package com.alecstrong.sql.psi.test.fixtures
 
-import com.alecstrong.sql.psi.core.PredefinedTable
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlCoreEnvironment
 import com.alecstrong.sql.psi.core.SqlFileBase
@@ -10,6 +9,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.psi.FileViewProvider
+import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.tree.IFileElementType
 import java.io.File
 
@@ -17,7 +17,7 @@ object TestHeadlessParser {
   fun build(
     root: String,
     annotator: SqlAnnotationHolder,
-    predefinedTables: List<PredefinedTable> = emptyList(),
+    predefinedTables: List<String> = emptyList(),
     customInit: CoreApplicationEnvironment.() -> Unit = { },
   ): SqlCoreEnvironment {
     return build(listOf(File(root)), annotator, predefinedTables, customInit)
@@ -26,11 +26,9 @@ object TestHeadlessParser {
   fun build(
     sourceFolders: List<File>,
     annotator: SqlAnnotationHolder,
-    predefinedTables: List<PredefinedTable> = emptyList(),
+    predefinedTables: List<String> = emptyList(),
     customInit: CoreApplicationEnvironment.() -> Unit = { },
   ): SqlCoreEnvironment {
-    val parserDefinition = TestParserDefinition(predefinedTables)
-
     val environment = object : SqlCoreEnvironment(
       sourceFolders = sourceFolders,
       dependencies = emptyList(),
@@ -38,7 +36,16 @@ object TestHeadlessParser {
       init {
         initializeApplication {
           registerFileType(TestFileType, TestFileType.defaultExtension)
+          val parserDefinition = TestParserDefinition(
+            lazy {
+              val factory = PsiFileFactory.getInstance(projectEnvironment.project)
+              predefinedTables.map {
+                factory.createFileFromText(TestLanguage, it) as SqlFileBase
+              }
+            },
+          )
           registerParserDefinition(parserDefinition)
+
           customInit()
         }
       }
@@ -56,7 +63,7 @@ private object TestFileType : LanguageFileType(TestLanguage) {
   override fun getDescription() = "Test SQLite Language File"
 }
 
-private class TestParserDefinition(private val predefinedTables: List<PredefinedTable>) : SqlParserDefinition() {
+private class TestParserDefinition(private val predefinedTables: Lazy<List<SqlFileBase>>) : SqlParserDefinition() {
   override fun createFile(viewProvider: FileViewProvider) = TestFile(viewProvider, predefinedTables)
   override fun getFileNodeType() = FILE
   override fun getLanguage() = TestLanguage
@@ -66,7 +73,7 @@ private class TestParserDefinition(private val predefinedTables: List<Predefined
   }
 }
 
-private class TestFile(viewProvider: FileViewProvider, predefinedTables: List<PredefinedTable>) : SqlFileBase(viewProvider, TestLanguage, predefinedTables) {
+private class TestFile(viewProvider: FileViewProvider, private val predefinedTables: Lazy<List<SqlFileBase>>) : SqlFileBase(viewProvider, TestLanguage) {
   override fun getFileType() = TestFileType
   override val order = name.substringBefore(".${fileType.defaultExtension}").let { name ->
     if (name.all { it in '0'..'9' }) {
@@ -74,5 +81,10 @@ private class TestFile(viewProvider: FileViewProvider, predefinedTables: List<Pr
     } else {
       null
     }
+  }
+
+  override fun baseContributorFiles(): List<SqlFileBase> {
+    val base = super.baseContributorFiles()
+    return base + predefinedTables.value
   }
 }
