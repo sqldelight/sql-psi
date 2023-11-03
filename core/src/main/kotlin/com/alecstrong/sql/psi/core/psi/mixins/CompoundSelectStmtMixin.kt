@@ -66,7 +66,7 @@ internal abstract class CompoundSelectStmtMixin(
 
       // Ordering terms are also applicable in the select statement's from clause.
       return queryExposed().filter { it !in exposed }
-        .map { QueryResult(it.table, it.columns.filter { it !in exposedColumns }) }
+        .map { QueryResult(it.table, it.columns.filter { it !in exposedColumns }, adjacent = true) }
         .plus(exposed)
     } else if (child is SqlExpr || child is SqlOrderingTerm) {
       return queryExposed()
