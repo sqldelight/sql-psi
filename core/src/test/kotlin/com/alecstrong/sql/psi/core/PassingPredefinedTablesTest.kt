@@ -1,5 +1,6 @@
-package com.alecstrong.sql.psi.test.fixtures
+package com.alecstrong.sql.psi.core
 
+import com.alecstrong.sql.psi.test.fixtures.TestHeadlessParser
 import org.junit.Assert.fail
 import org.junit.Test
 import java.io.File

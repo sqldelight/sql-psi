@@ -5,9 +5,11 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import org.junit.Test
 import java.io.File
-import java.util.Enumeration
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
+import java.nio.file.FileSystems
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.copyToRecursively
+import kotlin.io.path.div
+import kotlin.io.path.toPath
 
 abstract class FixturesTest(
   val name: String,
@@ -18,7 +20,8 @@ abstract class FixturesTest(
 
   abstract fun setupDialect()
 
-  @Test fun execute() {
+  @Test
+  fun execute() {
     val errors = ArrayList<String>()
 
     val newRoot = File("build/fixtureCopies/${fixtureRoot.name}Copy")
@@ -121,31 +124,20 @@ abstract class FixturesTest(
   }
 }
 
+@OptIn(ExperimentalPathApi::class)
 fun Any.loadFolderFromResources(path: String, target: File) {
-  val jarFile = File(javaClass.protectionDomain.codeSource.location.path)
   File(target, path).apply { if (exists()) deleteRecursively() }
-
-  assert(jarFile.isFile)
-
-  val jar = JarFile(jarFile)
-  val entries: Enumeration<JarEntry> = jar.entries() // gives ALL entries in jar
-  while (entries.hasMoreElements()) {
-    val entry = entries.nextElement()
-    val name: String = entry.name
-    if (name.startsWith("$path/")) { // filter according to the path
-      if (entry.isDirectory) {
-        File(target, entry.name).mkdir()
-      } else {
-        File(target, entry.name).apply {
-          createNewFile()
-          jar.getInputStream(entry).use {
-            it.copyTo(outputStream())
-          }
-        }
-      }
-    }
+  val resourcesUri = javaClass.getResource("/$path")?.toURI()
+  requireNotNull(resourcesUri) {
+    "/$path not found in resources"
   }
-  jar.close()
+  when (resourcesUri.scheme) {
+    "jar" -> FileSystems.newFileSystem(resourcesUri, emptyMap<String, Nothing>(), null).use {
+      it.getPath("/$path").copyToRecursively(target.toPath() / path, overwrite = true, followLinks = false)
+    }
+    "file" -> resourcesUri.toPath().copyToRecursively(target.toPath() / path, overwrite = true, followLinks = false)
+    else -> error("Unsupported scheme ${resourcesUri.scheme} of $resourcesUri")
+  }
 }
 
 private fun formatErrorList(errors: List<String>): String {
