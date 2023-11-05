@@ -10,6 +10,8 @@ import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.copyToRecursively
 import kotlin.io.path.div
 import kotlin.io.path.toPath
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 abstract class FixturesTest(
   val name: String,
@@ -113,23 +115,24 @@ abstract class FixturesTest(
   }
 
   companion object {
-    init {
-      loadFolderFromResources("fixtures", target = File("build"))
-    }
-
     @JvmStatic
-    protected val ansiFixtures = File("build/fixtures").listFiles()
-      .filter { it.isDirectory }
-      .map { arrayOf(it.name, it) }
+    protected val ansiFixtures = loadFolderFromResources("fixtures", target = File("build")).toParameter()
   }
 }
 
+fun File.toParameter(): List<Array<out Any>> =
+  listFiles()?.filter { it.isDirectory }?.map { arrayOf(it.name, it) } ?: emptyList()
+
+fun loadFolderFromResources(target: File) = object : ReadOnlyProperty<Any?, List<Array<out Any>>> {
+  override operator fun getValue(thisRef: Any?, property: KProperty<*>) = loadFolderFromResources(property.name, target).toParameter()
+}
+
 @OptIn(ExperimentalPathApi::class)
-fun Any.loadFolderFromResources(path: String, target: File) {
-  File(target, path).apply { if (exists()) deleteRecursively() }
+fun Any.loadFolderFromResources(path: String, target: File): File {
+  val targetFile = File(target, path).apply { if (exists()) deleteRecursively() }
   val resourcesUri = javaClass.getResource("/$path")?.toURI()
   requireNotNull(resourcesUri) {
-    "/$path not found in resources"
+    "/$path not found in resources."
   }
   when (resourcesUri.scheme) {
     "jar" -> FileSystems.newFileSystem(resourcesUri, emptyMap<String, Nothing>(), null).use {
@@ -138,6 +141,7 @@ fun Any.loadFolderFromResources(path: String, target: File) {
     "file" -> resourcesUri.toPath().copyToRecursively(target.toPath() / path, overwrite = true, followLinks = false)
     else -> error("Unsupported scheme ${resourcesUri.scheme} of $resourcesUri")
   }
+  return targetFile
 }
 
 private fun formatErrorList(errors: List<String>): String {
