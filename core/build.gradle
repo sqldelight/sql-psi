@@ -17,7 +17,6 @@ sourceSets {
 dependencies {
   compileOnly libs.bundles.intelliJ
 
-  testFixturesApi project(":core")
   testFixturesApi libs.junit
   testFixturesCompileOnly libs.bundles.intelliJ
 
