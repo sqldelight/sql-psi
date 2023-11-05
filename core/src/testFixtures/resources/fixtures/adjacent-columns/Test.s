@@ -16,3 +16,8 @@ WHERE id IN (
     LEFT JOIN bar ON foo.id = bar.id
     LEFT JOIN baz ON foo.id = baz.id
 );
+
+SELECT *
+FROM foo
+JOIN bar USING (id)
+JOIN baz USING (id);

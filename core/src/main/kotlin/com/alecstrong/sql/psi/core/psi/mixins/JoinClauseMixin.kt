@@ -35,7 +35,8 @@ internal abstract class JoinClauseMixin(
                       column is PsiNamedElement && column.name!! in subquery.queryExposed()
                         .flatMap { it.columns }
                         .mapNotNull { (it.element as? PsiNamedElement)?.name }
-                    },
+                    }
+                    .distinctBy { (it.element as? PsiNamedElement)?.name ?: it },
                 ),
               )
             }
