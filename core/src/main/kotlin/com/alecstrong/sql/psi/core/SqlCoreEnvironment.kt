@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.roots.impl.CustomEntityProjectModelInfoProvider
 import com.intellij.openapi.roots.impl.DirectoryIndex
 import com.intellij.openapi.roots.impl.DirectoryIndexImpl
 import com.intellij.openapi.roots.impl.ProjectFileIndexImpl
@@ -31,6 +32,9 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.smartPointers.SmartPointerAnchorProvider
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.workspaceModel.core.fileIndex.WorkspaceFileIndex
+import com.intellij.workspaceModel.core.fileIndex.WorkspaceFileIndexContributor
+import com.intellij.workspaceModel.core.fileIndex.impl.WorkspaceFileIndexImpl
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -52,6 +56,14 @@ private class ApplicationEnvironment {
     CoreApplicationEnvironment.registerApplicationExtensionPoint(
       SmartPointerAnchorProvider.EP_NAME,
       SmartPointerAnchorProvider::class.java,
+    )
+    CoreApplicationEnvironment.registerApplicationExtensionPoint(
+      WorkspaceFileIndexImpl.EP_NAME,
+      WorkspaceFileIndexContributor::class.java,
+    )
+    CoreApplicationEnvironment.registerApplicationExtensionPoint(
+      CustomEntityProjectModelInfoProvider.EP,
+      CustomEntityProjectModelInfoProvider::class.java,
     )
   }
 }
@@ -77,8 +89,10 @@ open class SqlCoreEnvironment(
       ProjectRootManager::class.java,
       ProjectRootManagerImpl(projectEnvironment.project),
     )
-
-    System.setProperty("platform.projectModel.workspace.model.file.index", "false")
+    projectEnvironment.project.registerService(
+      WorkspaceFileIndex::class.java,
+      WorkspaceFileIndexImpl(projectEnvironment.project),
+    )
     projectEnvironment.project.registerService(
       DirectoryIndex::class.java,
       DirectoryIndexImpl(projectEnvironment.project),
