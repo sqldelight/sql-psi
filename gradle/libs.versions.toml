@@ -2,7 +2,7 @@
 # AS releases: https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html
 # IC sources: https://www.jetbrains.com/intellij-repository/releases
 # choose a matching/similar build
-ideaVersion = "223.8836.41" # AS Giraffe | IC-2022.3.3
+ideaVersion = "241.194" # AS Giraffe | IC-2022.3.3
 kotlin = "1.9.21"
 
 [libraries]
