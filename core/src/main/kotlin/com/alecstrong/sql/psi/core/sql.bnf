@@ -168,7 +168,7 @@ delete_stmt ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] 
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
-delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ] LIMIT limiting_term [ ( OFFSET | COMMA ) expr ] ] {
+delete_stmt_limited ::= [ with_clause ] DELETE FROM qualified_table_name [ WHERE expr ] [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ] limit_stmt ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 2
 }
@@ -335,13 +335,14 @@ pragma_value ::= ( signed_number
 reindex_stmt ::= REINDEX [ collation_name | [ database_name DOT ] ( table_name | index_name ) ] {
   pin = 1
 }
-compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( COMMA ordering_term ) * ] [ LIMIT limiting_term [ ( OFFSET | COMMA ) limiting_term ] ] {
+compound_select_stmt ::= [ with_clause ] select_stmt  ( compound_operator select_stmt ) * [ ORDER BY ordering_term ( COMMA ordering_term ) * ] [ limit_stmt ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CompoundSelectStmtMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
     "com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
   ]
 }
+limit_stmt ::= LIMIT limiting_term [ ( OFFSET | COMMA ) limiting_term ]
 limiting_term ::= expr
 select_stmt ::= SELECT [ DISTINCT | ALL ] result_column ( COMMA result_column ) * [ FROM join_clause ] [ WHERE expr ] [group_by] [HAVING expr] | VALUES values_expression ( COMMA values_expression ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.SelectStmtMixin"
@@ -402,7 +403,7 @@ update_stmt_limited ::= [ with_clause ] UPDATE [ OR ROLLBACK | OR ABORT | OR REP
   update_set_clause
   [ WHERE expr ]
   [ [ ORDER BY ordering_term ( COMMA ordering_term ) * ]
-  LIMIT limiting_term [ ( OFFSET | COMMA ) expr ] ] {
+  limit_stmt ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.MutatorMixin"
   pin = 4
 }
