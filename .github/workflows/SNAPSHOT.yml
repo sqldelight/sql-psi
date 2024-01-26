@@ -21,7 +21,7 @@ jobs:
         java-version: 17
 
     - name: Setup gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
     - run: ./gradlew build --stacktrace
     - name: Publish a SNAPSHOT
       env:
