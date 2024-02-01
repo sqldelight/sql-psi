@@ -10,5 +10,5 @@ grammarKit {
 dependencies {
   compileOnly libs.bundles.intelliJ
 
-  implementation project(':core')
+  implementation projects.core
 }

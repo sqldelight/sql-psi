@@ -1,0 +1,10 @@
+plugins {
+  alias(libs.plugins.kotlinJvm)
+}
+
+apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
+
+dependencies {
+  implementation projects.core
+  compileOnly libs.bundles.intelliJ
+}

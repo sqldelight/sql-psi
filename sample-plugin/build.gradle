@@ -11,7 +11,7 @@ sourceSets {
 }
 
 dependencies {
-  implementation project(":sample-core")
+  implementation projects.sampleCore
 }
 
 tasks.named('buildSearchableOptions') { enabled = false }
