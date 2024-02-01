@@ -5,9 +5,12 @@ pluginManagement {
   }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "sql-psi"
 
 include ':core'
+include ':environment'
 
 include ':sample-core'
 include ':sample-headless'

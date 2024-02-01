@@ -3,12 +3,14 @@ plugins {
 }
 
 dependencies {
-  implementation project(':sample-core')
-  implementation project(':core')
+  implementation projects.sampleCore
+  implementation projects.core
+  compileOnly projects.environment
 
   implementation(libs.bundles.intelliJ) {
     exclude(group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core")
   }
   testImplementation libs.coroutines.core
   testImplementation "org.jetbrains.kotlin:kotlin-test"
+  testImplementation projects.environment
 }

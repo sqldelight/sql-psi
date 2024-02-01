@@ -159,7 +159,7 @@ open class SqlCoreEnvironment(
     otherFailures.forEach { it.invoke() }
   }
 
-  inline fun<reified T : PsiFile> forSourceFiles(noinline action: (T) -> Unit) {
+  inline fun <reified T : PsiFile> forSourceFiles(noinline action: (T) -> Unit) {
     forSourceFiles(T::class, action)
   }
 
@@ -205,10 +205,6 @@ open class SqlCoreEnvironment(
   override fun close() {
     Disposer.dispose(env.disposable)
   }
-}
-
-fun interface SqlCompilerAnnotator {
-  fun annotate(element: PsiElement, annotationHolder: SqlAnnotationHolder)
 }
 
 private class CoreFileIndex(

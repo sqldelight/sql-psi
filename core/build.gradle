@@ -19,6 +19,7 @@ dependencies {
 
   testFixturesApi libs.junit
   testFixturesCompileOnly libs.bundles.intelliJ
+  testFixturesCompileOnly projects.environment
 
   testImplementation libs.junit
   testImplementation libs.truth
@@ -26,6 +27,7 @@ dependencies {
     exclude(group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core")
   }
   testImplementation libs.coroutines.core
+  testImplementation projects.environment
 }
 
 generateLexer {

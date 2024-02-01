@@ -13,7 +13,7 @@ interface SchemaContributorIndex {
   fun get(key: String, project: Project, scope: GlobalSearchScope): Collection<SchemaContributor>
 
   companion object {
-    internal val KEY by lazy {
+    val KEY by lazy {
       StubIndexKey.createIndexKey<String, SchemaContributor>("sqldelight.schema")
     }
 
