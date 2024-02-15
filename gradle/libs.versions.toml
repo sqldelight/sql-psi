@@ -12,7 +12,7 @@ intellijProjectModelImpl = { module = "com.jetbrains.intellij.platform:project-m
 intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl", version.ref = "ideaVersion" }
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
 intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
-coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 
 junit = "junit:junit:4.13.2"
 truth = "com.google.truth:truth:1.4.0"
