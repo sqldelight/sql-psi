@@ -184,7 +184,10 @@ STRING=('([^'])*'|\"([^\"])*\")
   "HAVING"               { return HAVING; }
   "INDEXED"              { return INDEXED; }
   "NATURAL"              { return NATURAL; }
+  "LATERAL"              { return LATERAL; }
   "LEFT"                 { return LEFT; }
+  "RIGHT"                { return RIGHT; }
+  "FULL"                 { return FULL; }
   "OUTER"                { return OUTER; }
   "INNER"                { return INNER; }
   "CROSS"                { return CROSS; }
