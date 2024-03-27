@@ -387,7 +387,6 @@ result_column ::= ( MULTIPLY
 left_join_operator ::= LEFT
 right_join_operator ::= RIGHT
 full_join_operator ::= FULL
-lateral_join_modifier ::= LATERAL
 
 join_operator ::= ( COMMA
                   | [ NATURAL ] [ left_join_operator [ OUTER ] | INNER | CROSS ] JOIN )
