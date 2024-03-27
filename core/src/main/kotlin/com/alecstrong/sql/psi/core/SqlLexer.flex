@@ -185,6 +185,8 @@ STRING=('([^'])*'|\"([^\"])*\")
   "INDEXED"              { return INDEXED; }
   "NATURAL"              { return NATURAL; }
   "LEFT"                 { return LEFT; }
+  "RIGHT"                { return RIGHT; }
+  "FULL"                 { return FULL; }
   "OUTER"                { return OUTER; }
   "INNER"                { return INNER; }
   "CROSS"                { return CROSS; }

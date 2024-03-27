@@ -5,10 +5,12 @@ import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlJoinClause
 import com.alecstrong.sql.psi.core.psi.SqlJoinConstraint
+import com.alecstrong.sql.psi.core.psi.SqlJoinOperator
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.tree.TokenSet
 
 internal abstract class JoinClauseMixin(
   node: ASTNode,
@@ -61,10 +63,7 @@ internal abstract class JoinClauseMixin(
               var columns = query.flatMap { it.columns }
               var synthesizedColumns = query.flatMap { it.synthesizedColumns }
 
-              if (operator.node.findChildByType(
-                  SqlTypes.LEFT,
-                ) != null
-              ) {
+              if (supportsJoinOperator(operator)) {
                 columns = columns.map { it.copy(nullable = true) }
                 synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
               }
@@ -88,6 +87,16 @@ internal abstract class JoinClauseMixin(
         }
       }
     return@ModifiableFileLazy queryAvailable
+  }
+
+  private fun supportsJoinOperator(operator: SqlJoinOperator): Boolean {
+    return operator.node.findChildByType(
+      TokenSet.create(
+        SqlTypes.LEFT_JOIN_OPERATOR,
+        SqlTypes.RIGHT_JOIN_OPERATOR,
+        SqlTypes.FULL_JOIN_OPERATOR,
+      ),
+    ) != null
   }
 
   override fun queryExposed() = queryExposed.forFile(containingFile)
