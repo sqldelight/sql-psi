@@ -26,4 +26,4 @@ grammarKitComposer = { id = "com.alecstrong.grammar.kit.composer", version = "0.
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
-intellij = { id = "org.jetbrains.intellij", version = "1.17.2" }
+intellij = { id = "org.jetbrains.intellij", version = "1.17.3" }
