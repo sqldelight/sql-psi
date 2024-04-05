@@ -17,15 +17,3 @@ WHERE a_id = 1;
 SELECT B.a_id
 FROM A
 JOIN B USING (a_id);
-
-SELECT B.a_id
-FROM A
-LEFT JOIN B USING (a_id);
-
-SELECT B.a_id
-FROM A
-RIGHT JOIN B USING (a_id);
-
-SELECT B.a_id
-FROM A
-FULL JOIN B USING (a_id);
