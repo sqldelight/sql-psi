@@ -18,8 +18,8 @@ dependencies {
   compileOnly libs.bundles.intelliJ
 
   testFixturesApi libs.junit
+  testFixturesApi projects.environment
   testFixturesCompileOnly libs.bundles.intelliJ
-  testFixturesCompileOnly projects.environment
 
   testImplementation libs.junit
   testImplementation libs.truth
