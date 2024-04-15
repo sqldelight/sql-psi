@@ -121,16 +121,16 @@ column_def ::= [ javadoc ] column_name column_type ( column_constraint ) * {
 }
 column_type ::= type_name
 type_name ::= identifier [ LP signed_number RP | LP signed_number COMMA signed_number RP ]
-column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] conflict_clause [ AUTOINCREMENT ] | NOT NULL conflict_clause | UNIQUE conflict_clause | check_constraint | default_constraint | COLLATE collation_name | foreign_key_clause | generated_clause )
+column_constraint ::= [ CONSTRAINT identifier ] ( PRIMARY KEY [ ASC | DESC ] [ conflict_clause ] [ AUTOINCREMENT ] | NOT NULL [ conflict_clause ] | UNIQUE [ conflict_clause ] | check_constraint | default_constraint | COLLATE collation_name | foreign_key_clause | generated_clause )
 generated_clause ::= [ GENERATED ] ALWAYS AS LP expr RP
 check_constraint ::= CHECK LP expr RP
 default_constraint ::= DEFAULT ( signed_number | literal_value | LP expr RP )
 signed_number ::= [ PLUS | MINUS ] numeric_literal
-table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) LP indexed_column ( COMMA indexed_column ) * RP conflict_clause | CHECK LP expr RP | FOREIGN KEY LP column_name ( COMMA column_name ) * RP foreign_key_clause )
+table_constraint ::= [ CONSTRAINT identifier ] ( ( PRIMARY KEY | UNIQUE ) LP indexed_column ( COMMA indexed_column ) * RP [ conflict_clause ] | CHECK LP expr RP | FOREIGN KEY LP column_name ( COMMA column_name ) * RP foreign_key_clause )
 foreign_key_clause ::= REFERENCES foreign_table [ LP column_name ( COMMA column_name ) * RP ] [ ( ON ( DELETE | UPDATE ) ( SET NULL | SET DEFAULT | CASCADE | RESTRICT | NO ACTION ) | MATCH identifier ) * ] [ [ NOT ] DEFERRABLE [ INITIALLY DEFERRED | INITIALLY IMMEDIATE ] ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ForeignKeyClauseMixin"
 }
-conflict_clause ::= [ ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE ) ]
+conflict_clause ::= ON CONFLICT ( ROLLBACK | ABORT | FAIL | IGNORE | REPLACE )
 create_trigger_stmt ::= CREATE [ TEMP | TEMPORARY ] TRIGGER [ IF NOT EXISTS ] [ database_name DOT ] trigger_name [ BEFORE | AFTER | INSTEAD OF ] ( DELETE | INSERT | UPDATE [ OF column_name ( COMMA column_name ) * ] ) ON table_name [ FOR EACH ROW ] [ WHEN expr ] BEGIN ( (update_stmt | insert_stmt | delete_stmt | compound_select_stmt ) SEMI ) + END {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateTriggerMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
@@ -358,7 +358,7 @@ group_by ::= GROUP BY expr ( COMMA expr ) * {
 }
 
 values_expression ::= LP expr ( COMMA expr ) * RP
-join_clause ::= table_or_subquery ( join_operator table_or_subquery join_constraint ) * {
+join_clause ::= table_or_subquery ( join_operator table_or_subquery [join_constraint] ) * {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.JoinClauseMixin"
   implements = [
     "com.alecstrong.sql.psi.core.psi.QueryElement";
@@ -390,7 +390,7 @@ full_join_operator ::= FULL
 
 join_operator ::= ( COMMA
                   | [ NATURAL ] [ left_join_operator [ OUTER ] | INNER | CROSS ] JOIN )
-join_constraint ::= [ ON expr | USING LP column_name ( COMMA column_name ) * RP ]
+join_constraint ::= ON expr | USING LP column_name ( COMMA column_name ) * RP
 ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.OrderByMixin"
 }

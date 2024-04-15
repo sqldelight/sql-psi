@@ -53,39 +53,39 @@ internal abstract class JoinClauseMixin(
 
   private val queryExposed = ModifiableFileLazy {
     var queryAvailable = tableOrSubqueryList[0].queryExposed()
-    tableOrSubqueryList.drop(1)
-      .zip(joinConstraintList)
-      .zip(joinOperatorList) zip2@{ (subquery, constraint), operator ->
-        queryAvailable += subquery.queryExposed().let { query ->
-          when {
-            query.isEmpty() -> return@zip2
-            else -> {
-              var columns = query.flatMap { it.columns }
-              var synthesizedColumns = query.flatMap { it.synthesizedColumns }
+    for ((index, subquery) in tableOrSubqueryList.drop(1).withIndex()) {
+      val constraint: SqlJoinConstraint? = if (index in joinConstraintList.indices) joinConstraintList[index] else null
+      val operator: SqlJoinOperator = joinOperatorList[index]
+      val query = subquery.queryExposed()
 
-              if (supportsJoinOperator(operator)) {
-                columns = columns.map { it.copy(nullable = true) }
-                synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
-              }
-              if (constraint.node?.findChildByType(
-                  SqlTypes.USING,
-                ) != null
-              ) {
-                val columnNames = constraint.columnNameList.map { it.name }
-                columns = columns.map {
-                  it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
-                }
-              }
-              QueryResult(
-                table = query.first().table,
-                columns = columns,
-                synthesizedColumns = synthesizedColumns,
-                joinConstraint = constraint,
-              )
+      queryAvailable += when {
+        query.isEmpty() -> continue
+        else -> {
+          var columns = query.flatMap { it.columns }
+          var synthesizedColumns = query.flatMap { it.synthesizedColumns }
+
+          if (supportsJoinOperator(operator)) {
+            columns = columns.map { it.copy(nullable = true) }
+            synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
+          }
+          if (constraint != null && constraint.node?.findChildByType(
+              SqlTypes.USING,
+            ) != null
+          ) {
+            val columnNames = constraint.columnNameList.map { it.name }
+            columns = columns.map {
+              it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
             }
           }
+          QueryResult(
+            table = query.first().table,
+            columns = columns,
+            synthesizedColumns = synthesizedColumns,
+            joinConstraint = constraint,
+          )
         }
       }
+    }
     return@ModifiableFileLazy queryAvailable
   }
 
