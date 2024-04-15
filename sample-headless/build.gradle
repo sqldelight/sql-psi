@@ -13,4 +13,5 @@ dependencies {
   testImplementation libs.coroutines.core
   testImplementation "org.jetbrains.kotlin:kotlin-test"
   testImplementation projects.environment
+  testImplementation(testFixtures(project(':sample-core')))
 }

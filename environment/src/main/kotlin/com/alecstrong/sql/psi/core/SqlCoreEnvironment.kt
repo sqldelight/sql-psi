@@ -21,7 +21,6 @@ import com.intellij.openapi.roots.impl.ProjectRootManagerImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.VirtualFileSystem
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
@@ -33,7 +32,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.workspaceModel.core.fileIndex.WorkspaceFileIndex
 import com.intellij.workspaceModel.core.fileIndex.WorkspaceFileIndexContributor
 import com.intellij.workspaceModel.core.fileIndex.impl.WorkspaceFileIndexImpl
-import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 import kotlin.reflect.KClass
 
 private class ApplicationEnvironment {
@@ -65,8 +65,8 @@ private class ApplicationEnvironment {
 }
 
 open class SqlCoreEnvironment(
-  sourceFolders: List<File>,
-  dependencies: List<File>,
+  sourceFolders: List<Path>,
+  dependencies: List<Path>,
 ) : AutoCloseable {
   private val fileIndex: CoreFileIndex
 
@@ -76,9 +76,8 @@ open class SqlCoreEnvironment(
     env.coreApplicationEnvironment,
   )
 
-  protected val localFileSystem: VirtualFileSystem = VirtualFileManager.getInstance().getFileSystem(
-    StandardFileSystems.FILE_PROTOCOL,
-  )
+  private val localFileSystem: VirtualFileSystem = StandardFileSystems.local()
+  private val jarFileSystem: VirtualFileSystem = StandardFileSystems.jar()
 
   init {
     projectEnvironment.registerProjectComponent(
@@ -94,10 +93,20 @@ open class SqlCoreEnvironment(
       DirectoryIndexImpl(projectEnvironment.project),
     )
 
-    fileIndex = CoreFileIndex(sourceFolders, localFileSystem, projectEnvironment.project)
+    fileIndex = CoreFileIndex(
+      sourceFolders,
+      localFileSystem,
+      jarFileSystem,
+      project = projectEnvironment.project,
+    )
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
-    val contributorIndex = CoreFileIndex(sourceFolders + dependencies, localFileSystem, projectEnvironment.project)
+    val contributorIndex = CoreFileIndex(
+      sourceFolders + dependencies,
+      localFileSystem,
+      jarFileSystem,
+      project = projectEnvironment.project,
+    )
     projectEnvironment.project.registerService(
       SchemaContributorIndex::class.java,
       object : SchemaContributorIndex {
@@ -204,16 +213,27 @@ open class SqlCoreEnvironment(
 }
 
 private class CoreFileIndex(
-  val sourceFolders: List<File>,
-  private val localFileSystem: VirtualFileSystem,
+  val sourceFolders: List<Path>,
+  val localFileSystems: VirtualFileSystem,
+  val jarFileSystem: VirtualFileSystem,
   project: Project,
 ) : ProjectFileIndexImpl(project) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
-    return sourceFolders.all {
-      val file = localFileSystem.findFileByPath(it.absolutePath)
-        ?: throw NullPointerException("File ${it.absolutePath} not found")
-      iterateContentUnderDirectory(file, iterator)
+    for (file in sourceFolders) {
+      val vFile = when (val schema = file.fileSystem.provider().scheme) {
+        StandardFileSystems.JAR_PROTOCOL -> {
+          val jarFilePath = file.toUri().toString().removePrefix("jar:file://")
+          jarFileSystem.findFileByPath(jarFilePath)
+        }
+        StandardFileSystems.FILE_PROTOCOL -> localFileSystems.findFileByPath(file.pathString)
+        else -> error("Not supported schema $schema")
+      } ?: throw NullPointerException("File ${file.pathString} not found")
+
+      if (!iterateContentUnderDirectory(vFile, iterator)) {
+        return false
+      }
     }
+    return true
   }
 
   override fun iterateContentUnderDirectory(file: VirtualFile, iterator: ContentIterator): Boolean {

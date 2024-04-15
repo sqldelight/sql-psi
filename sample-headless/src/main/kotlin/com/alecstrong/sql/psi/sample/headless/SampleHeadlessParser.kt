@@ -6,9 +6,10 @@ import com.alecstrong.sql.psi.sample.core.SampleFileType
 import com.alecstrong.sql.psi.sample.core.SampleParserDefinition
 import com.intellij.psi.PsiDocumentManager
 import java.io.File
+import java.nio.file.Path
 
 class SampleHeadlessParser {
-  fun parseSqlite(sourceFolders: List<File>, onError: (String) -> Unit): List<SampleFile> {
+  fun parseSqlite(sourceFolders: List<Path>, onError: (String) -> Unit): List<SampleFile> {
     val parserDefinition = SampleParserDefinition()
     val environment = object : SqlCoreEnvironment(
       sourceFolders = sourceFolders,
@@ -39,7 +40,7 @@ class SampleHeadlessParser {
 }
 
 fun main() {
-  SampleHeadlessParser().parseSqlite(listOf(File("sample-headless"))) {
+  SampleHeadlessParser().parseSqlite(listOf(File("sample-headless").toPath())) {
     System.err.println(it)
   }
 }

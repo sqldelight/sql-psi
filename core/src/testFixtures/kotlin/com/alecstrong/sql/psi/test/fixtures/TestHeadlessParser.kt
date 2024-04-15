@@ -11,20 +11,20 @@ import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.tree.IFileElementType
-import java.io.File
+import java.nio.file.Path
 
 object TestHeadlessParser {
   fun build(
-    root: String,
+    root: Path,
     annotator: SqlAnnotationHolder,
     predefinedTables: List<String> = emptyList(),
     customInit: CoreApplicationEnvironment.() -> Unit = { },
   ): SqlCoreEnvironment {
-    return build(listOf(File(root)), annotator, predefinedTables, customInit)
+    return build(listOf(root), annotator, predefinedTables, customInit)
   }
 
   fun build(
-    sourceFolders: List<File>,
+    sourceFolders: List<Path>,
     annotator: SqlAnnotationHolder,
     predefinedTables: List<String> = emptyList(),
     customInit: CoreApplicationEnvironment.() -> Unit = { },

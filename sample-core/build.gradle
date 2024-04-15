@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.grammarKitComposer)
+  id("java-test-fixtures")
 }
 
 grammarKit {
@@ -9,6 +10,7 @@ grammarKit {
 
 dependencies {
   compileOnly libs.bundles.intelliJ
+  testFixturesCompileOnly libs.bundles.intelliJ
 
   implementation projects.core
 }
