@@ -4,7 +4,7 @@
 # choose a matching/similar build
 
 ideaVersion = "231.9414.13" # AS Hedgehog | 2023.1.1
-kotlin = "1.9.23"
+kotlin = "1.9.24"
 
 [libraries]
 intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", version.ref = "ideaVersion" }
