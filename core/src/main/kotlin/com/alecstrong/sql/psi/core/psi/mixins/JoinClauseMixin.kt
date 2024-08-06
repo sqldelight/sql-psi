@@ -52,52 +52,82 @@ internal abstract class JoinClauseMixin(
   }
 
   private val queryExposed = ModifiableFileLazy {
-    var queryAvailable = tableOrSubqueryList[0].queryExposed()
-    for ((index, subquery) in tableOrSubqueryList.drop(1).withIndex()) {
+
+    var queryAvailable: Collection<QueryResult> = tableOrSubqueryList.first().queryExposed()
+
+    for ((index, subquery) in tableOrSubqueryList.zipWithNext().withIndex()) {
+
       val constraint: SqlJoinConstraint? = if (index in joinConstraintList.indices) joinConstraintList[index] else null
       val operator: SqlJoinOperator = joinOperatorList[index]
-      val query = subquery.queryExposed()
 
-      queryAvailable += when {
-        query.isEmpty() -> continue
-        else -> {
-          var columns = query.flatMap { it.columns }
-          var synthesizedColumns = query.flatMap { it.synthesizedColumns }
+      val query = subquery.second.queryExposed()
 
-          if (supportsJoinOperator(operator)) {
-            columns = columns.map { it.copy(nullable = true) }
-            synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
-          }
-          if (constraint != null && constraint.node?.findChildByType(
-              SqlTypes.USING,
-            ) != null
-          ) {
-            val columnNames = constraint.columnNameList.map { it.name }
-            columns = columns.map {
-              it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
-            }
-          }
-          QueryResult(
-            table = query.first().table,
-            columns = columns,
-            synthesizedColumns = synthesizedColumns,
-            joinConstraint = constraint,
-          )
+      if (query.isEmpty()) continue
+
+      var columns = query.flatMap { it.columns }
+      var synthesizedColumns = query.flatMap { it.synthesizedColumns }
+
+      if (rightJoinOperator(joinOperatorList[index])) {
+        val rightQuery = subquery.first.queryExposed()
+        var rightColumns = rightQuery.flatMap { it.columns }
+        var rightSynthesizedColumns = rightQuery.flatMap { it.synthesizedColumns }
+
+        rightColumns = rightColumns.map { it.copy(nullable = true) }
+        rightSynthesizedColumns = rightSynthesizedColumns.map { it.copy(nullable = true) }
+
+        queryAvailable += QueryResult(
+          table = rightQuery.first().table,
+          columns = rightColumns,
+          synthesizedColumns = rightSynthesizedColumns,
+          joinConstraint = joinConstraintList[index],
+        )
+      }
+
+      if (leftJoinOperator(operator)) {
+        columns = columns.map { it.copy(nullable = true) }
+        synthesizedColumns = synthesizedColumns.map { it.copy(nullable = true) }
+      }
+
+      if (constraint != null && usingConstraint(constraint)) {
+        val columnNames = constraint.columnNameList.map { it.name }
+        columns = columns.map {
+          it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
         }
       }
+
+      queryAvailable += QueryResult(
+        table = query.first().table,
+        columns = columns,
+        synthesizedColumns = synthesizedColumns,
+        joinConstraint = constraint,
+      )
     }
-    return@ModifiableFileLazy queryAvailable
+
+    return@ModifiableFileLazy queryAvailable.associateBy { it.table }.values
   }
 
-  private fun supportsJoinOperator(operator: SqlJoinOperator): Boolean {
+  private fun leftJoinOperator(operator: SqlJoinOperator): Boolean {
     return operator.node.findChildByType(
       TokenSet.create(
         SqlTypes.LEFT_JOIN_OPERATOR,
+        SqlTypes.FULL_JOIN_OPERATOR,
+      ),
+    ) != null
+  }
+
+  private fun rightJoinOperator(operator: SqlJoinOperator): Boolean {
+    return operator.node.findChildByType(
+      TokenSet.create(
         SqlTypes.RIGHT_JOIN_OPERATOR,
         SqlTypes.FULL_JOIN_OPERATOR,
       ),
     ) != null
   }
 
+  private fun usingConstraint(constraint: SqlJoinConstraint): Boolean {
+    return constraint.node?.findChildByType(
+      SqlTypes.USING,
+    ) != null
+  }
   override fun queryExposed() = queryExposed.forFile(containingFile)
 }
