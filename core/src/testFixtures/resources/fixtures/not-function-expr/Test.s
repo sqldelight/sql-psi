@@ -1,0 +1,15 @@
+CREATE TABLE test (
+  test_id INTEGER
+);
+
+SELECT
+  test_id
+FROM
+  test
+GROUP BY
+  test_id
+HAVING
+ NOT COALESCE(TRUE, FALSE);
+
+SELECT NOT COALESCE(TRUE, FALSE) FROM test;
+
