@@ -35,6 +35,8 @@ internal abstract class CreateViewMixin(
   }
 
   override fun modifySchema(schema: Schema) {
+    schema.forType<TableElement>().remove(name())
+    schema.forType<SqlCreateViewStmt>().remove(name())
     schema.put<TableElement>(this)
     schema.put<SqlCreateViewStmt>(this)
   }
