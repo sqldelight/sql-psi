@@ -16,6 +16,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiReference
+import com.intellij.psi.tree.TokenSet
 import javax.swing.Icon
 
 internal abstract class TableNameMixin(
@@ -41,12 +42,11 @@ internal abstract class TableNameMixin(
     val matches by lazy { tableAvailable(this, name) }
     val references = reference.resolve()
     if (references == this) {
-      if (parent.node.findChildByType(SqlTypes.EXISTS) == null && matches.any { it.table != this }) {
+      if (createTableSchema(parent.node) && matches.any { it.table != this }) {
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (references == null) {
-      if ((parent is SqlDropTableStmt || parent is SqlDropViewStmt) &&
-        parent.node.findChildByType(SqlTypes.EXISTS) != null
+      if ((parent is SqlDropTableStmt || parent is SqlDropViewStmt) && !createTableSchema(parent.node)
       ) {
         return
       }
@@ -57,5 +57,14 @@ internal abstract class TableNameMixin(
 
   override fun getIcon(flags: Int): Icon {
     return AllIcons.Nodes.DataTables
+  }
+
+  private fun createTableSchema(node: ASTNode): Boolean {
+    return node.findChildByType(
+      TokenSet.create(
+        SqlTypes.EXISTS,
+        SqlTypes.REPLACE,
+      ),
+    ) == null
   }
 }
