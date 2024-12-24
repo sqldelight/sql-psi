@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.spotless)
@@ -36,6 +38,17 @@ subprojects {
   apply(plugin: "org.jetbrains.kotlin.jvm")
 
   kotlin.jvmToolchain(17)
+
+  tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+  }
+
+  tasks.withType(KotlinCompile).configureEach {
+    kotlinOptions {
+      jvmTarget = '11'
+    }
+  }
 
   tasks.withType(Test).configureEach {
     testLogging {
