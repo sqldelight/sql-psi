@@ -37,8 +37,6 @@ allprojects {
 subprojects {
   apply(plugin: "org.jetbrains.kotlin.jvm")
 
-  kotlin.jvmToolchain(17)
-
   tasks.withType(JavaCompile).configureEach {
     sourceCompatibility = '11'
     targetCompatibility = '11'
