@@ -1,0 +1,45 @@
+{
+  extends: [
+    "config:recommended"
+  ],
+  ignoreDeps: [
+    "com.jetbrains.intellij.platform",
+    "com.jetbrains.intellij.java",
+    "com.jetbrains.intellij.platform:lang-impl",
+    "com.jetbrains.intellij.platform:core-impl",
+    "com.jetbrains.intellij.platform:indexing",
+    "com.jetbrains.intellij.platform:analysis-impl",
+    "com.jetbrains.intellij.platform:project-model-impl"
+  ],
+  packageRules: [
+    {
+      matchUpdateTypes: [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      automerge: true
+    }
+  ],
+  ignorePresets: [
+    // Ensure we get the latest version and are not pinned to old versions.
+    'workarounds:javaLTSVersions',
+  ],
+  customManagers: [
+    // Update .java-version file with the latest JDK version.
+    {
+      customType: 'regex',
+      fileMatch: [
+        '\\.java-version$',
+      ],
+      matchStrings: [
+        '(?<currentValue>.*)\\n',
+      ],
+      datasourceTemplate: 'java-version',
+      depNameTemplate: 'java',
+      // Only write the major version.
+      extractVersionTemplate: '^(?<version>\\d+)',
+    },
+  ]
+}
