@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.grammarKitComposer)
@@ -13,7 +11,7 @@ grammarKit {
 }
 
 sourceSets {
-  main.java.srcDir "gen"
+  main.java.srcDir(tasks.named("generateLexer").flatMap { it.targetOutputDir })
 }
 
 dependencies {
@@ -38,6 +36,3 @@ generateLexer {
   targetClass.set('SqlLexer')
   purgeOldFiles.set(true)
 }
-
-compileKotlin.dependsOn generateLexer
-kotlinSourcesJar.dependsOn generateLexer
