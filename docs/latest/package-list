@@ -1,0 +1,11 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:core
+com.alecstrong.sql.psi.core
+com.alecstrong.sql.psi.core.lexer
+com.alecstrong.sql.psi.core.psi
+com.alecstrong.sql.psi.core.psi.impl
+com.alecstrong.sql.psi.core.psi.mixins
+module:environment
+com.alecstrong.sql.psi.core
