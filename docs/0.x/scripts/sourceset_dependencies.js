@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":core:dokkaHtmlPartial/main":[],":environment:dokkaHtmlPartial/main":[]}'
