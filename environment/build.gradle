@@ -1,8 +1,8 @@
 plugins {
   alias(libs.plugins.kotlinJvm)
+  alias(libs.plugins.mavenPublish)
+  alias(libs.plugins.dokka)
 }
-
-apply from: "$rootDir/gradle/gradle-mvn-push.gradle"
 
 dependencies {
   implementation projects.core

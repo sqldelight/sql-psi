@@ -1,25 +1,37 @@
-Releasing
-=========
+# Releasing
 
- 1. Change the version in `gradle.properties` to a non-SNAPSHOT verson.
- 2. Update the `CHANGELOG.md` for the impending release.
- 3. Update the `README.md` with the new version.
- 4. `git commit -am "Prepare for release X.Y.Z."` (where X.Y.Z is the new version)
- 5. `./gradlew clean publish --no-parallel`.
- 6. Visit [Sonatype Nexus](https://oss.sonatype.org/) and promote the artifact.
- 7. `git tag -a X.Y.Z -m "Version X.Y.Z"` (where X.Y.Z is the new version)
- 8. Update the `gradle.properties` to the next SNAPSHOT version.
- 9. `git commit -am "Prepare next development version."`
- 10. `git push && git push --tags`
- 11. Update the sample app to the release version and send a PR.
+1. Update the `VERSION_NAME` in `gradle.properties` to the release version.
 
-If step 6 or 7 fails, drop the Sonatype repo, fix the problem, commit, and start again at step 5.
+2. Update the `CHANGELOG.md`:
+    1. Change the `Unreleased` header to the release version.
+    2. Add a link URL to ensure the header link works.
+    3. Add a new `Unreleased` section to the top.
 
+3. Commit
 
-Prerequisites
--------------
+   ```
+   $ git commit -am "Prepare version X.Y.Z"
+   ```
 
-In `~/.gradle/gradle.properties`, set the following:
+4. Tag
 
- * `SONATYPE_NEXUS_USERNAME` - Sonatype username for releasing to `com.squareup`.
- * `SONATYPE_NEXUS_PASSWORD` - Sonatype password for releasing to `com.squareup`.
+   ```
+   $ git tag -am "Version X.Y.Z" X.Y.Z
+   ```
+
+5. Update the `VERSION_NAME` in `gradle.properties` to the next "SNAPSHOT" version.
+
+6. Commit
+
+   ```
+   $ git commit -am "Prepare next development version"
+   ```
+
+7. Push!
+
+   ```
+   $ git push && git push --tags
+   ```
+
+   This will trigger a GitHub Action workflow which will create a GitHub release and upload the
+   release artifacts to Maven Central.

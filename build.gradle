@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   alias(libs.plugins.kotlinJvm) apply false
   alias(libs.plugins.spotless)
-  alias(libs.plugins.mavenPublish)
+  alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka)
 }
 
@@ -29,14 +29,9 @@ allprojects {
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
     maven { url "https://cache-redirector.jetbrains.com/maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies" }
   }
-
-  group = GROUP
-  version = VERSION_NAME
 }
 
 subprojects {
-  apply(plugin: "org.jetbrains.kotlin.jvm")
-
   tasks.withType(JavaCompile).configureEach {
     sourceCompatibility = '11'
     targetCompatibility = '11'
