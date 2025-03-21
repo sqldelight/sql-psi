@@ -4,6 +4,14 @@
 
 Nothing yet!
 
+
+## [0.5.0] - 2025-03-21
+[0.5.0]: https://github.com/sqldelight/sql-psi/releases/tag/0.5.0
+
+- New: Maven coordinates have changed to use `app.cash.sql-psi` group ID.
+- For other changes, see https://github.com/sqldelight/sql-psi/compare/0.4.10...0.5.0 (future releases will have an actual change log).
+
+
 ## 0.4.10
 
 ## 0.4.9
