@@ -60,7 +60,7 @@ stmt_list ::= ( stmt SEMI ) * {
   mixin="com.alecstrong.sql.psi.core.psi.mixins.SqlStmtListMixin"
   pin(".*")=1
 }
-stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( extension_stmt | alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
+stmt ::= [ EXPLAIN [ QUERY PLAN ] ] ( extension_stmt | alter_table_stmt | analyze_stmt | attach_stmt | begin_stmt | commit_stmt | create_extension_stmt | create_schema_stmt | create_index_stmt | create_table_stmt | create_trigger_stmt | create_view_stmt |
                                           create_virtual_table_stmt | delete_stmt_limited | detach_stmt | drop_index_stmt | drop_table_stmt | drop_trigger_stmt | drop_view_stmt | insert_stmt |
                                           pragma_stmt | reindex_stmt | release_stmt | rollback_stmt | savepoint_stmt | compound_select_stmt | update_stmt_limited | vacuum_stmt
                                         ) {
@@ -489,3 +489,7 @@ module_argument_name ::= id
 bind_parameter ::= '?'
 table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
+
+create_stmt_override :: = "__CREATE__"
+create_extension_stmt ::= create_stmt_override
+create_schema_stmt ::= create_stmt_override
