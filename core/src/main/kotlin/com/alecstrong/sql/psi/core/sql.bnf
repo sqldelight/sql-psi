@@ -213,7 +213,6 @@ expr ::= ( other_expr
          | binary_or_expr
          | binary_and_expr
          | between_expr
-         | binary_like_expr
          | is_distinct_from_expr // needs to go before is_expr because it starts the same
          | is_expr
          | null_expr
@@ -221,6 +220,9 @@ expr ::= ( other_expr
          | cast_expr
          | function_expr
          | in_expr
+         | bind_expr
+         | like_escape_character_expr // The ESCAPE clause (with its escape character) acts as a single postfix operator
+         | binary_like_expr
          | binary_equality_expr
          | binary_boolean_expr
          | binary_bitwise_expr
@@ -229,8 +231,7 @@ expr ::= ( other_expr
          | binary_pipe_expr
          | unary_expr
          | literal_expr
-         | column_expr
-         | bind_expr )
+         | column_expr)
 
 other_expr ::= extension_expr
 extension_expr ::= FAKE_EXTENSION
@@ -284,7 +285,8 @@ paren_expr ::= LP expr RP {
 cast_expr ::= CAST LP expr AS type_name RP
 collate_expr ::= expr COLLATE collation_name
 binary_like_operator ::= ( LIKE | GLOB | REGEXP | MATCH )
-binary_like_expr ::= expr [ NOT ] ( binary_like_operator ) expr [ ESCAPE expr ] {
+like_escape_character_expr ::= ESCAPE expr
+binary_like_expr ::= expr [ NOT ] binary_like_operator expr [ like_escape_character_expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.BinaryLikeExprMixin"
 }
 null_expr ::= expr ( ISNULL | NOTNULL | NOT NULL )
