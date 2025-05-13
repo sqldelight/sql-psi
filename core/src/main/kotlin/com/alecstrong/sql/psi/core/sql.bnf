@@ -392,7 +392,7 @@ full_join_operator ::= FULL
 
 join_operator ::= ( COMMA
                   | [ NATURAL ] [ left_join_operator [ OUTER ] | INNER | CROSS ] JOIN )
-join_constraint ::= ON expr | USING LP column_name ( COMMA column_name ) * RP
+join_constraint ::= [ ON expr | USING LP column_name ( COMMA column_name ) * RP ]
 ordering_term ::= expr [ COLLATE collation_name ] [ ASC | DESC ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.OrderByMixin"
 }
