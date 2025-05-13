@@ -3,7 +3,7 @@
 # IC sources: https://www.jetbrains.com/intellij-repository/releases
 # choose a matching/similar build
 
-ideaVersion = "231.9423.9" # AS Hedgehog | 2023.1.1
+ideaVersion = "251.25410.140" # AS Hedgehog | 2023.1.1
 kotlin = "2.1.21"
 
 [libraries]
