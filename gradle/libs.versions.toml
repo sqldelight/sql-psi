@@ -24,6 +24,6 @@ intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImp
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 grammarKitComposer = { id = "com.alecstrong.grammar.kit.composer", version = "0.1.12" }
 spotless = { id = "com.diffplug.spotless", version = "7.0.3" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.32.0" }
 dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
 intellij = { id = "org.jetbrains.intellij", version = "1.17.4" }
