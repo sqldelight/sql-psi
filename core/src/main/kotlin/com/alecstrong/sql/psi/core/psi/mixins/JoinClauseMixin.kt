@@ -75,6 +75,7 @@ internal abstract class JoinClauseMixin(
         rightColumns = rightColumns.map { it.copy(nullable = true) }
         rightSynthesizedColumns = rightSynthesizedColumns.map { it.copy(nullable = true) }
 
+        queryAvailable -= rightQuery
         queryAvailable += QueryResult(
           table = rightQuery.first().table,
           columns = rightColumns,
@@ -103,7 +104,7 @@ internal abstract class JoinClauseMixin(
       )
     }
 
-    return@ModifiableFileLazy queryAvailable.associateBy { it.table }.values
+    return@ModifiableFileLazy queryAvailable
   }
 
   private fun leftJoinOperator(operator: SqlJoinOperator): Boolean {
