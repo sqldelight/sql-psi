@@ -40,6 +40,11 @@ private class ApplicationEnvironment {
   val disposable = Disposer.newDisposable()
 
   val coreApplicationEnvironment: CoreApplicationEnvironment = CoreApplicationEnvironment(disposable).apply {
+
+    System.setProperty("ide.hide.excluded.files", "false")
+    System.setProperty("psi.sleep.in.validity.check", "false")
+    System.setProperty("psi.incremental.reparse.depth.limit", "1000")
+
     CoreApplicationEnvironment.registerApplicationExtensionPoint(
       MetaLanguage.EP_NAME,
       MetaLanguage::class.java,
