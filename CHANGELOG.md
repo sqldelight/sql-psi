@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-Nothing yet!
+- In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
 
 ## [0.5.2] - 2025-05-16
 [0.5.2]: https://github.com/sqldelight/sql-psi/releases/tag/0.5.2
