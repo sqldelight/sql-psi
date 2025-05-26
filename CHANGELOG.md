@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-Nothing yet!
+- Fix unwanted environment log warnings https://github.com/sqldelight/sql-psi/pull/679
 
 ## [0.5.2] - 2025-05-16
 [0.5.2]: https://github.com/sqldelight/sql-psi/releases/tag/0.5.2
