@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Change visibility on CreateIndexElementType, CreateIndexElementType https://github.com/sqldelight/sql-psi/pull/683 
 - Fix unwanted environment log warnings https://github.com/sqldelight/sql-psi/pull/679
 
 ## [0.5.2] - 2025-05-16
