@@ -65,7 +65,7 @@ internal abstract class CreateViewMixin(
   }
 }
 
-internal class CreateViewElementType(name: String) :
+open class CreateViewElementType(name: String) :
   SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.VIEW_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateViewStmtImpl(stub, this)
