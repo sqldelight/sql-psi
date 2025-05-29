@@ -55,9 +55,9 @@ internal abstract class CreateIndexMixin(
   }
 }
 
-internal class CreateIndexElementType(
+open class CreateIndexElementType(
   name: String,
 ) : SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
-  override fun nameType() = SqlTypes.TABLE_NAME
+  override fun nameType() = SqlTypes.INDEX_NAME
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateIndexStmtImpl(stub, this)
 }
