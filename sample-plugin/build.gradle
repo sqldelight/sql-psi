@@ -2,16 +2,24 @@ plugins {
   alias(libs.plugins.intellij)
 }
 
-intellij {
-  version.set("IC-${libs.versions.ideaVersion.get()}")
-}
-
 sourceSets {
   main.java.srcDir "src/generated/kotlin"
 }
 
+repositories {
+  intellijPlatform {
+    defaultRepositories()
+    intellijDependencies()
+  }
+}
+
 dependencies {
   implementation projects.sampleCore
+
+  intellijPlatform {
+    intellijIdeaCommunity('2023.1')
+    instrumentationTools()
+  }
 }
 
 tasks.named('buildSearchableOptions') { enabled = false }

@@ -3,7 +3,12 @@
 ## Unreleased
 
 - In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
+- Fix unwanted environment log warnings https://github.com/sqldelight/sql-psi/pull/679
 
+## [0.5.2] - 2025-05-16
+[0.5.2]: https://github.com/sqldelight/sql-psi/releases/tag/0.5.2
+
+- Bug fixes and improvements :D
 
 ## [0.5.0] - 2025-03-21
 [0.5.0]: https://github.com/sqldelight/sql-psi/releases/tag/0.5.0
