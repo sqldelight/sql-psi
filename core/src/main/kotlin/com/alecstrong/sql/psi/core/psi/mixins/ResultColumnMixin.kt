@@ -44,7 +44,7 @@ internal abstract class ResultColumnMixin(
     }
 
     return@lazy queryAvailable.fold(emptyList<QueryResult>()) { left, right ->
-      left + right.copy(table = null, columns = right.columns.filter { !it.hiddenByUsing })
+      left + right.copy(table = right.table, columns = right.columns.filter { !it.hiddenByUsing })
     }
   }
 
