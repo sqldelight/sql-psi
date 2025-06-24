@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix ResultColumnMixin - add table reference for QueryResult https://github.com/sqldelight/sql-psi/pull/687
+- Change visibility on CreateIndexElementType, CreateIndexElementType https://github.com/sqldelight/sql-psi/pull/683 
 - In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
 - Fix unwanted environment log warnings https://github.com/sqldelight/sql-psi/pull/679
 
