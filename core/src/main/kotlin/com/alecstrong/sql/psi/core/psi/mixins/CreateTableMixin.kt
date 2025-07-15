@@ -264,7 +264,7 @@ internal abstract class CreateTableMixin private constructor(
   }
 }
 
-internal class CreateTableElementType(
+open class CreateTableElementType(
   name: String,
 ) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
