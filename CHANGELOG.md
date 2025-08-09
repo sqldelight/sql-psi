@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Nothing yet!
+- Change visibility on CreateTableElementType https://github.com/sqldelight/sql-psi/pull/691
 
 
 ## [0.6.0] - 2025-08-08
