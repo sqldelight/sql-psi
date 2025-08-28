@@ -31,7 +31,7 @@ class SampleHeadlessParserTest {
       }
       files.test()
     } finally {
-        sqliteTestFixtures.close()
+      sqliteTestFixtures.close()
     }
   }
 
@@ -45,8 +45,8 @@ class SampleHeadlessParserTest {
       }
       files.test()
     } finally {
-    sqliteTestFixtures.close()
-  }
+      sqliteTestFixtures.close()
+    }
   }
 
   @Test
