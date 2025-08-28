@@ -1,5 +1,6 @@
 import com.alecstrong.sql.psi.sample.core.SampleFileType
 import java.net.URI
+import java.nio.file.FileSystem
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -7,7 +8,7 @@ import kotlin.io.path.toPath
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-object SqliteTestFixtures : ReadOnlyProperty<Nothing?, Path> {
+class SqliteTestFixtures : ReadOnlyProperty<Nothing?, Path>, AutoCloseable {
   val jarFile: Path get() = SqliteTestFixtures::class.java.getResource("/SqliteTestFixtures.class")!!.toURI().toJarPath().parent
 
   override operator fun getValue(thisRef: Nothing?, property: KProperty<*>): Path {
@@ -16,13 +17,22 @@ object SqliteTestFixtures : ReadOnlyProperty<Nothing?, Path> {
     return uri.toJarPath()
   }
 
+  private val openFileSystems = mutableSetOf<FileSystem>()
+
+  override fun close() {
+    for (openFileSystem in openFileSystems) {
+      openFileSystem.close()
+    }
+  }
+
   private fun URI.toJarPath(): Path {
-    try {
+    val fileSystem = try {
       FileSystems.getFileSystem(this)
-    } catch (ignored: FileSystemNotFoundException) {
+    } catch (_: FileSystemNotFoundException) {
       val env = mapOf("create" to "true")
       FileSystems.newFileSystem(this, env)
     }
+    openFileSystems.add(fileSystem)
     return toPath()
   }
 }

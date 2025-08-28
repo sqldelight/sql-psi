@@ -23,29 +23,44 @@ class SampleHeadlessParserTest {
 
   @Test
   fun parserIsSuccessfulWithFileInJarSource() {
-    val test by SqliteTestFixtures
-    val files = SampleHeadlessParser().parseSqlite(listOf(test)) {
-      fail(it)
+    val sqliteTestFixtures = SqliteTestFixtures()
+    try {
+      val test by SqliteTestFixtures()
+      val files = SampleHeadlessParser().parseSqlite(listOf(test)) {
+        fail(it)
+      }
+      files.test()
+    } finally {
+        sqliteTestFixtures.close()
     }
-    files.test()
   }
 
   @Test
   fun parserIsSuccessfulWithSourceFolderAndFileInJarSource() {
-    val test2 by SqliteTestFixtures
-    val files = SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"), test2)) {
-      fail(it)
-    }
-    files.test()
+    val sqliteTestFixtures = SqliteTestFixtures()
+    val test2 by sqliteTestFixtures
+    try {
+      val files = SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"), test2)) {
+        fail(it)
+      }
+      files.test()
+    } finally {
+    sqliteTestFixtures.close()
+  }
   }
 
   @Test
   fun parserIsSuccessfulWithJarSource() {
-    val files = SampleHeadlessParser().parseSqlite(listOf(SqliteTestFixtures.jarFile)) {
-      fail(it)
+    val sqliteTestFixtures = SqliteTestFixtures()
+    try {
+      val files = SampleHeadlessParser().parseSqlite(listOf(sqliteTestFixtures.jarFile)) {
+        fail(it)
+      }
+      assertEquals(2, files.size)
+      files.test()
+    } finally {
+      sqliteTestFixtures.close()
     }
-    assertEquals(2, files.size)
-    files.test()
   }
 
   private fun List<SampleFile>.test() {

@@ -5,7 +5,6 @@ import com.alecstrong.sql.psi.sample.core.SampleFile
 import com.alecstrong.sql.psi.sample.core.SampleFileType
 import com.alecstrong.sql.psi.sample.core.SampleParserDefinition
 import com.intellij.psi.PsiDocumentManager
-import java.io.File
 import java.nio.file.Path
 
 class SampleHeadlessParser {
@@ -36,11 +35,5 @@ class SampleHeadlessParser {
         add(it)
       }
     }
-  }
-}
-
-fun main() {
-  SampleHeadlessParser().parseSqlite(listOf(File("sample-headless").toPath())) {
-    System.err.println(it)
   }
 }
