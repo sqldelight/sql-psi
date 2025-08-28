@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Change visibility on CreateTableElementType https://github.com/sqldelight/sql-psi/pull/691
+- Change visibility on CreateTableElementType (https://github.com/sqldelight/sql-psi/pull/691)
+- Support reading jar files (https://github.com/sqldelight/sql-psi/pull/588)
 
 
 ## [0.6.0] - 2025-08-08

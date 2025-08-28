@@ -33,7 +33,7 @@ abstract class FixturesTest(
     }
 
     val environment = TestHeadlessParser.build(
-      root = newRoot.path,
+      root = newRoot.toPath(),
       customInit = {
         setupDialect()
       },

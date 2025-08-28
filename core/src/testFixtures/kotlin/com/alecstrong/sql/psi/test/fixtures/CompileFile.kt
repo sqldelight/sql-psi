@@ -2,8 +2,9 @@ package com.alecstrong.sql.psi.test.fixtures
 
 import com.alecstrong.sql.psi.core.SqlFileBase
 import com.intellij.core.CoreApplicationEnvironment
-import java.io.File
 import java.nio.file.Files
+import kotlin.io.path.div
+import kotlin.io.path.writeText
 
 fun compileFile(
   // language=sql
@@ -23,9 +24,9 @@ fun compileFiles(
   predefined: List<String> = emptyList(),
   action: (List<SqlFileBase>) -> Unit,
 ) {
-  val directory = Files.createTempDirectory("sql-psi").toFile()
+  val directory = Files.createTempDirectory("sql-psi")
   for ((index, content) in files.withIndex()) {
-    val file = File(directory, "$index.s")
+    val file = directory / "$index.s"
     file.writeText(content)
   }
 
