@@ -15,7 +15,7 @@ intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.r
 coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 
 junit = "junit:junit:4.13.2"
-truth = "com.google.truth:truth:1.4.4"
+assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 
 [bundles]
 intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi"]
