@@ -1,7 +1,11 @@
 package com.alecstrong.sql.psi.core
 
+import assertk.assertThat
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.alecstrong.sql.psi.test.fixtures.compileFile
-import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class NullabilityTest {
@@ -33,8 +37,8 @@ class NullabilityTest {
       val projection = select.queryExposed().flatMap { it.columns }
 
       assertThat(projection[0].nullable).isNull()
-      assertThat(projection[1].nullable).isTrue()
-      assertThat(projection[2].nullable).isTrue()
+      assertThat(projection[1].nullable).isNotNull().isTrue()
+      assertThat(projection[2].nullable).isNotNull().isTrue()
     }
   }
 
@@ -77,7 +81,7 @@ class NullabilityTest {
 
       assertThat(projection[0].nullable).isNull()
       assertThat(projection[1].nullable).isNull()
-      assertThat(projection[2].nullable).isTrue()
+      assertThat(projection[2].nullable).isNotNull().isTrue()
     }
   }
 
@@ -99,9 +103,9 @@ class NullabilityTest {
       val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
       val projection = select.queryExposed().flatMap { it.columns }
 
-      assertThat(projection[0].nullable).isFalse()
-      assertThat(projection[1].nullable).isFalse()
-      assertThat(projection[2].nullable).isFalse()
+      assertThat(projection[0].nullable).isNotNull().isFalse()
+      assertThat(projection[1].nullable).isNotNull().isFalse()
+      assertThat(projection[2].nullable).isNotNull().isFalse()
     }
   }
 }
