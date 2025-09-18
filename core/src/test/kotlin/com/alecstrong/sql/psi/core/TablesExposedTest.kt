@@ -1,7 +1,8 @@
 package com.alecstrong.sql.psi.core
 
+import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
 import com.alecstrong.sql.psi.test.fixtures.compileFiles
-import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class TablesExposedTest {
@@ -38,13 +39,14 @@ class TablesExposedTest {
       ),
     ) { (_, file) ->
 
-      assertThat(file.tables(includeAll = true).map { it.tableName.text }).containsExactly(
-        "predefined",
-        "test1",
-        "test2",
-        "test4",
-        "test5",
-      )
+      assertThat(file.tables(includeAll = true).map { it.tableName.text })
+        .containsExactlyInAnyOrder(
+          "predefined",
+          "test1",
+          "test2",
+          "test4",
+          "test5",
+        )
     }
   }
 
@@ -81,11 +83,12 @@ class TablesExposedTest {
       ),
     ) { (_, file) ->
 
-      assertThat(file.tables(includeAll = false).map { it.tableName.text }).containsExactly(
-        "test2",
-        "test4",
-        "test5",
-      )
+      assertThat(file.tables(includeAll = false).map { it.tableName.text })
+        .containsExactlyInAnyOrder(
+          "test2",
+          "test4",
+          "test5",
+        )
     }
   }
 }

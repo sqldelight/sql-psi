@@ -22,7 +22,7 @@ dependencies {
   testFixturesCompileOnly libs.bundles.intelliJ
 
   testImplementation libs.junit
-  testImplementation libs.truth
+  testImplementation libs.assertk
   testImplementation(libs.bundles.intelliJ) {
     exclude(group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core")
   }
