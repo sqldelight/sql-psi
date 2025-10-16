@@ -7,6 +7,11 @@ plugins {
   alias(libs.plugins.dokka)
 }
 
+dependencies {
+  dokka(projects.core)
+  dokka(projects.environment)
+}
+
 spotless {
   kotlin {
     target "**/*.kt"
