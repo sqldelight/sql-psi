@@ -45,18 +45,31 @@ internal abstract class CreateVirtualTableMixin(
     )
       .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
 
-    val synthesizedColumns = if (usesFtsModule) {
-      val columnNames = columnNameElements.map { it.name }
+    val synthesizedColumns = when {
+      usesFts3Module || usesFts4Module -> {
+        val columnNames = columnNameElements.map { it.name }
 
-      listOf(
-        SynthesizedColumn(
-          table = this,
-          acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
-            .filter { it !in columnNames },
-        ),
-      )
-    } else {
-      emptyList()
+        listOf(
+          SynthesizedColumn(
+            table = this,
+            acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
+              .filter { it !in columnNames },
+          ),
+        )
+      }
+      usesFts5Module -> {
+        val columnNames = columnNameElements.map { it.name }
+
+        listOf(
+          SynthesizedColumn(
+            table = this,
+            acceptableValues = listOf("rowid", "_row_id_", "rank", tableName.name)
+              .filter { it !in columnNames },
+          ),
+        )
+      }
+
+      else -> emptyList()
     }
 
     return LazyQuery(tableName) {
@@ -77,3 +90,12 @@ internal class CreateVirtualTableElementType(name: String) :
 
 val SqlCreateVirtualTableStmt.usesFtsModule: Boolean
   get() = this.moduleName?.text?.startsWith(prefix = "fts", ignoreCase = true) == true
+
+val SqlCreateVirtualTableStmt.usesFts3Module: Boolean
+  get() = this.moduleName?.text?.startsWith(prefix = "fts3", ignoreCase = true) == true
+
+val SqlCreateVirtualTableStmt.usesFts4Module: Boolean
+  get() = this.moduleName?.text?.startsWith(prefix = "fts4", ignoreCase = true) == true
+
+val SqlCreateVirtualTableStmt.usesFts5Module: Boolean
+  get() = this.moduleName?.text?.startsWith(prefix = "fts5", ignoreCase = true) == true
