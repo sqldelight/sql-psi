@@ -2,7 +2,14 @@
 
 ## Unreleased
 
+Mothing yet!
+
+
+## [0.7.1] - 2025-11-11
+[0.7.1]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.1
+
 - Improve handling of FTS5 hidden columns (https://github.com/sqldelight/sql-psi/pull/717)
+
 
 ## [0.7.0] - 2025-09-02
 [0.7.0]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.0
