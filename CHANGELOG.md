@@ -5,6 +5,12 @@
 Mothing yet!
 
 
+## [0.7.2] - 2025-11-12
+[0.7.2]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.2
+
+- Make `localFileSystem` and `jarFileSystem` protected on `SqlCoreEnvironment`.
+
+
 ## [0.7.1] - 2025-11-11
 [0.7.1]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.1
 
