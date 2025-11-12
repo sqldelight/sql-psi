@@ -76,8 +76,8 @@ open class SqlCoreEnvironment(
     env.coreApplicationEnvironment,
   )
 
-  private val localFileSystem: VirtualFileSystem = StandardFileSystems.local()
-  private val jarFileSystem: VirtualFileSystem = StandardFileSystems.jar()
+  protected val localFileSystem: VirtualFileSystem = StandardFileSystems.local()
+  protected val jarFileSystem: VirtualFileSystem = StandardFileSystems.jar()
 
   init {
     projectEnvironment.registerProjectComponent(
@@ -225,7 +225,7 @@ private class CoreFileIndex(
           val jarFilePath = file.toUri().toString().removePrefix("jar:file://")
           jarFileSystem.findFileByPath(jarFilePath)
         }
-        StandardFileSystems.FILE_PROTOCOL -> localFileSystems.findFileByPath(file.pathString)
+        StandardFileSystems.FILE_PROTOCOL -> localFileSystems.findFileByPath(file.toAbsolutePath().toString())
         else -> error("Not supported schema $schema")
       } ?: throw NullPointerException("File ${file.pathString} not found")
 
