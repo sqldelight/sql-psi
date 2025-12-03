@@ -16,12 +16,7 @@ spotless {
   kotlin {
     target "**/*.kt"
     targetExclude "**/gen/**/*.*"
-    ktlint('0.49.1').editorConfigOverride([
-      "indent_size": "2",
-       "disabled_rules": "package-name",
-       "ij_kotlin_allow_trailing_comma": "true",
-       "ij_kotlin_allow_trailing_comma_on_call_site": "true",
-    ])
+    ktfmt(libs.ktfmt.get().version).googleStyle()
     trimTrailingWhitespace()
     endWithNewline()
   }
