@@ -12,9 +12,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.PsiReferenceBase
 
-internal class SqlColumnReference<T : SqlNamedElementImpl>(
-  element: T,
-) : PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
+internal class SqlColumnReference<T : SqlNamedElementImpl>(element: T) :
+  PsiReferenceBase<T>(element, TextRange.from(0, element.textLength)) {
   override fun handleElementRename(newElementName: String) = element.setName(newElementName)
 
   private val resolved = ModifiableFileLazy {
@@ -25,12 +24,15 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     }
   }
 
-  override fun resolve() = if (!element.isValid) null else resolved.forFile(element.containingFile)?.element
+  override fun resolve() =
+    if (!element.isValid) null else resolved.forFile(element.containingFile)?.element
 
-  internal fun resolveToQuery(): QueryColumn? = if (!element.isValid) null else resolved.forFile(element.containingFile)
+  internal fun resolveToQuery(): QueryColumn? =
+    if (!element.isValid) null else resolved.forFile(element.containingFile)
 
   internal fun unsafeResolve(): QueryColumn? {
-    if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin) return QueryColumn(element)
+    if (element.parent is SqlColumnDef || element.parent is CreateVirtualTableMixin)
+      return QueryColumn(element)
 
     val tableName = tableName()
     val tables: List<QueryResult>
@@ -45,11 +47,13 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     }
 
     fun List<QueryResult>.matchingColumns(): List<QueryColumn> {
-      val columns = flatMap { it.columns }
-        .filter { it.element is PsiNamedElement && it.element.name == element.name }
-      val synthesizedColumns = flatMap { it.synthesizedColumns }
-        .filter { element.name in it.acceptableValues }
-        .map { QueryColumn(it.table, it.nullable) }
+      val columns =
+        flatMap { it.columns }
+          .filter { it.element is PsiNamedElement && it.element.name == element.name }
+      val synthesizedColumns =
+        flatMap { it.synthesizedColumns }
+          .filter { element.name in it.acceptableValues }
+          .map { QueryColumn(it.table, it.nullable) }
       return columns + synthesizedColumns
     }
 
@@ -68,7 +72,8 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
   override fun getVariants(): Array<Any> {
     tableName()?.let { tableName ->
       // Only include columns for the already specified table.
-      return availableQuery().filter { it.table?.name == tableName.name }
+      return availableQuery()
+        .filter { it.table?.name == tableName.name }
         .flatMap { it.columns }
         .map { it.element }
         .toLookupArray()
@@ -81,23 +86,23 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(
     return availableQuery().flatMap { it.columns.map { it.element } }.toLookupArray()
   }
 
-  private fun List<PsiElement?>.toLookupArray(): Array<Any> = filterIsInstance<PsiNamedElement>()
-    .distinctBy { it.name }
-    .filter { it.isValid }
-    .map {
-      if (it is SqlColumnName) {
-        val sqlColumnDef = it.reference?.resolve()?.parent as? SqlColumnDef
-        LookupElementBuilder.createWithIcon(it)
-          .withTypeText(sqlColumnDef?.columnType?.text)
-      } else {
-        LookupElementBuilder.createWithIcon(it)
+  private fun List<PsiElement?>.toLookupArray(): Array<Any> =
+    filterIsInstance<PsiNamedElement>()
+      .distinctBy { it.name }
+      .filter { it.isValid }
+      .map {
+        if (it is SqlColumnName) {
+          val sqlColumnDef = it.reference?.resolve()?.parent as? SqlColumnDef
+          LookupElementBuilder.createWithIcon(it).withTypeText(sqlColumnDef?.columnType?.text)
+        } else {
+          LookupElementBuilder.createWithIcon(it)
+        }
       }
-    }
-    .toTypedArray()
+      .toTypedArray()
 
   /**
-   * Return the table that the column element this reference wraps belongs to, or null if no
-   * table was specified.
+   * Return the table that the column element this reference wraps belongs to, or null if no table
+   * was specified.
    */
   private fun tableName(): PsiNamedElement? {
     val parent = element.parent

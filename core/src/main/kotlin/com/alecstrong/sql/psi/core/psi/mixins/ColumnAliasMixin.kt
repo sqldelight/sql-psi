@@ -10,10 +10,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiElement
 
-internal abstract class ColumnAliasMixin(
-  node: ASTNode,
-) : SqlNamedElementImpl(node),
-  SqlColumnAlias {
+internal abstract class ColumnAliasMixin(node: ASTNode) :
+  SqlNamedElementImpl(node), SqlColumnAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::column_alias_real
 
   override fun source(): PsiElement {
@@ -33,6 +31,7 @@ internal abstract class ColumnAliasMixin(
 
   private fun SqlCteTableName.selectStatement(): SqlCompoundSelectStmt {
     val withClause = parent as SqlWithClause
-    return withClause.withClauseAuxiliaryStmtList[withClause.cteTableNameList.indexOf(this)].compoundSelectStmt
+    return withClause.withClauseAuxiliaryStmtList[withClause.cteTableNameList.indexOf(this)]
+      .compoundSelectStmt
   }
 }

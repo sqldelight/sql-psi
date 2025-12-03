@@ -19,17 +19,17 @@ internal abstract class CreateTriggerMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
   node: ASTNode?,
-) : SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
+) :
+  SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
   SqlCreateTriggerStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return triggerName.text
   }
 
@@ -39,9 +39,9 @@ internal abstract class CreateTriggerMixin(
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child is MutatorMixin || child is SqlExpr || child is CompoundSelectStmtMixin) {
-      val table = tablesAvailable(this).firstOrNull {
-        it.tableName.name == tableName?.name
-      }?.query ?: return super.queryAvailable(child)
+      val table =
+        tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query
+          ?: return super.queryAvailable(child)
 
       if (hasElement(SqlTypes.INSERT)) {
         return listOf(
@@ -49,7 +49,7 @@ internal abstract class CreateTriggerMixin(
             SingleRow(tableName!!, "new"),
             table.columns,
             synthesizedColumns = table.synthesizedColumns,
-          ),
+          )
         )
       }
       if (hasElement(SqlTypes.UPDATE)) {
@@ -72,22 +72,24 @@ internal abstract class CreateTriggerMixin(
             SingleRow(tableName!!, "old"),
             table.columns,
             synthesizedColumns = table.synthesizedColumns,
-          ),
+          )
         )
       }
     }
     if (child is SqlColumnName) {
       return listOfNotNull(
-        tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query,
+        tablesAvailable(this).firstOrNull { it.tableName.name == tableName?.name }?.query
       )
     }
     return super.queryAvailable(child)
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (node.findChildByType(SqlTypes.EXISTS) == null &&
-      containingFile.schema<SqlCreateTriggerStmt>(this)
-        .any { it != this && it.triggerName.textMatches(triggerName) }
+    if (
+      node.findChildByType(SqlTypes.EXISTS) == null &&
+        containingFile.schema<SqlCreateTriggerStmt>(this).any {
+          it != this && it.triggerName.textMatches(triggerName)
+        }
     ) {
       annotationHolder.createErrorAnnotation(
         triggerName,
@@ -105,5 +107,6 @@ internal abstract class CreateTriggerMixin(
 internal class CreateTriggerElementType(name: String) :
   SqlSchemaContributorElementType<SqlCreateTriggerStmt>(name, SqlCreateTriggerStmt::class.java) {
   override fun nameType() = SqlTypes.TRIGGER_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateTriggerStmtImpl(stub, this)
 }

@@ -24,22 +24,19 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 
-internal abstract class CreateTableMixin private constructor(
-  stub: SchemaContributorStub?,
-  nodeType: IElementType?,
-  node: ASTNode?,
-) : SqlSchemaContributorImpl<TableElement, CreateTableElementType>(stub, nodeType, node),
+internal abstract class CreateTableMixin
+private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node: ASTNode?) :
+  SqlSchemaContributorImpl<TableElement, CreateTableElementType>(stub, nodeType, node),
   SqlCreateTableStmt,
   TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return tableName.name
   }
 
@@ -47,35 +44,34 @@ internal abstract class CreateTableMixin private constructor(
     schema.put<TableElement>(this)
   }
 
-  override fun tableExposed() = LazyQuery(tableName) {
-    compoundSelectStmt?.let {
-      QueryResult(tableName, it.queryExposed().flatMap { it.columns })
-    } ?: queryAvailable(this).single()
-  }
+  override fun tableExposed() =
+    LazyQuery(tableName) {
+      compoundSelectStmt?.let { QueryResult(tableName, it.queryExposed().flatMap { it.columns }) }
+        ?: queryAvailable(this).single()
+    }
 
   override fun queryAvailable(child: PsiElement): List<QueryResult> {
-    val containsWithoutId = tableOptions
-      ?.tableOptionList
-      ?.any {
-        (it.node.findChildByType(SqlTypes.WITHOUT) != null)
-      } ?: false
-    val synthesizedColumns = if (!containsWithoutId) {
-      val columnNames = columnDefList.mapNotNull { it.columnName.name }
-      listOf(
-        SynthesizedColumn(
-          table = this,
-          acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames },
-        ),
-      )
-    } else {
-      emptyList()
-    }
+    val containsWithoutId =
+      tableOptions?.tableOptionList?.any { (it.node.findChildByType(SqlTypes.WITHOUT) != null) }
+        ?: false
+    val synthesizedColumns =
+      if (!containsWithoutId) {
+        val columnNames = columnDefList.mapNotNull { it.columnName.name }
+        listOf(
+          SynthesizedColumn(
+            table = this,
+            acceptableValues = listOf("rowid", "oid", "_rowid_").filter { it !in columnNames },
+          )
+        )
+      } else {
+        emptyList()
+      }
     return listOf(
       QueryResult(
         table = tableName,
         columns = columnDefList.map { it.columnName }.asColumns(),
         synthesizedColumns = synthesizedColumns,
-      ),
+      )
     )
   }
 
@@ -98,13 +94,15 @@ internal abstract class CreateTableMixin private constructor(
       }
     }
 
-    return columnDefList.filter { it.columnConstraintList.any { it.hasPrimaryKey() } }
+    return columnDefList
+      .filter { it.columnConstraintList.any { it.hasPrimaryKey() } }
       .take(1)
       .map { it.columnName.name }
   }
 
   private fun isCollectivelyUnique(columns: List<SqlColumnName>): Boolean {
-    tableConstraintList.filter { it.hasPrimaryKey() || it.isUnique() }
+    tableConstraintList
+      .filter { it.hasPrimaryKey() || it.isUnique() }
       .map {
         it.indexedColumnList.mapNotNull {
           val expr = it.expr
@@ -113,25 +111,25 @@ internal abstract class CreateTableMixin private constructor(
       }
       .plus(
         listOf(
-          columnDefList.filter {
-            it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() }
-          }.mapNotNull { it.columnName.name },
-        ),
+          columnDefList
+            .filter { it.columnConstraintList.any { it.hasPrimaryKey() || it.isUnique() } }
+            .mapNotNull { it.columnName.name }
+        )
       )
-      .forEach { uniqueKeys ->
-        if (columns.map { it.name }.all { it in uniqueKeys }) return true
-      }
+      .forEach { uniqueKeys -> if (columns.map { it.name }.all { it in uniqueKeys }) return true }
 
     // Check if there is an externally created unique index that matches the given columns.
-    containingFile.schema<SqlCreateIndexStmt>(this)
+    containingFile
+      .schema<SqlCreateIndexStmt>(this)
       .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
       .forEach {
-        val indexedColumns = it.indexedColumnList.mapNotNull {
-          val expr = it.expr
-          if (expr is SqlColumnExpr) expr.columnName.name else null
-        }
-        if (columns.map { it.name }.containsAll(indexedColumns) &&
-          columns.size == indexedColumns.size
+        val indexedColumns =
+          it.indexedColumnList.mapNotNull {
+            val expr = it.expr
+            if (expr is SqlColumnExpr) expr.columnName.name else null
+          }
+        if (
+          columns.map { it.name }.containsAll(indexedColumns) && columns.size == indexedColumns.size
         ) {
           return true
         }
@@ -141,14 +139,13 @@ internal abstract class CreateTableMixin private constructor(
   }
 
   private fun checkForDuplicateColumns(annotationHolder: SqlAnnotationHolder) {
-    columnDefList.map { it.columnName }
+    columnDefList
+      .map { it.columnName }
       .groupBy { it.name }
       .map { it.value }
       .filter { it.size > 1 }
       .flatMap { it }
-      .forEach {
-        annotationHolder.createErrorAnnotation(it, "Duplicate column name")
-      }
+      .forEach { annotationHolder.createErrorAnnotation(it, "Duplicate column name") }
   }
 
   private fun checkForeignKeys(annotationHolder: SqlAnnotationHolder) {
@@ -207,19 +204,20 @@ internal abstract class CreateTableMixin private constructor(
         }
     }
 
-    tableConstraintList.filter { it.foreignKeyClause != null }
+    tableConstraintList
+      .filter { it.foreignKeyClause != null }
       .forEach { constraint ->
-        constraint.foreignKeyClause!!.checkCompositeForeignKey(
-          constraint.columnNameList,
-        )
+        constraint.foreignKeyClause!!.checkCompositeForeignKey(constraint.columnNameList)
       }
   }
 
   private fun checkPrimaryKey(annotationHolder: SqlAnnotationHolder) {
     // Verify there is only a single primary key
-    val constraints = columnDefList.flatMap { it.columnConstraintList }
-      .filter { it.hasPrimaryKey() }
-      .plus(tableConstraintList.filter { it.hasPrimaryKey() })
+    val constraints =
+      columnDefList
+        .flatMap { it.columnConstraintList }
+        .filter { it.hasPrimaryKey() }
+        .plus(tableConstraintList.filter { it.hasPrimaryKey() })
     if (constraints.size > 1) {
       constraints.forEach {
         annotationHolder.createErrorAnnotation(
@@ -241,9 +239,7 @@ internal abstract class CreateTableMixin private constructor(
     }
   }
 
-  /**
-   * @return true if the column constraint lists are all well formed.
-   */
+  /** @return true if the column constraint lists are all well formed. */
   private fun checkForDuplicateColumnConstraints(annotationHolder: SqlAnnotationHolder): Boolean {
     columnDefList.forEach {
       if (it.columnConstraintList.count { it.hasPrimaryKey() } > 1) {
@@ -260,13 +256,14 @@ internal abstract class CreateTableMixin private constructor(
 
   companion object {
     private fun SqlCompositeElement.hasPrimaryKey() = node.findChildByType(SqlTypes.PRIMARY) != null
+
     private fun SqlCompositeElement.isUnique() = node.findChildByType(SqlTypes.UNIQUE) != null
   }
 }
 
-open class CreateTableElementType(
-  name: String,
-) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+open class CreateTableElementType(name: String) :
+  SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateTableStmtImpl(stub, this)
 }

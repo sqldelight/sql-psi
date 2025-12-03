@@ -7,6 +7,5 @@ import com.intellij.lang.ASTNode
 
 // Throws if you access typeName and one doesn't
 // exist — typeName is optional for ModuleColumnDef
-internal abstract class ModuleColumnDefMixin(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node), SqlModuleColumnDef, SqlColumnDef
+internal abstract class ModuleColumnDefMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), SqlModuleColumnDef, SqlColumnDef

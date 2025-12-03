@@ -22,11 +22,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
 
-internal abstract class SelectStmtMixin(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  SqlSelectStmt,
-  FromQuery {
+internal abstract class SelectStmtMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), SqlSelectStmt, FromQuery {
   /**
    * During some resolution steps we don't care about the parent's projection and can safely ignore
    * it to avoid recursing too far.
@@ -35,44 +32,50 @@ internal abstract class SelectStmtMixin(
 
   private val queryExposed = ModifiableFileLazy {
     if (valuesExpressionList.isNotEmpty()) {
-      return@ModifiableFileLazy listOf(QueryResult(null, valuesExpressionList.first().exprList.asColumns()))
+      return@ModifiableFileLazy listOf(
+        QueryResult(null, valuesExpressionList.first().exprList.asColumns())
+      )
     }
     return@ModifiableFileLazy listOf(
       QueryResult(
         null,
-        columns = resultColumnList.flatMap { resultColumn ->
-          resultColumn.queryExposed().flatMap { queryResult ->
-            queryResult.columns.map {
-              if (exprList.size > 0 && it.element.nonNullIn(exprList[0])) {
-                it.copy(nullable = false)
-              } else {
-                it
+        columns =
+          resultColumnList.flatMap { resultColumn ->
+            resultColumn.queryExposed().flatMap { queryResult ->
+              queryResult.columns.map {
+                if (exprList.size > 0 && it.element.nonNullIn(exprList[0])) {
+                  it.copy(nullable = false)
+                } else {
+                  it
+                }
               }
             }
-          }
-        },
-      ),
+          },
+      )
     )
   }
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in exprList || child in (groupBy?.exprList ?: emptyList())) {
-      val available = fromQuery().map { it.copy(adjacent = true) } +
-        super.queryAvailable(this).map { it.copy(adjacent = false) }
+      val available =
+        fromQuery().map { it.copy(adjacent = true) } +
+          super.queryAvailable(this).map { it.copy(adjacent = false) }
       if (ignoreParentProjection) return available
 
-      val projection = (parent as CompoundSelectStmtMixin).queryExposed().map { selectStmt ->
-        selectStmt.copy(
-          adjacent = false,
-          columns = selectStmt.columns.filter { projectionColumn ->
-            // Avoid including any projection columns that would create name collisions.
-            (projectionColumn.element as? PsiNamedElement)?.name !in
-              available.flatMap {
-                it.columns.mapNotNull { (it.element as? PsiNamedElement)?.name }
-              }
-          },
-        )
-      }
+      val projection =
+        (parent as CompoundSelectStmtMixin).queryExposed().map { selectStmt ->
+          selectStmt.copy(
+            adjacent = false,
+            columns =
+              selectStmt.columns.filter { projectionColumn ->
+                // Avoid including any projection columns that would create name collisions.
+                (projectionColumn.element as? PsiNamedElement)?.name !in
+                  available.flatMap {
+                    it.columns.mapNotNull { (it.element as? PsiNamedElement)?.name }
+                  }
+              },
+          )
+        }
 
       return available + projection
     }
@@ -107,10 +110,12 @@ internal abstract class SelectStmtMixin(
           (rhs is SqlLiteralExpr && rhs.literalValue.node.findChildByType(SqlTypes.NULL) != null) &&
           whereExpr.node.findChildByType(SqlTypes.NOT) != null
       }
-      is SqlBinaryAndExpr -> nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) ||
-        nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
-      is SqlBinaryOrExpr -> nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) &&
-        nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
+      is SqlBinaryAndExpr ->
+        nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) ||
+          nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
+      is SqlBinaryOrExpr ->
+        nonNullIn(whereExpr.getExprList().getOrNull(0) ?: return false) &&
+          nonNullIn(whereExpr.getExprList().getOrNull(1) ?: return false)
       else -> false
     }
   }

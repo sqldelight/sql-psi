@@ -10,10 +10,7 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.psi.PsiElement
 import javax.swing.Icon
 
-internal abstract class TableAliasMixin(
-  node: ASTNode,
-) : SqlNamedElementImpl(node),
-  SqlTableAlias {
+internal abstract class TableAliasMixin(node: ASTNode) : SqlNamedElementImpl(node), SqlTableAlias {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::table_alias_real
 
   override fun source(): PsiElement {

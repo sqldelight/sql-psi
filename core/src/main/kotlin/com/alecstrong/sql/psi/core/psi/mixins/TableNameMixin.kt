@@ -19,17 +19,16 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.tree.TokenSet
 import javax.swing.Icon
 
-internal abstract class TableNameMixin(
-  node: ASTNode,
-) : SqlNamedElementImpl(node) {
+internal abstract class TableNameMixin(node: ASTNode) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean
-    get() = when (this) {
-      is SqlTableName -> SqlParser::table_name_real
-      is SqlViewName -> SqlParser::view_name_real
-      is SqlForeignTable -> SqlParser::foreign_table_real
-      is SqlNewTableName -> SqlParser::new_table_name_real
-      else -> throw IllegalStateException("Unknown table type ${this::class}")
-    }
+    get() =
+      when (this) {
+        is SqlTableName -> SqlParser::table_name_real
+        is SqlViewName -> SqlParser::view_name_real
+        is SqlForeignTable -> SqlParser::foreign_table_real
+        is SqlNewTableName -> SqlParser::new_table_name_real
+        else -> throw IllegalStateException("Unknown table type ${this::class}")
+      }
 
   override fun getReference(): PsiReference {
     return SqlTableReference(this)
@@ -46,7 +45,8 @@ internal abstract class TableNameMixin(
         annotationHolder.createErrorAnnotation(this, "Table already defined with name $name")
       }
     } else if (references == null) {
-      if ((parent is SqlDropTableStmt || parent is SqlDropViewStmt) && !createTableSchema(parent.node)
+      if (
+        (parent is SqlDropTableStmt || parent is SqlDropViewStmt) && !createTableSchema(parent.node)
       ) {
         return
       }
@@ -60,11 +60,6 @@ internal abstract class TableNameMixin(
   }
 
   private fun createTableSchema(node: ASTNode): Boolean {
-    return node.findChildByType(
-      TokenSet.create(
-        SqlTypes.EXISTS,
-        SqlTypes.REPLACE,
-      ),
-    ) == null
+    return node.findChildByType(TokenSet.create(SqlTypes.EXISTS, SqlTypes.REPLACE)) == null
   }
 }

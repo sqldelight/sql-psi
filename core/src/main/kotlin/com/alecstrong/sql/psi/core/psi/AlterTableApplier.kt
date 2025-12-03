@@ -8,33 +8,30 @@ interface AlterTableApplier : PsiElement {
 }
 
 val AlterTableApplier.alterStmt
-  get() = PsiTreeUtil.getParentOfType(
-    this,
-    SqlAlterTableStmt::class.java,
-  )!!
+  get() = PsiTreeUtil.getParentOfType(this, SqlAlterTableStmt::class.java)!!
 
 internal fun LazyQuery.withAlterStatement(
   alter: SqlAlterTableStmt,
   until: SqlAlterTableRules? = null,
 ): LazyQuery {
-  return alter.alterTableRulesList.takeWhile { it != until }.fold(
-    this,
-    { lazyQuery, alterTableRules ->
-      // Rename table.
-      alterTableRules.alterTableRenameTable?.let { renameTable ->
-        return@fold LazyQuery(
-          tableName = renameTable.newTableName,
-          query = {
-            lazyQuery.query.copy(table = renameTable.newTableName)
-          },
-        )
-      }
+  return alter.alterTableRulesList
+    .takeWhile { it != until }
+    .fold(
+      this,
+      { lazyQuery, alterTableRules ->
+        // Rename table.
+        alterTableRules.alterTableRenameTable?.let { renameTable ->
+          return@fold LazyQuery(
+            tableName = renameTable.newTableName,
+            query = { lazyQuery.query.copy(table = renameTable.newTableName) },
+          )
+        }
 
-      (alterTableRules.firstChild as? AlterTableApplier)?.let {
-        return@fold it.applyTo(lazyQuery)
-      }
+        (alterTableRules.firstChild as? AlterTableApplier)?.let {
+          return@fold it.applyTo(lazyQuery)
+        }
 
-      return@fold lazyQuery
-    },
-  )
+        return@fold lazyQuery
+      },
+    )
 }

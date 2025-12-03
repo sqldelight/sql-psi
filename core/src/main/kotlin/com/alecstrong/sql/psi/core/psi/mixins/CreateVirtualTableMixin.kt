@@ -20,18 +20,18 @@ internal abstract class CreateVirtualTableMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
   node: ASTNode?,
-) : SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
+) :
+  SqlSchemaContributorImpl<TableElement, CreateVirtualTableElementType>(stub, nodeType, node),
   SqlCreateVirtualTableStmt,
   TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return tableName.name
   }
 
@@ -40,37 +40,41 @@ internal abstract class CreateVirtualTableMixin(
   }
 
   override fun tableExposed(): LazyQuery {
-    val columnNameElements = findChildrenByClass(
-      SqlModuleArgument::class.java,
-    )
-      .mapNotNull { it.moduleArgumentDef?.moduleColumnDef?.columnName ?: it.moduleArgumentDef?.columnDef?.columnName }
-
-    val synthesizedColumns = when {
-      usesFts3Module || usesFts4Module -> {
-        val columnNames = columnNameElements.map { it.name }
-
-        listOf(
-          SynthesizedColumn(
-            table = this,
-            acceptableValues = listOf("docid", "rowid", "oid", "_rowid_", tableName.name)
-              .filter { it !in columnNames },
-          ),
-        )
-      }
-      usesFts5Module -> {
-        val columnNames = columnNameElements.map { it.name }
-
-        listOf(
-          SynthesizedColumn(
-            table = this,
-            acceptableValues = listOf("rowid", "_row_id_", "rank", tableName.name)
-              .filter { it !in columnNames },
-          ),
-        )
+    val columnNameElements =
+      findChildrenByClass(SqlModuleArgument::class.java).mapNotNull {
+        it.moduleArgumentDef?.moduleColumnDef?.columnName
+          ?: it.moduleArgumentDef?.columnDef?.columnName
       }
 
-      else -> emptyList()
-    }
+    val synthesizedColumns =
+      when {
+        usesFts3Module || usesFts4Module -> {
+          val columnNames = columnNameElements.map { it.name }
+
+          listOf(
+            SynthesizedColumn(
+              table = this,
+              acceptableValues =
+                listOf("docid", "rowid", "oid", "_rowid_", tableName.name).filter {
+                  it !in columnNames
+                },
+            )
+          )
+        }
+        usesFts5Module -> {
+          val columnNames = columnNameElements.map { it.name }
+
+          listOf(
+            SynthesizedColumn(
+              table = this,
+              acceptableValues =
+                listOf("rowid", "_row_id_", "rank", tableName.name).filter { it !in columnNames },
+            )
+          )
+        }
+
+        else -> emptyList()
+      }
 
     return LazyQuery(tableName) {
       QueryResult(
@@ -85,6 +89,7 @@ internal abstract class CreateVirtualTableMixin(
 internal class CreateVirtualTableElementType(name: String) :
   SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateVirtualTableStmtImpl(stub, this)
 }
 

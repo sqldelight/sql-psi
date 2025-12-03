@@ -30,9 +30,9 @@ class NullabilityTest {
       |      FROM owner
       |      LEFT OUTER JOIN car ON owner.carId = car.id)
       |WHERE carBrand = ?;
-      """.trimMargin(),
+      """
+        .trimMargin()
     ) { file ->
-
       val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
       val projection = select.queryExposed().flatMap { it.columns }
 
@@ -73,9 +73,9 @@ class NullabilityTest {
       |  GROUP BY 1
       |  ORDER BY target.name COLLATE NOCASE ASC
       |;
-      """.trimMargin(),
+      """
+        .trimMargin()
     ) { file ->
-
       val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
       val projection = select.queryExposed().flatMap { it.columns }
 
@@ -97,9 +97,9 @@ class NullabilityTest {
       |SELECT name, name AS poop, thing AS poop2
       |FROM target
       |WHERE name IS NOT NULL AND thing IS NOT NULL;
-      """.trimMargin(),
+      """
+        .trimMargin()
     ) { file ->
-
       val select = file.sqlStmtList!!.stmtList.mapNotNull { it.compoundSelectStmt }.single()
       val projection = select.queryExposed().flatMap { it.columns }
 

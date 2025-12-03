@@ -22,7 +22,8 @@ open class SqlAnnotator : Annotator {
   }
 }
 
-class AnnotationException(val msg: String, val element: PsiElement? = null) : IllegalStateException(msg)
+class AnnotationException(val msg: String, val element: PsiElement? = null) :
+  IllegalStateException(msg)
 
 fun interface SqlAnnotationHolder {
   fun createErrorAnnotation(element: PsiElement, message: String)

@@ -7,11 +7,13 @@ import kotlin.reflect.KClass
 
 interface SchemaContributor : SqlCompositeElement {
   fun modifySchema(schema: Schema)
+
   fun name(): String
 }
 
 interface SchemaContributorStub : StubElement<SchemaContributor> {
   fun name(): String
+
   fun getTextOffset(): Int
 }
 
@@ -20,14 +22,15 @@ internal open class SchemaContributorStubImpl<T : SchemaContributor>(
   type: SqlSchemaContributorElementType<T>,
   private val name: String,
   private val textOffset: Int,
-) : StubBase<SchemaContributor>(parent, type),
-  SchemaContributorStub {
+) : StubBase<SchemaContributor>(parent, type), SchemaContributorStub {
   override fun name() = name
+
   override fun getTextOffset() = textOffset
 }
 
 class Schema {
-  private val map = mutableMapOf<KClass<out SchemaContributor>, MutableMap<String, out SchemaContributor>>()
+  private val map =
+    mutableMapOf<KClass<out SchemaContributor>, MutableMap<String, out SchemaContributor>>()
 
   @Suppress("UNCHECKED_CAST")
   internal inline fun <reified Value : SchemaContributor> forType(): MutableMap<String, Value> =
@@ -35,7 +38,9 @@ class Schema {
 
   @Suppress("UNCHECKED_CAST")
   internal inline fun <reified Value : SchemaContributor> put(value: SchemaContributor) {
-    val map = map.getOrPut(Value::class, { linkedMapOf<String, Value>() }) as MutableMap<String, SchemaContributor>
+    val map =
+      map.getOrPut(Value::class, { linkedMapOf<String, Value>() })
+        as MutableMap<String, SchemaContributor>
     map.putIfAbsent(value.name(), value)
   }
 

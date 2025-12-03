@@ -12,21 +12,18 @@ import com.alecstrong.sql.psi.core.psi.impl.SqlDropIndexStmtImpl
 import com.intellij.lang.ASTNode
 import com.intellij.psi.tree.IElementType
 
-internal abstract class DropIndexMixin private constructor(
-  stub: SchemaContributorStub?,
-  nodeType: IElementType?,
-  node: ASTNode?,
-) : SqlSchemaContributorImpl<SqlCreateIndexStmt, DropIndexElementType>(stub, nodeType, node),
+internal abstract class DropIndexMixin
+private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node: ASTNode?) :
+  SqlSchemaContributorImpl<SqlCreateIndexStmt, DropIndexElementType>(stub, nodeType, node),
   SqlDropIndexStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return indexName?.text ?: ""
   }
 
@@ -36,9 +33,11 @@ internal abstract class DropIndexMixin private constructor(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     indexName?.let { indexName ->
-      if (node.findChildByType(SqlTypes.EXISTS) == null &&
-        containingFile.schema<SqlCreateIndexStmt>(this)
-          .none { it != this && it.indexName.textMatches(indexName) }
+      if (
+        node.findChildByType(SqlTypes.EXISTS) == null &&
+          containingFile.schema<SqlCreateIndexStmt>(this).none {
+            it != this && it.indexName.textMatches(indexName)
+          }
       ) {
         annotationHolder.createErrorAnnotation(
           indexName,
@@ -51,9 +50,9 @@ internal abstract class DropIndexMixin private constructor(
   }
 }
 
-internal class DropIndexElementType(
-  name: String,
-) : SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
+internal class DropIndexElementType(name: String) :
+  SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlDropIndexStmtImpl(stub, this)
 }

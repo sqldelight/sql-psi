@@ -9,10 +9,8 @@ import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlResultColumn
 import com.intellij.lang.ASTNode
 
-internal abstract class ResultColumnMixin(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  SqlResultColumn {
+internal abstract class ResultColumnMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), SqlResultColumn {
   private val queryExposed = ModifiableFileLazy lazy@{
     val fromQuery = (parent as? FromQuery)?.fromQuery() ?: return@lazy emptyList<QueryResult>()
     tableName?.let { tableNameElement ->
@@ -23,16 +21,15 @@ internal abstract class ResultColumnMixin(
       var column: QueryElement.QueryColumn
       if (it is SqlColumnExpr) {
         val reference = (it.columnName as ColumnNameMixin).reference
-        column = reference.resolveToQuery()
-          ?: QueryElement.QueryColumn(it.columnName.reference?.resolve() ?: it)
+        column =
+          reference.resolveToQuery()
+            ?: QueryElement.QueryColumn(it.columnName.reference?.resolve() ?: it)
       } else {
         column = QueryElement.QueryColumn(it)
       }
 
       // expr [ '.' column_alias ]
-      columnAlias?.let { alias ->
-        column = column.copy(element = alias)
-      }
+      columnAlias?.let { alias -> column = column.copy(element = alias) }
 
       return@lazy listOf(QueryResult(columns = listOf(column)))
     }

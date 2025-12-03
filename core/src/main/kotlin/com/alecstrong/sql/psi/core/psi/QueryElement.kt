@@ -21,7 +21,8 @@ interface QueryElement : PsiElement {
    * a_table JOIN a_second_table
    * ```
    *
-   * Would expose `[QueryResult(a_table, [all of a_tables columns]), QueryResult(a_second_table, [all of a_second_tables columns])]`
+   * Would expose `[QueryResult(a_table, [all of a_tables columns]), QueryResult(a_second_table,
+   * [all of a_second_tables columns])]`
    */
   fun queryExposed(): Collection<QueryResult>
 
@@ -55,8 +56,8 @@ interface QueryElement : PsiElement {
   )
 
   /**
-   * These aren't considered part of the exposed query (ie performing a SELECT * does not return
-   * the column in the result set) but they can be explicitly referenced.
+   * These aren't considered part of the exposed query (ie performing a SELECT * does not return the
+   * column in the result set) but they can be explicitly referenced.
    */
   data class SynthesizedColumn(
     val table: PsiElement,

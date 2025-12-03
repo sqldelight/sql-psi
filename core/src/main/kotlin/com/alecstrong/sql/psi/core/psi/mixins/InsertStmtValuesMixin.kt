@@ -8,10 +8,8 @@ import com.alecstrong.sql.psi.core.psi.SqlInsertStmtValues
 import com.alecstrong.sql.psi.core.psi.SqlTypes
 import com.intellij.lang.ASTNode
 
-internal abstract class InsertStmtValuesMixin(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  SqlInsertStmtValues {
+internal abstract class InsertStmtValuesMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), SqlInsertStmtValues {
   override fun getParent(): SqlInsertStmt? {
     return super.getParent() as SqlInsertStmt?
   }
@@ -21,9 +19,7 @@ internal abstract class InsertStmtValuesMixin(
     val table = tableAvailable(this, parent.tableName.name).firstOrNull() ?: return
     val columns = table.columns.map { (it.element as SqlColumnName).name }
     // DEFAULT VALUES clause
-    val insertDefaultValues = node.findChildByType(
-      SqlTypes.DEFAULT,
-    ) != null
+    val insertDefaultValues = node.findChildByType(SqlTypes.DEFAULT) != null
     val setColumns =
       if (parent.columnNameList.isEmpty() && !insertDefaultValues) {
         columns
@@ -52,10 +48,11 @@ internal abstract class InsertStmtValuesMixin(
       }
     }
 
-    val needsDefaultValue = table.columns
-      .filterNot { (element, _) -> element is SqlColumnName && element.name in setColumns }
-      .map { it.element as SqlColumnName }
-      .filterNot { (it.parent as ColumnDefMixin).hasDefaultValue() }
+    val needsDefaultValue =
+      table.columns
+        .filterNot { (element, _) -> element is SqlColumnName && element.name in setColumns }
+        .map { it.element as SqlColumnName }
+        .filterNot { (it.parent as ColumnDefMixin).hasDefaultValue() }
     if (needsDefaultValue.size == 1) {
       annotationHolder.createErrorAnnotation(
         parent,
