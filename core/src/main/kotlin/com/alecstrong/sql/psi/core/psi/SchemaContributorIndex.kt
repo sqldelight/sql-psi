@@ -10,12 +10,11 @@ import com.intellij.psi.stubs.StubIndexKey
 
 interface SchemaContributorIndex {
   fun getKey(): StubIndexKey<String, SchemaContributor>
+
   fun get(key: String, project: Project, scope: GlobalSearchScope): Collection<SchemaContributor>
 
   companion object {
-    val KEY by lazy {
-      StubIndexKey.createIndexKey<String, SchemaContributor>("sqldelight.schema")
-    }
+    val KEY by lazy { StubIndexKey.createIndexKey<String, SchemaContributor>("sqldelight.schema") }
 
     fun getInstance(project: Project): SchemaContributorIndex {
       return project.serviceOrNull() ?: SchemaContributorIndexImpl.instance
@@ -23,7 +22,8 @@ interface SchemaContributorIndex {
   }
 }
 
-internal class SchemaContributorIndexImpl : SchemaContributorIndex, StringStubIndexExtension<SchemaContributor>() {
+internal class SchemaContributorIndexImpl :
+  SchemaContributorIndex, StringStubIndexExtension<SchemaContributor>() {
   override fun getVersion() = 4
 
   override fun getKey(): StubIndexKey<String, SchemaContributor> {

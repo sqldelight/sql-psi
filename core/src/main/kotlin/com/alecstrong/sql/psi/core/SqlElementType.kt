@@ -31,7 +31,8 @@ class SqlElementType(name: String) : IElementType(name, null) {
 abstract class SqlSchemaContributorElementType<SchemaType : SchemaContributor>(
   private val name: String,
   /**
-   * This should be the same class used when interfacing with [com.alecstrong.sql.psi.core.psi.Schema]
+   * This should be the same class used when interfacing with
+   * [com.alecstrong.sql.psi.core.psi.Schema]
    */
   private val schemaClass: Class<SchemaType>,
 ) : ILightStubElementType<SchemaContributorStub, SchemaContributor>(name, null) {

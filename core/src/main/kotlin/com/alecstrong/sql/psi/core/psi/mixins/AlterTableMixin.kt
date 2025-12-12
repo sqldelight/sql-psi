@@ -42,29 +42,28 @@ internal class AlterTableStmtStubImpl<T : TableElement>(
   override fun newTableName() = newTableName
 }
 
-internal abstract class AlterTableMixin private constructor(
-  stub: AlterTableStmtStub?,
-  nodeType: IElementType?,
-  node: ASTNode?,
-) : SqlSchemaContributorImpl<TableElement, AlterTableElementType>(stub, nodeType, node),
+internal abstract class AlterTableMixin
+private constructor(stub: AlterTableStmtStub?, nodeType: IElementType?, node: ASTNode?) :
+  SqlSchemaContributorImpl<TableElement, AlterTableElementType>(stub, nodeType, node),
   SqlAlterTableStmt,
   TableElement {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: AlterTableStmtStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: AlterTableStmtStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun getStub() = super.getStub() as AlterTableStmtStub?
 
   fun newTableName(): String? {
-    stub?.let { return it.newTableName() }
+    stub?.let {
+      return it.newTableName()
+    }
     return newTableName?.name
   }
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return tableName.name
   }
 
@@ -87,15 +86,17 @@ internal abstract class AlterTableMixin private constructor(
     return LazyQuery(
       tableName = newTableName ?: tableName,
       query = result@{
-        val tableName = getParentOfType(tableName.reference?.resolve(), TableElement::class.java)
-          ?: return@result QueryElement.QueryResult(columns = emptyList())
-        val lazyQuery = tableName.tableExposed()
-        try {
-          lazyQuery.withAlterStatement(this)
-        } catch (e: AnnotationException) {
-          lazyQuery
-        }.query
-      },
+          val tableName =
+            getParentOfType(tableName.reference?.resolve(), TableElement::class.java)
+              ?: return@result QueryElement.QueryResult(columns = emptyList())
+          val lazyQuery = tableName.tableExposed()
+          try {
+              lazyQuery.withAlterStatement(this)
+            } catch (e: AnnotationException) {
+              lazyQuery
+            }
+            .query
+        },
     )
   }
 
@@ -109,8 +110,8 @@ internal abstract class AlterTableMixin private constructor(
     }
     val parent = getParentOfType(tableName.reference?.resolve(), TableElement::class.java)
     when (parent) {
-      is SqlAlterTableStmt, is SqlCreateTableStmt -> {
-      }
+      is SqlAlterTableStmt,
+      is SqlCreateTableStmt -> {}
       else -> {
         annotationHolder.createErrorAnnotation(
           tableName,
@@ -128,14 +129,12 @@ internal abstract class AlterTableMixin private constructor(
   }
 }
 
-open class AlterTableElementType(
-  name: String,
-) : SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
+open class AlterTableElementType(name: String) :
+  SqlSchemaContributorElementType<TableElement>(name, TableElement::class.java) {
   override fun nameType() = SqlTypes.TABLE_NAME
-  override fun createPsi(stub: SchemaContributorStub) = SqlAlterTableStmtImpl(
-    stub as AlterTableStmtStub,
-    this,
-  )
+
+  override fun createPsi(stub: SchemaContributorStub) =
+    SqlAlterTableStmtImpl(stub as AlterTableStmtStub, this)
 
   override fun serialize(stub: SchemaContributorStub, stubOutputStream: StubOutputStream) {
     super.serialize(stub, stubOutputStream)
@@ -180,6 +179,4 @@ open class AlterTableElementType(
 }
 
 private val SqlAlterTableStmt.newTableName
-  get() = alterTableRulesList
-    .mapNotNull { it.alterTableRenameTable?.newTableName }
-    .lastOrNull()
+  get() = alterTableRulesList.mapNotNull { it.alterTableRenameTable?.newTableName }.lastOrNull()

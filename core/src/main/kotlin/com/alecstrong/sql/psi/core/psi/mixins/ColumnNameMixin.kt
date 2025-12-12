@@ -10,9 +10,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import javax.swing.Icon
 
-internal abstract class ColumnNameMixin(
-  node: ASTNode,
-) : SqlNamedElementImpl(node) {
+internal abstract class ColumnNameMixin(node: ASTNode) : SqlNamedElementImpl(node) {
   override val parseRule: (PsiBuilder, Int) -> Boolean = SqlParser::column_name_real
 
   override fun getReference() = SqlColumnReference(this)

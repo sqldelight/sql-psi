@@ -9,11 +9,21 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 class SqliteTestFixtures : ReadOnlyProperty<Nothing?, Path>, AutoCloseable {
-  val jarFile: Path get() = SqliteTestFixtures::class.java.getResource("/SqliteTestFixtures.class")!!.toURI().toJarPath().parent
+  val jarFile: Path
+    get() =
+      SqliteTestFixtures::class
+        .java
+        .getResource("/SqliteTestFixtures.class")!!
+        .toURI()
+        .toJarPath()
+        .parent
 
   override operator fun getValue(thisRef: Nothing?, property: KProperty<*>): Path {
     val uri =
-      SqliteTestFixtures::class.java.getResource("/${property.name}.${SampleFileType.defaultExtension}")!!.toURI()
+      SqliteTestFixtures::class
+        .java
+        .getResource("/${property.name}.${SampleFileType.defaultExtension}")!!
+        .toURI()
     return uri.toJarPath()
   }
 
@@ -26,12 +36,13 @@ class SqliteTestFixtures : ReadOnlyProperty<Nothing?, Path>, AutoCloseable {
   }
 
   private fun URI.toJarPath(): Path {
-    val fileSystem = try {
-      FileSystems.getFileSystem(this)
-    } catch (_: FileSystemNotFoundException) {
-      val env = mapOf("create" to "true")
-      FileSystems.newFileSystem(this, env)
-    }
+    val fileSystem =
+      try {
+        FileSystems.getFileSystem(this)
+      } catch (_: FileSystemNotFoundException) {
+        val env = mapOf("create" to "true")
+        FileSystems.newFileSystem(this, env)
+      }
     openFileSystems.add(fileSystem)
     return toPath()
   }

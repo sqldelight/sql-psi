@@ -17,17 +17,17 @@ internal abstract class CreateIndexMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
   node: ASTNode?,
-) : SqlSchemaContributorImpl<SqlCreateIndexStmt, CreateIndexElementType>(stub, nodeType, node),
+) :
+  SqlSchemaContributorImpl<SqlCreateIndexStmt, CreateIndexElementType>(stub, nodeType, node),
   SqlCreateIndexStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name(): String {
-    stub?.let { return it.name() }
+    stub?.let {
+      return it.name()
+    }
     return indexName.text
   }
 
@@ -38,16 +38,18 @@ internal abstract class CreateIndexMixin(
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in indexedColumnList || child == expr) {
       return listOfNotNull(
-        tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query,
+        tablesAvailable(child).firstOrNull { it.tableName.name == tableName?.name }?.query
       )
     }
     return super.queryAvailable(child)
   }
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
-    if (node.findChildByType(SqlTypes.EXISTS) == null &&
-      containingFile.schema<SqlCreateIndexStmt>(this)
-        .any { it != this && it.indexName.textMatches(indexName) }
+    if (
+      node.findChildByType(SqlTypes.EXISTS) == null &&
+        containingFile.schema<SqlCreateIndexStmt>(this).any {
+          it != this && it.indexName.textMatches(indexName)
+        }
     ) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }
@@ -55,9 +57,9 @@ internal abstract class CreateIndexMixin(
   }
 }
 
-open class CreateIndexElementType(
-  name: String,
-) : SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
+open class CreateIndexElementType(name: String) :
+  SqlSchemaContributorElementType<SqlCreateIndexStmt>(name, SqlCreateIndexStmt::class.java) {
   override fun nameType() = SqlTypes.INDEX_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlCreateIndexStmtImpl(stub, this)
 }

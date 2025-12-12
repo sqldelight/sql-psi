@@ -10,9 +10,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 
-internal abstract class WithClauseContainer(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node) {
+internal abstract class WithClauseContainer(node: ASTNode) : SqlCompositeElementImpl(node) {
   abstract fun getWithClause(): SqlWithClause?
 
   override fun tablesAvailable(child: PsiElement): Collection<LazyQuery> {
@@ -23,15 +21,20 @@ internal abstract class WithClauseContainer(
   }
 
   protected fun SqlWithClause.tablesExposed(): List<LazyQuery> {
-    return cteTableNameList.zip(withClauseAuxiliaryStmtList)
+    return cteTableNameList
+      .zip(withClauseAuxiliaryStmtList)
       .mapNotNull { (name, withClauseAuxiliaryStmt) ->
-        PsiTreeUtil.findChildOfType(withClauseAuxiliaryStmt, QueryElement::class.java)?.let { name to it }
+        PsiTreeUtil.findChildOfType(withClauseAuxiliaryStmt, QueryElement::class.java)?.let {
+          name to it
+        }
       }
       .map { (name, queryElement) ->
         LazyQuery(name.tableName) {
           QueryResult(
             name.tableName,
-            name.columnAliasList.asColumns().ifEmpty { queryElement.queryExposed().flatMap(QueryResult::columns) },
+            name.columnAliasList.asColumns().ifEmpty {
+              queryElement.queryExposed().flatMap(QueryResult::columns)
+            },
           )
         }
       }

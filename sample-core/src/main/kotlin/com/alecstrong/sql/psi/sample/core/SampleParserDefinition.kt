@@ -11,7 +11,9 @@ class SampleParserDefinition : SqlParserDefinition() {
   }
 
   override fun createFile(viewProvider: FileViewProvider) = SampleFile(viewProvider)
+
   override fun getFileNodeType() = FILE
+
   override fun getLanguage() = SampleLanguage
 
   companion object {

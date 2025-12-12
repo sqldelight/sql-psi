@@ -39,42 +39,37 @@ import kotlin.reflect.KClass
 private class ApplicationEnvironment {
   val disposable = Disposer.newDisposable()
 
-  val coreApplicationEnvironment: CoreApplicationEnvironment = CoreApplicationEnvironment(disposable).apply {
+  val coreApplicationEnvironment: CoreApplicationEnvironment =
+    CoreApplicationEnvironment(disposable).apply {
+      System.setProperty("ide.hide.excluded.files", "false")
+      System.setProperty("psi.sleep.in.validity.check", "false")
+      System.setProperty("psi.incremental.reparse.depth.limit", "1000")
 
-    System.setProperty("ide.hide.excluded.files", "false")
-    System.setProperty("psi.sleep.in.validity.check", "false")
-    System.setProperty("psi.incremental.reparse.depth.limit", "1000")
-
-    CoreApplicationEnvironment.registerApplicationExtensionPoint(
-      MetaLanguage.EP_NAME,
-      MetaLanguage::class.java,
-    )
-    CoreApplicationEnvironment.registerApplicationExtensionPoint(
-      SmartPointerAnchorProvider.EP_NAME,
-      SmartPointerAnchorProvider::class.java,
-    )
-    CoreApplicationEnvironment.registerApplicationExtensionPoint(
-      WorkspaceFileIndexImpl.EP_NAME,
-      WorkspaceFileIndexContributor::class.java,
-    )
-    CoreApplicationEnvironment.registerApplicationExtensionPoint(
-      CustomEntityProjectModelInfoProvider.EP,
-      CustomEntityProjectModelInfoProvider::class.java,
-    )
-  }
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
+        MetaLanguage.EP_NAME,
+        MetaLanguage::class.java,
+      )
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
+        SmartPointerAnchorProvider.EP_NAME,
+        SmartPointerAnchorProvider::class.java,
+      )
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
+        WorkspaceFileIndexImpl.EP_NAME,
+        WorkspaceFileIndexContributor::class.java,
+      )
+      CoreApplicationEnvironment.registerApplicationExtensionPoint(
+        CustomEntityProjectModelInfoProvider.EP,
+        CustomEntityProjectModelInfoProvider::class.java,
+      )
+    }
 }
 
-open class SqlCoreEnvironment(
-  sourceFolders: List<Path>,
-  dependencies: List<Path>,
-) : AutoCloseable {
+open class SqlCoreEnvironment(sourceFolders: List<Path>, dependencies: List<Path>) : AutoCloseable {
   private val fileIndex: CoreFileIndex
 
   private val env = ApplicationEnvironment()
-  protected val projectEnvironment = CoreProjectEnvironment(
-    env.disposable,
-    env.coreApplicationEnvironment,
-  )
+  protected val projectEnvironment =
+    CoreProjectEnvironment(env.disposable, env.coreApplicationEnvironment)
 
   protected val localFileSystem: VirtualFileSystem = StandardFileSystems.local()
   protected val jarFileSystem: VirtualFileSystem = StandardFileSystems.jar()
@@ -93,20 +88,22 @@ open class SqlCoreEnvironment(
       DirectoryIndexImpl(projectEnvironment.project),
     )
 
-    fileIndex = CoreFileIndex(
-      sourceFolders,
-      localFileSystem,
-      jarFileSystem,
-      project = projectEnvironment.project,
-    )
+    fileIndex =
+      CoreFileIndex(
+        sourceFolders,
+        localFileSystem,
+        jarFileSystem,
+        project = projectEnvironment.project,
+      )
     projectEnvironment.project.registerService(ProjectFileIndex::class.java, fileIndex)
 
-    val contributorIndex = CoreFileIndex(
-      sourceFolders + dependencies,
-      localFileSystem,
-      jarFileSystem,
-      project = projectEnvironment.project,
-    )
+    val contributorIndex =
+      CoreFileIndex(
+        sourceFolders + dependencies,
+        localFileSystem,
+        jarFileSystem,
+        project = projectEnvironment.project,
+      )
     projectEnvironment.project.registerService(
       SchemaContributorIndex::class.java,
       object : SchemaContributorIndex {
@@ -114,8 +111,10 @@ open class SqlCoreEnvironment(
           val manager = PsiManager.getInstance(projectEnvironment.project)
           val map = linkedMapOf<VirtualFile, Collection<SchemaContributor>>()
           contributorIndex.iterateContent { file ->
-            map[file] = (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList
-              ?.mapNotNull { it.firstChild as? SchemaContributor } ?: emptyList()
+            map[file] =
+              (manager.findFile(file) as? SqlFileBase)?.sqlStmtList?.stmtList?.mapNotNull {
+                it.firstChild as? SchemaContributor
+              } ?: emptyList()
             return@iterateContent true
           }
           map
@@ -140,7 +139,8 @@ open class SqlCoreEnvironment(
   ) {
     val otherFailures = mutableListOf<() -> Unit>()
     val myHolder = SqlAnnotationHolder { element, s ->
-      if (PsiTreeUtil.getNonStrictParentOfType(
+      if (
+        PsiTreeUtil.getNonStrictParentOfType(
           element,
           SqlCreateTableStmt::class.java,
           SqlCreateVirtualTableStmt::class.java,
@@ -149,9 +149,7 @@ open class SqlCoreEnvironment(
       ) {
         annotationHolder.createErrorAnnotation(element, s)
       } else {
-        otherFailures.add {
-          annotationHolder.createErrorAnnotation(element, s)
-        }
+        otherFailures.add { annotationHolder.createErrorAnnotation(element, s) }
       }
     }
     forSourceFiles<SqlFileBase> {
@@ -195,7 +193,8 @@ open class SqlCoreEnvironment(
         |Failed to compile ${containingFile.virtualFile.path}:${node.startOffset}:
         |  $text
         |
-          """.trimMargin(),
+          """
+            .trimMargin(),
           e,
         )
       }
@@ -220,14 +219,16 @@ private class CoreFileIndex(
 ) : ProjectFileIndexImpl(project) {
   override fun iterateContent(iterator: ContentIterator): Boolean {
     for (file in sourceFolders) {
-      val vFile = when (val schema = file.fileSystem.provider().scheme) {
-        StandardFileSystems.JAR_PROTOCOL -> {
-          val jarFilePath = file.toUri().toString().removePrefix("jar:file://")
-          jarFileSystem.findFileByPath(jarFilePath)
-        }
-        StandardFileSystems.FILE_PROTOCOL -> localFileSystems.findFileByPath(file.toAbsolutePath().toString())
-        else -> error("Not supported schema $schema")
-      } ?: throw NullPointerException("File ${file.pathString} not found")
+      val vFile =
+        when (val schema = file.fileSystem.provider().scheme) {
+          StandardFileSystems.JAR_PROTOCOL -> {
+            val jarFilePath = file.toUri().toString().removePrefix("jar:file://")
+            jarFileSystem.findFileByPath(jarFilePath)
+          }
+          StandardFileSystems.FILE_PROTOCOL ->
+            localFileSystems.findFileByPath(file.toAbsolutePath().toString())
+          else -> error("Not supported schema $schema")
+        } ?: throw NullPointerException("File ${file.pathString} not found")
 
       if (!iterateContentUnderDirectory(vFile, iterator)) {
         return false

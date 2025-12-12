@@ -10,10 +10,8 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 
-open class SqlCompositeElementImpl(
-  node: ASTNode,
-) : ASTWrapperPsiElement(node),
-  SqlCompositeElement {
+open class SqlCompositeElementImpl(node: ASTNode) :
+  ASTWrapperPsiElement(node), SqlCompositeElement {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     return (parent as SqlCompositeElement).queryAvailable(this)
   }
@@ -41,12 +39,11 @@ open class SqlCompositeElementImpl(
     }
 }
 
-internal abstract class SqlSchemaContributorImpl<SchemaType : SchemaContributor, ElementType : SqlSchemaContributorElementType<SchemaType>>(
-  stub: SchemaContributorStub?,
-  nodeType: IElementType?,
-  node: ASTNode?,
-) : StubBasedPsiElementBase<SchemaContributorStub>(stub, nodeType, node),
-  SchemaContributor {
+internal abstract class SqlSchemaContributorImpl<
+  SchemaType : SchemaContributor,
+  ElementType : SqlSchemaContributorElementType<SchemaType>,
+>(stub: SchemaContributorStub?, nodeType: IElementType?, node: ASTNode?) :
+  StubBasedPsiElementBase<SchemaContributorStub>(stub, nodeType, node), SchemaContributor {
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     return (parent as SqlCompositeElement).queryAvailable(this)
   }

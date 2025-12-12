@@ -6,10 +6,8 @@ import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlTableOrSubquery
 import com.intellij.lang.ASTNode
 
-internal abstract class TableOrSubqueryMixin(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  SqlTableOrSubquery {
+internal abstract class TableOrSubqueryMixin(node: ASTNode) :
+  SqlCompositeElementImpl(node), SqlTableOrSubquery {
   private val queryExposed = ModifiableFileLazy lazy@{
     tableName?.let { tableNameElement ->
       val result = tableAvailable(tableNameElement, tableNameElement.name)
@@ -17,7 +15,13 @@ internal abstract class TableOrSubqueryMixin(
         return@lazy emptyList<QueryResult>()
       }
       tableAlias?.let { alias ->
-        return@lazy listOf(QueryResult(alias, result.flatMap { it.columns }, result.flatMap { it.synthesizedColumns }))
+        return@lazy listOf(
+          QueryResult(
+            alias,
+            result.flatMap { it.columns },
+            result.flatMap { it.synthesizedColumns },
+          )
+        )
       }
       return@lazy result
     }
@@ -28,7 +32,9 @@ internal abstract class TableOrSubqueryMixin(
       }
       return@lazy result
     }
-    joinClause?.let { return@lazy it.queryExposed() }
+    joinClause?.let {
+      return@lazy it.queryExposed()
+    }
     return@lazy tableOrSubqueryList.flatMap { it.queryExposed() }
   }
 

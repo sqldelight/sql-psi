@@ -7,16 +7,19 @@ import com.intellij.lang.parser.GeneratedParserUtilBase
 
 abstract class ModuleParserUtil : GeneratedParserUtilBase() {
   companion object {
-    @JvmStatic fun custom_module_argument(builder: PsiBuilder, level: Int, columnName: Parser): Boolean {
-      if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "module_argument_real")) return false
+    @JvmStatic
+    fun custom_module_argument(builder: PsiBuilder, level: Int, columnName: Parser): Boolean {
+      if (!GeneratedParserUtilBase.recursion_guard_(builder, level, "module_argument_real"))
+        return false
       var result: Boolean
-      val marker = GeneratedParserUtilBase.enter_section_(
-        builder,
-        level,
-        GeneratedParserUtilBase._COLLAPSE_,
-        MODULE_ARGUMENT,
-        "<module argument real>",
-      )
+      val marker =
+        GeneratedParserUtilBase.enter_section_(
+          builder,
+          level,
+          GeneratedParserUtilBase._COLLAPSE_,
+          MODULE_ARGUMENT,
+          "<module argument real>",
+        )
       columnName.parse(builder, level + 1)
       var parens = 0
       while (builder.tokenType != SqlTypes.COMMA) {

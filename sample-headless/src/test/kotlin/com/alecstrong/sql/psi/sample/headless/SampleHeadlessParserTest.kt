@@ -15,9 +15,7 @@ import kotlin.test.fail
 class SampleHeadlessParserTest {
   @Test
   fun parserIsSuccessfulWithSourceFolder() {
-    val files = SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"))) {
-      fail(it)
-    }
+    val files = SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"))) { fail(it) }
     files.test()
   }
 
@@ -26,9 +24,7 @@ class SampleHeadlessParserTest {
     val sqliteTestFixtures = SqliteTestFixtures()
     try {
       val test by SqliteTestFixtures()
-      val files = SampleHeadlessParser().parseSqlite(listOf(test)) {
-        fail(it)
-      }
+      val files = SampleHeadlessParser().parseSqlite(listOf(test)) { fail(it) }
       files.test()
     } finally {
       sqliteTestFixtures.close()
@@ -40,9 +36,8 @@ class SampleHeadlessParserTest {
     val sqliteTestFixtures = SqliteTestFixtures()
     val test2 by sqliteTestFixtures
     try {
-      val files = SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"), test2)) {
-        fail(it)
-      }
+      val files =
+        SampleHeadlessParser().parseSqlite(listOf(Path("../sample-headless"), test2)) { fail(it) }
       files.test()
     } finally {
       sqliteTestFixtures.close()
@@ -53,9 +48,8 @@ class SampleHeadlessParserTest {
   fun parserIsSuccessfulWithJarSource() {
     val sqliteTestFixtures = SqliteTestFixtures()
     try {
-      val files = SampleHeadlessParser().parseSqlite(listOf(sqliteTestFixtures.jarFile)) {
-        fail(it)
-      }
+      val files =
+        SampleHeadlessParser().parseSqlite(listOf(sqliteTestFixtures.jarFile)) { fail(it) }
       assertEquals(2, files.size)
       files.test()
     } finally {
@@ -82,7 +76,12 @@ class SampleHeadlessParserTest {
             for (expr in exprs) {
               if (expr is CustomExpr) {
                 val fooRule = expr.fooRule
-                val literalExpr = fooRule.childrenOfType(SqlLiteralExpr::class).single().childrenOfType(SqlLiteralExpr::class).single()
+                val literalExpr =
+                  fooRule
+                    .childrenOfType(SqlLiteralExpr::class)
+                    .single()
+                    .childrenOfType(SqlLiteralExpr::class)
+                    .single()
                 assertEquals(13, literalExpr.literalValue.numericLiteral!!.text.toInt())
               }
             }
@@ -93,4 +92,5 @@ class SampleHeadlessParserTest {
   }
 }
 
-fun <T : PsiElement> PsiElement.childrenOfType(kClass: KClass<T>): List<T> = PsiTreeUtil.getChildrenOfTypeAsList(this, kClass.java)
+fun <T : PsiElement> PsiElement.childrenOfType(kClass: KClass<T>): List<T> =
+  PsiTreeUtil.getChildrenOfTypeAsList(this, kClass.java)

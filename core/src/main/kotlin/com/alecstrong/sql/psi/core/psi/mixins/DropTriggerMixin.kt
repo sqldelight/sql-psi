@@ -16,14 +16,12 @@ internal abstract class DropTriggerMixin(
   stub: SchemaContributorStub?,
   nodeType: IElementType?,
   node: ASTNode?,
-) : SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
+) :
+  SqlSchemaContributorImpl<SqlCreateTriggerStmt, CreateTriggerElementType>(stub, nodeType, node),
   SqlDropTriggerStmt {
   constructor(node: ASTNode) : this(null, null, node)
 
-  constructor(
-    stub: SchemaContributorStub,
-    nodeType: IElementType,
-  ) : this(stub, nodeType, null)
+  constructor(stub: SchemaContributorStub, nodeType: IElementType) : this(stub, nodeType, null)
 
   override fun name() = triggerName?.text ?: ""
 
@@ -35,9 +33,11 @@ internal abstract class DropTriggerMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     triggerName?.let { triggerName ->
-      if (node.findChildByType(SqlTypes.EXISTS) == null &&
-        containingFile.schema<SqlCreateTriggerStmt>(this)
-          .none { it != this && it.triggerName.textMatches(triggerName) }
+      if (
+        node.findChildByType(SqlTypes.EXISTS) == null &&
+          containingFile.schema<SqlCreateTriggerStmt>(this).none {
+            it != this && it.triggerName.textMatches(triggerName)
+          }
       ) {
         annotationHolder.createErrorAnnotation(
           triggerName,
@@ -53,5 +53,6 @@ internal abstract class DropTriggerMixin(
 internal class DropTriggerElementType(name: String) :
   SqlSchemaContributorElementType<SqlCreateTriggerStmt>(name, SqlCreateTriggerStmt::class.java) {
   override fun nameType() = SqlTypes.TRIGGER_NAME
+
   override fun createPsi(stub: SchemaContributorStub) = SqlDropTriggerStmtImpl(stub, this)
 }

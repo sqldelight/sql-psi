@@ -11,11 +11,10 @@ import com.alecstrong.sql.psi.core.psi.SqlWithClause
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-internal abstract class MutatorMixin(
-  node: ASTNode,
-) : WithClauseContainer(node) {
+internal abstract class MutatorMixin(node: ASTNode) : WithClauseContainer(node) {
   // One of these will get overridden with what we want. If not error! Kind of type safe?
   open fun getQualifiedTableName(): SqlQualifiedTableName = throw AssertionError()
+
   open fun getTableName() = getQualifiedTableName().tableName
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
@@ -30,7 +29,10 @@ internal abstract class MutatorMixin(
 
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     super.annotate(annotationHolder)
-    val tables = tableAvailable(this, getTableName().name).ifEmpty { return }
+    val tables =
+      tableAvailable(this, getTableName().name).ifEmpty {
+        return
+      }
     val tableUpdated = tables.singleOrNull()?.table
     if (tableUpdated == null) {
       annotationHolder.createErrorAnnotation(
@@ -42,12 +44,16 @@ internal abstract class MutatorMixin(
 
     if ((this is SqlUpdateStmt || this is SqlUpdateStmtLimited) && tableUpdated is SqlViewName) {
       // Find the trigger that does INSTEAD OF UPDATE.
-      val trigger = containingFile.schema<SqlCreateTriggerStmt>().find {
-        it.tableName?.name == tableUpdated.name &&
-          it.node.getChildren(null).map { it.text }.containsAll(listOf("INSTEAD", "OF", "UPDATE"))
-      }
+      val trigger =
+        containingFile.schema<SqlCreateTriggerStmt>().find {
+          it.tableName?.name == tableUpdated.name &&
+            it.node.getChildren(null).map { it.text }.containsAll(listOf("INSTEAD", "OF", "UPDATE"))
+        }
       if (trigger == null) {
-        annotationHolder.createErrorAnnotation(getTableName(), "Cannot UPDATE the view ${tableUpdated.text} without a trigger on ${tableUpdated.text} that has INSTEAD OF UPDATE.")
+        annotationHolder.createErrorAnnotation(
+          getTableName(),
+          "Cannot UPDATE the view ${tableUpdated.text} without a trigger on ${tableUpdated.text} that has INSTEAD OF UPDATE.",
+        )
         return
       }
     }

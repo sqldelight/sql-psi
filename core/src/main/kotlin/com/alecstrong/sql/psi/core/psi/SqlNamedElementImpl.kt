@@ -12,17 +12,13 @@ import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.GeneratedMarkerVisitor
 import com.intellij.psi.impl.source.tree.TreeElement
 
-abstract class SqlNamedElementImpl(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  PsiNameIdentifierOwner {
+abstract class SqlNamedElementImpl(node: ASTNode) :
+  SqlCompositeElementImpl(node), PsiNameIdentifierOwner {
   abstract val parseRule: (builder: PsiBuilder, level: Int) -> Boolean
 
   override fun getText(): String {
-    return (
-      node.findChildByType(SqlTypes.ID)?.text
-        ?: node.findChildByType(SqlTypes.STRING)!!.text
-      ).trim('\'', '"', '`', '[', ']')
+    return (node.findChildByType(SqlTypes.ID)?.text ?: node.findChildByType(SqlTypes.STRING)!!.text)
+      .trim('\'', '"', '`', '[', ']')
   }
 
   override fun getName() = text
@@ -34,20 +30,18 @@ abstract class SqlNamedElementImpl(
     // is implemented since it's inspired by that, which is documented online in IntelliJ's
     // official documentation for writing a language plugin. Good luck!
 
-    val parserDefinition: ParserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(language)
-    var builder = PsiBuilderFactory.getInstance().createBuilder(
-      project,
-      parent.node,
-      parserDefinition.createLexer(project),
-      language,
-      name,
-    )
-    builder = GeneratedParserUtilBase.adapt_builder_(
-      node.elementType,
-      builder,
-      SqlParser(),
-      SqlParser.EXTENDS_SETS_,
-    )
+    val parserDefinition: ParserDefinition =
+      LanguageParserDefinitions.INSTANCE.forLanguage(language)
+    var builder =
+      PsiBuilderFactory.getInstance()
+        .createBuilder(project, parent.node, parserDefinition.createLexer(project), language, name)
+    builder =
+      GeneratedParserUtilBase.adapt_builder_(
+        node.elementType,
+        builder,
+        SqlParser(),
+        SqlParser.EXTENDS_SETS_,
+      )
     GeneratedParserUtilBase.ErrorState.get(builder).currentFrame = GeneratedParserUtilBase.Frame()
 
     parseRule(builder, 0)

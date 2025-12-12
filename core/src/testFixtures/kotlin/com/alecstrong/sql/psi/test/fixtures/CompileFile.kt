@@ -9,18 +9,16 @@ import kotlin.io.path.writeText
 fun compileFile(
   // language=sql
   text: String,
-  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  customInit: CoreApplicationEnvironment.() -> Unit = {},
   predefined: List<String> = emptyList(),
   action: (SqlFileBase) -> Unit,
 ) {
-  compileFiles(text, predefined = predefined, customInit = customInit) {
-    action(it.single())
-  }
+  compileFiles(text, predefined = predefined, customInit = customInit) { action(it.single()) }
 }
 
 fun compileFiles(
   vararg files: String,
-  customInit: CoreApplicationEnvironment.() -> Unit = { },
+  customInit: CoreApplicationEnvironment.() -> Unit = {},
   predefined: List<String> = emptyList(),
   action: (List<SqlFileBase>) -> Unit,
 ) {
@@ -30,22 +28,23 @@ fun compileFiles(
     file.writeText(content)
   }
 
-  val environment = TestHeadlessParser.build(
-    sourceFolders = listOf(directory),
-    customInit = customInit,
-    annotator = { element, message ->
-      val tree = buildString {
-        appendLine(element.containingFile.name)
-        appendLine(element.containingFile.text)
-        element.containingFile.printTree {
-          append("  ")
-          append(it)
+  val environment =
+    TestHeadlessParser.build(
+      sourceFolders = listOf(directory),
+      customInit = customInit,
+      annotator = { element, message ->
+        val tree = buildString {
+          appendLine(element.containingFile.name)
+          appendLine(element.containingFile.text)
+          element.containingFile.printTree {
+            append("  ")
+            append(it)
+          }
         }
-      }
-      throw AssertionError("at ${element.textOffset} : $message\n$tree")
-    },
-    predefinedTables = predefined,
-  )
+        throw AssertionError("at ${element.textOffset} : $message\n$tree")
+      },
+      predefinedTables = predefined,
+    )
 
   val sqlFilesMap = buildMap {
     environment.forSourceFiles<SqlFileBase> { sqlFile ->
@@ -53,9 +52,7 @@ fun compileFiles(
       put(index, sqlFile)
     }
   }
-  val sqlFiles = List(sqlFilesMap.size) {
-    sqlFilesMap[it]!!
-  }
+  val sqlFiles = List(sqlFilesMap.size) { sqlFilesMap[it]!! }
   action(sqlFiles)
   environment.close()
 }

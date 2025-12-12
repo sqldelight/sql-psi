@@ -17,10 +17,8 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import kotlin.reflect.KClass
 
-abstract class SqlFileBase(
-  viewProvider: FileViewProvider,
-  language: Language,
-) : PsiFileBase(viewProvider, language) {
+abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
+  PsiFileBase(viewProvider, language) {
   abstract val order: Long?
 
   val sqlStmtList
@@ -28,7 +26,8 @@ abstract class SqlFileBase(
 
   fun tablesAvailable(child: PsiElement) = schema<TableElement>(child).map { it.tableExposed() }
 
-  fun triggers(sqlStmtElement: PsiElement?): Collection<SqlCreateTriggerStmt> = schema(sqlStmtElement)
+  fun triggers(sqlStmtElement: PsiElement?): Collection<SqlCreateTriggerStmt> =
+    schema(sqlStmtElement)
 
   internal inline fun <reified T : SchemaContributor> schema(
     sqlStmtElement: PsiElement? = null,
@@ -62,9 +61,8 @@ abstract class SqlFileBase(
   }
 
   /**
-   * @return Tables this file exposes as LazyQuery.
-   *
    * @param includeAll If true, also return tables that other files expose.
+   * @return Tables this file exposes as LazyQuery.
    */
   fun tables(includeAll: Boolean): Collection<LazyQuery> {
     val tables = schema<TableElement>().map { it.tableExposed() }
@@ -72,19 +70,22 @@ abstract class SqlFileBase(
   }
 
   internal fun viewForName(name: String): SqlCreateViewStmt? {
-    return schema<TableElement>().filterIsInstance<SqlCreateViewStmt>().singleOrNull { it.name() == name }
+    return schema<TableElement>().filterIsInstance<SqlCreateViewStmt>().singleOrNull {
+      it.name() == name
+    }
   }
 
   private fun views(): List<SqlCreateViewStmt> {
-    return sqlStmtList?.stmtList?.mapNotNull {
-      it.createViewStmt
-    }.orEmpty()
+    return sqlStmtList?.stmtList?.mapNotNull { it.createViewStmt }.orEmpty()
   }
 
   private fun tables(): List<TableElement> {
-    return sqlStmtList?.stmtList?.mapNotNull {
-      (it.createViewStmt as TableElement?) ?: it.createTableStmt ?: it.createVirtualTableStmt
-    }.orEmpty()
+    return sqlStmtList
+      ?.stmtList
+      ?.mapNotNull {
+        (it.createViewStmt as TableElement?) ?: it.createTableStmt ?: it.createVirtualTableStmt
+      }
+      .orEmpty()
   }
 
   private inline fun <T : SchemaContributor> iteratePreviousStatements(
@@ -127,17 +128,17 @@ abstract class SqlFileBase(
       topContributors.forEach(block)
     }
 
-    contributors()?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
-      ?.forEach {
-        block(it)
-      }
+    contributors()
+      ?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
+      ?.forEach { block(it) }
   }
 
-  private fun contributors() = sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
+  private fun contributors() =
+    sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
 
   /**
-   * Optional files which can be used for extra Schema Contributors that are unindexed.
-   * The files are added to the schema in the provided order.
+   * Optional files which can be used for extra Schema Contributors that are unindexed. The files
+   * are added to the schema in the provided order.
    */
   protected open fun baseContributorFiles(): List<SqlFileBase> = emptyList()
 

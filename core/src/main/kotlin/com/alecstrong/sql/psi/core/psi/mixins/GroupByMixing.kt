@@ -9,10 +9,7 @@ import com.alecstrong.sql.psi.core.psi.SqlSelectStmt
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 
-internal abstract class GroupByMixing(
-  node: ASTNode,
-) : SqlCompositeElementImpl(node),
-  SqlGroupBy {
+internal abstract class GroupByMixing(node: ASTNode) : SqlCompositeElementImpl(node), SqlGroupBy {
   override fun queryAvailable(child: PsiElement): Collection<QueryElement.QueryResult> {
     return (parent as SqlSelectStmt).queryAvailable(child)
   }
