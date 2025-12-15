@@ -2,8 +2,7 @@
 
 ## Unreleased
 
-Mothing yet!
-
+- Support numeric literals when using virtual table module arguments (https://github.com/sqldelight/sql-psi/pull/728)
 
 ## [0.7.2] - 2025-11-12
 [0.7.2]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.2
