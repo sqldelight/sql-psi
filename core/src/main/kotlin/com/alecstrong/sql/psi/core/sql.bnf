@@ -149,7 +149,7 @@ module_column_def ::= [ javadoc ] column_name [ column_type ] ( column_constrain
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.ModuleColumnDefMixin"
   implements = "com.alecstrong.sql.psi.core.psi.SqlColumnDef"
 }
-module_argument_def ::= ( module_argument_name EQ (string_literal | identifier) ) | column_def | module_column_def
+module_argument_def ::= ( module_argument_name EQ (numeric_literal | string_literal | identifier) ) | column_def | module_column_def
 create_virtual_table_stmt ::= CREATE VIRTUAL TABLE [ IF NOT EXISTS ] [ database_name DOT ] table_name USING module_name [ LP <<custom_module_argument module_argument_def>> ( COMMA <<custom_module_argument module_argument_def>> ) * RP ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateVirtualTableMixin"
   implements = "com.alecstrong.sql.psi.core.psi.TableElement"
