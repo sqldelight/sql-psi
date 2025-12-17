@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix Ide hang when using code completion in virtual table module (https://github.com/sqldelight/sql-psi/pull/730)
 - Support numeric literals when using virtual table module arguments (https://github.com/sqldelight/sql-psi/pull/728)
 
 ## [0.7.2] - 2025-11-12
