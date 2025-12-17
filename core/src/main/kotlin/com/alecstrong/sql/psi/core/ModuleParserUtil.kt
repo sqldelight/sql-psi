@@ -22,7 +22,7 @@ abstract class ModuleParserUtil : GeneratedParserUtilBase() {
         )
       columnName.parse(builder, level + 1)
       var parens = 0
-      while (builder.tokenType != SqlTypes.COMMA) {
+      while (builder.tokenType != null && builder.tokenType != SqlTypes.COMMA) {
         if (builder.tokenType == SqlTypes.LP) parens++
         if (builder.tokenType == SqlTypes.RP && (--parens == -1)) break
         builder.advanceLexer()
