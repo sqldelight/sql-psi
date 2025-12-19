@@ -100,7 +100,7 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
       .map { it.columnName.name }
   }
 
-  private fun isCollectivelyUnique(columns: List<SqlColumnName>): Boolean {
+  private fun isCollectivelyUnique(columns: List<SqlColumnName>, sourceStmt: PsiElement): Boolean {
     tableConstraintList
       .filter { it.hasPrimaryKey() || it.isUnique() }
       .map {
@@ -119,8 +119,11 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
       .forEach { uniqueKeys -> if (columns.map { it.name }.all { it in uniqueKeys }) return true }
 
     // Check if there is an externally created unique index that matches the given columns.
-    containingFile
-      .schema<SqlCreateIndexStmt>(this)
+    val indexStatements =
+      containingFile.schema<SqlCreateIndexStmt>() +
+        containingFile.schema<SqlCreateIndexStmt>(sourceStmt)
+
+    indexStatements
       .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
       .forEach {
         val indexedColumns =
@@ -172,7 +175,7 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
         }
       } else {
         // The columns specified must be unique.
-        if (!foreignTable.isCollectivelyUnique(columnNameList)) {
+        if (!foreignTable.isCollectivelyUnique(columnNameList, this)) {
           if (columnNameList.size == 1) {
             annotationHolder.createErrorAnnotation(
               this,
