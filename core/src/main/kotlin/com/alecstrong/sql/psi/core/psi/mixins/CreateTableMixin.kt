@@ -118,9 +118,9 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
       )
       .forEach { uniqueKeys -> if (columns.map { it.name }.all { it in uniqueKeys }) return true }
 
-    // Check if there is an externally created unique index that matches the given columns.
+    // Check in file for `CREATE UNIQUE INDEX` statement that matches the given columns.
     containingFile
-      .schema<SqlCreateIndexStmt>(this)
+      .schema<SqlCreateIndexStmt>() // sqlStmtElement is null to include all statements
       .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
       .forEach {
         val indexedColumns =
