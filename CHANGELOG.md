@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix Lexer to support ansi-sql quote escaping (https://github.com/sqldelight/sql-psi/pull/740)
 - Fix Ide hang when using code completion in virtual table module (https://github.com/sqldelight/sql-psi/pull/730)
 - Support numeric literals when using virtual table module arguments (https://github.com/sqldelight/sql-psi/pull/728)
 
