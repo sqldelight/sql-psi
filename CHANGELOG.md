@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fix a compilation error with migration files when CREATE UNIQUE INDEX referenced by FOREIGN KEY (https://github.com/sqldelight/sql-psi/pull/732)
 - Fix Ide hang when using code completion in virtual table module (https://github.com/sqldelight/sql-psi/pull/730)
 - Support numeric literals when using virtual table module arguments (https://github.com/sqldelight/sql-psi/pull/728)
 
