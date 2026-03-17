@@ -92,10 +92,9 @@ internal abstract class JoinClauseMixin(node: ASTNode) :
 
       if (constraint != null && usingConstraint(constraint)) {
         val columnNames = constraint.columnNameList.map { it.name }
-        columns =
-          columns.map {
-            it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
-          }
+        columns = columns.map {
+          it.copy(hiddenByUsing = it.element is PsiNamedElement && it.element.name in columnNames)
+        }
       }
 
       queryAvailable +=
