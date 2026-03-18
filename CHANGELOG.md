@@ -2,8 +2,7 @@
 
 ## Unreleased
 
-Nothing yet!
-
+- Fix a compilation error with migration files when CREATE UNIQUE INDEX referenced by FOREIGN KEY (https://github.com/sqldelight/sql-psi/pull/732)
 
 ## [0.7.3] - 2026-03-13
 [0.7.3]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.3
