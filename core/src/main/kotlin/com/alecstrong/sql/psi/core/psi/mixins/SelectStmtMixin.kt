@@ -11,6 +11,7 @@ import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlExpr
+import com.alecstrong.sql.psi.core.psi.SqlInsertStmt
 import com.alecstrong.sql.psi.core.psi.SqlIsExpr
 import com.alecstrong.sql.psi.core.psi.SqlLiteralExpr
 import com.alecstrong.sql.psi.core.psi.SqlParenExpr
@@ -21,6 +22,7 @@ import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SelectStmtMixin(node: ASTNode) :
   SqlCompositeElementImpl(node), SqlSelectStmt, FromQuery {
@@ -81,9 +83,14 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
     }
     if (child in resultColumnList) {
       return fromQuery().map { it.copy(adjacent = true) } +
-        super.queryAvailable(this).map { it.copy(adjacent = false) }
+        (if (this.isInsertSelect() && !hasSingleRowTable(super.queryAvailable(this))) emptyList()
+        else super.queryAvailable(this).map { it.copy(adjacent = false) })
     }
-    if (child == joinClause) return super.queryAvailable(child)
+
+    if (child == joinClause)
+      return (if (this.isInsertSelect() && !hasSingleRowTable(super.queryAvailable(this)))
+        emptyList()
+      else super.queryAvailable(child))
     return super.queryAvailable(child)
   }
 
@@ -94,6 +101,14 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
       return it.queryExposed()
     }
     return emptyList()
+  }
+
+  private fun PsiElement.isInsertSelect(): Boolean {
+    return PsiTreeUtil.getParentOfType(this, SqlInsertStmt::class.java) != null
+  }
+
+  private fun hasSingleRowTable(queryResults: Collection<QueryResult>): Boolean {
+    return queryResults.any() { it.table is SingleRow }
   }
 
   private fun PsiElement.nonNullIn(whereExpr: SqlExpr): Boolean {
