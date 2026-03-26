@@ -83,15 +83,13 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
     }
     if (child in resultColumnList) {
       return fromQuery().map { it.copy(adjacent = true) } +
-        (if (this.isInsertSelect() && !hasSingleRowTable(super.queryAvailable(this))) emptyList()
+        (if (this.isInsertSelect()) keepSingleRowTables(super.queryAvailable(this))
         else super.queryAvailable(this).map { it.copy(adjacent = false) })
     }
 
-    if (child == joinClause)
-      return (if (this.isInsertSelect() && !hasSingleRowTable(super.queryAvailable(this)))
-        emptyList()
-      else super.queryAvailable(child))
-    return super.queryAvailable(child)
+    return if (child == joinClause && this.isInsertSelect())
+      keepSingleRowTables(super.queryAvailable(child))
+    else super.queryAvailable(child)
   }
 
   override fun queryExposed() = queryExposed.forFile(containingFile)
@@ -107,8 +105,8 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
     return PsiTreeUtil.getParentOfType(this, SqlInsertStmt::class.java) != null
   }
 
-  private fun hasSingleRowTable(queryResults: Collection<QueryResult>): Boolean {
-    return queryResults.any() { it.table is SingleRow }
+  private fun keepSingleRowTables(queryResults: Collection<QueryResult>): Collection<QueryResult> {
+    return queryResults.filter { it.table is SingleRow }
   }
 
   private fun PsiElement.nonNullIn(whereExpr: SqlExpr): Boolean {
