@@ -59,9 +59,7 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in exprList || child in (groupBy?.exprList ?: emptyList())) {
-      val available =
-        fromQuery().map { it.copy(adjacent = true) } +
-          super.queryAvailable(this).map { it.copy(adjacent = false) }
+      val available = fromQuery().map { it.copy(adjacent = true) } + availableFromParent(this)
       if (ignoreParentProjection) return available
 
       val projection =
@@ -82,9 +80,7 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
       return available + projection
     }
     if (child in resultColumnList) {
-      return fromQuery().map { it.copy(adjacent = true) } +
-        (if (this.isInsertSelect()) keepSingleRowTables(super.queryAvailable(this))
-        else super.queryAvailable(this).map { it.copy(adjacent = false) })
+      return fromQuery().map { it.copy(adjacent = true) } + availableFromParent(this)
     }
 
     return if (child == joinClause && this.isInsertSelect())
@@ -99,6 +95,11 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
       return it.queryExposed()
     }
     return emptyList()
+  }
+
+  private fun availableFromParent(child: PsiElement): Collection<QueryResult> {
+    val available = super.queryAvailable(child).map { it.copy(adjacent = false) }
+    return if (isInsertSelect()) keepSingleRowTables(available) else available
   }
 
   private fun PsiElement.isInsertSelect(): Boolean {
