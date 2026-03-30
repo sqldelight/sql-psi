@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix a compilation error with migration files when CREATE UNIQUE INDEX referenced by FOREIGN KEY (https://github.com/sqldelight/sql-psi/pull/732)
+- Fix insert statement exposes columns to a select statement when used as the row source (https://github.com/sqldelight/sql-psi/pull/750)
 
 ## [0.7.3] - 2026-03-13
 [0.7.3]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.3
