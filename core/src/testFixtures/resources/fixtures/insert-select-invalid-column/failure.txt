@@ -1,0 +1,2 @@
+Test.s line 12:7 - No column found with name destination_id
+Test.s line 16:6 - No column found with name destination_id

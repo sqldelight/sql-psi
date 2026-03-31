@@ -11,6 +11,7 @@ import com.alecstrong.sql.psi.core.psi.SqlColumnExpr
 import com.alecstrong.sql.psi.core.psi.SqlColumnName
 import com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl
 import com.alecstrong.sql.psi.core.psi.SqlExpr
+import com.alecstrong.sql.psi.core.psi.SqlInsertStmt
 import com.alecstrong.sql.psi.core.psi.SqlIsExpr
 import com.alecstrong.sql.psi.core.psi.SqlLiteralExpr
 import com.alecstrong.sql.psi.core.psi.SqlParenExpr
@@ -21,6 +22,7 @@ import com.alecstrong.sql.psi.core.psi.asColumns
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.util.PsiTreeUtil
 
 internal abstract class SelectStmtMixin(node: ASTNode) :
   SqlCompositeElementImpl(node), SqlSelectStmt, FromQuery {
@@ -57,9 +59,7 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
 
   override fun queryAvailable(child: PsiElement): Collection<QueryResult> {
     if (child in exprList || child in (groupBy?.exprList ?: emptyList())) {
-      val available =
-        fromQuery().map { it.copy(adjacent = true) } +
-          super.queryAvailable(this).map { it.copy(adjacent = false) }
+      val available = fromQuery().map { it.copy(adjacent = true) } + availableFromParent(this)
       if (ignoreParentProjection) return available
 
       val projection =
@@ -80,11 +80,12 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
       return available + projection
     }
     if (child in resultColumnList) {
-      return fromQuery().map { it.copy(adjacent = true) } +
-        super.queryAvailable(this).map { it.copy(adjacent = false) }
+      return fromQuery().map { it.copy(adjacent = true) } + availableFromParent(this)
     }
-    if (child == joinClause) return super.queryAvailable(child)
-    return super.queryAvailable(child)
+
+    return if (child == joinClause && this.isInsertSelect())
+      keepSingleRowTables(super.queryAvailable(child))
+    else super.queryAvailable(child)
   }
 
   override fun queryExposed() = queryExposed.forFile(containingFile)
@@ -94,6 +95,19 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
       return it.queryExposed()
     }
     return emptyList()
+  }
+
+  private fun availableFromParent(child: PsiElement): Collection<QueryResult> {
+    val available = super.queryAvailable(child).map { it.copy(adjacent = false) }
+    return if (isInsertSelect()) keepSingleRowTables(available) else available
+  }
+
+  private fun PsiElement.isInsertSelect(): Boolean {
+    return PsiTreeUtil.getParentOfType(this, SqlInsertStmt::class.java) != null
+  }
+
+  private fun keepSingleRowTables(queryResults: Collection<QueryResult>): Collection<QueryResult> {
+    return queryResults.filter { it.table is SingleRow }
   }
 
   private fun PsiElement.nonNullIn(whereExpr: SqlExpr): Boolean {
