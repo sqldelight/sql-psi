@@ -7,6 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SchemaContributorIndex
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
+import com.alecstrong.sql.psi.core.psi.SqlExtensionStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmtList
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
@@ -117,7 +118,7 @@ abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
       for ((baseContributorIndex, baseContributor) in baseContributorFiles.withIndex()) {
         // Put the last file to index -1, and the previous files to previous index.
         val orderedIndex = -1 - baseContributorFiles.lastIndex + baseContributorIndex.toLong()
-        baseContributor.contributors()?.let { contributors ->
+        baseContributor.contributors().let { contributors ->
           orderedContributors[orderedIndex] = linkedSetOf(elements = contributors.toTypedArray())
         }
       }
@@ -129,12 +130,18 @@ abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
     }
 
     contributors()
-      ?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
-      ?.forEach { block(it) }
+      .takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
+      .forEach { block(it) }
   }
 
-  private fun contributors() =
-    sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
+  private fun contributors(): List<SchemaContributor> {
+    return sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }.orEmpty() +
+      sqlStmtList
+        ?.stmtList
+        ?.mapNotNull { it.firstChild as? SqlExtensionStmt }
+        ?.mapNotNull { it.firstChild as? SchemaContributor }
+        .orEmpty()
+  }
 
   /**
    * Optional files which can be used for extra Schema Contributors that are unindexed. The files
