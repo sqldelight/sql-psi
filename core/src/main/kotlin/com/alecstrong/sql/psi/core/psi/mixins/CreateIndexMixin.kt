@@ -46,7 +46,9 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
   override fun annotate(annotationHolder: SqlAnnotationHolder) {
     if (
       node.findChildByType(SqlTypes.EXISTS) == null &&
-        containingFile.schema<IndexElement>(this).any { it != this && it.name() == indexName.text }
+        containingFile.schema<IndexElement>(this).any {
+          it != this && it.indexElementName() == indexName.text
+        }
     ) {
       annotationHolder.createErrorAnnotation(indexName, "Duplicate index name ${indexName.text}")
     }

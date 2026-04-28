@@ -36,7 +36,7 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
       if (
         node.findChildByType(SqlTypes.EXISTS) == null &&
           containingFile.schema<IndexElement>(this).none {
-            it != this && it.name() == indexName.text
+            it != this && it.indexElementName() == indexName.text
           }
       ) {
         annotationHolder.createErrorAnnotation(
