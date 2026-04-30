@@ -52,7 +52,7 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
 
 internal class DropIndexElementType(name: String) :
   SqlSchemaContributorElementType<IndexElement>(name, IndexElement::class.java) {
-  override fun nameType() = SqlTypes.TABLE_NAME
+  override fun nameType() = SqlTypes.INDEX_NAME
 
   override fun createPsi(stub: SchemaContributorStub) = SqlDropIndexStmtImpl(stub, this)
 }
