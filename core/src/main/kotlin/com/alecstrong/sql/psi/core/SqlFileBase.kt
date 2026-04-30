@@ -118,7 +118,7 @@ abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
       for ((baseContributorIndex, baseContributor) in baseContributorFiles.withIndex()) {
         // Put the last file to index -1, and the previous files to previous index.
         val orderedIndex = -1 - baseContributorFiles.lastIndex + baseContributorIndex.toLong()
-        baseContributor.contributors().let { contributors ->
+        baseContributor.contributors()?.let { contributors ->
           orderedContributors[orderedIndex] = linkedSetOf(elements = contributors.toTypedArray())
         }
       }
@@ -130,17 +130,19 @@ abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
     }
 
     contributors()
-      .takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
-      .forEach { block(it) }
+      ?.takeWhile { order == null || until == null || it.textOffset <= until.textOffset }
+      ?.forEach { block(it) }
   }
 
-  private fun contributors(): List<SchemaContributor> {
-    return sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }.orEmpty() +
-      sqlStmtList
-        ?.stmtList
-        ?.mapNotNull { it.firstChild as? SqlExtensionStmt }
-        ?.mapNotNull { it.firstChild as? SchemaContributor }
-        .orEmpty()
+  private fun contributors(): List<SchemaContributor>? {
+    // Preserve schemaContributor statement ordering and add any schemaContributors that are first
+    // child of SqlExtensionStmt.
+    return sqlStmtList?.stmtList?.mapNotNull { stmt ->
+      stmt.firstChild as? SchemaContributor
+        ?: (stmt.firstChild as? SqlExtensionStmt)?.let { sqlExt ->
+          sqlExt.firstChild as? SchemaContributor
+        }
+    }
   }
 
   /**
