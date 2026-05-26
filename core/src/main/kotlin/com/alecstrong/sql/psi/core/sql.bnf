@@ -491,3 +491,6 @@ module_argument_name ::= id
 bind_parameter ::= '?'
 table_options ::= table_option ( [COMMA] table_option ) *
 table_option ::= WITHOUT ROWID
+
+any_operator ::= 'ANY' | 'SOME'
+all_operator ::= 'ALL'
