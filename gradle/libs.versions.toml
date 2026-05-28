@@ -17,7 +17,7 @@ coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
 junit = "junit:junit:4.13.2"
 assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 
-ktfmt = "com.facebook:ktfmt:0.62"
+ktfmt = "com.facebook:ktfmt:0.63"
 
 [bundles]
 intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi"]
