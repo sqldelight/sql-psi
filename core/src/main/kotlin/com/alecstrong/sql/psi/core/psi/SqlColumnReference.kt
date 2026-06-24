@@ -47,13 +47,15 @@ internal class SqlColumnReference<T : SqlNamedElementImpl>(element: T) :
     }
 
     fun List<QueryResult>.matchingColumns(): List<QueryColumn> {
-      val columns =
-        flatMap { it.columns }
-          .filter { it.element is PsiNamedElement && it.element.name == element.name }
-      val synthesizedColumns =
-        flatMap { it.synthesizedColumns }
-          .filter { element.name in it.acceptableValues }
-          .map { QueryColumn(it.table, it.nullable) }
+      val columns = flatMap {
+        it.columns
+      }
+        .filter { it.element is PsiNamedElement && it.element.name == element.name }
+      val synthesizedColumns = flatMap {
+        it.synthesizedColumns
+      }
+        .filter { element.name in it.acceptableValues }
+        .map { QueryColumn(it.table, it.nullable) }
       return columns + synthesizedColumns
     }
 
