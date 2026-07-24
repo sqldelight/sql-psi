@@ -9,11 +9,11 @@ import com.alecstrong.sql.psi.core.psi.SqlCreateVirtualTableStmt
 import com.intellij.core.CoreApplicationEnvironment
 import com.intellij.core.CoreProjectEnvironment
 import com.intellij.lang.MetaLanguage
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.roots.impl.CustomEntityProjectModelInfoProvider
 import com.intellij.openapi.roots.impl.DirectoryIndex
 import com.intellij.openapi.roots.impl.DirectoryIndexImpl
 import com.intellij.openapi.roots.impl.ProjectFileIndexImpl
@@ -35,9 +35,22 @@ import com.intellij.workspaceModel.core.fileIndex.impl.WorkspaceFileIndexImpl
 import java.nio.file.Path
 import kotlin.io.path.pathString
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
 private class ApplicationEnvironment {
   val disposable = Disposer.newDisposable()
+
+  init {
+    // Constructing CoreApplicationEnvironment on 233+ initializes DisabledPluginsState, which
+    // resolves PathManager.getConfigPath() and throws when there is no IDE installation to
+    // derive it from. Kotlin contains this same workaround:
+    // https://github.com/JetBrains/kotlin/blob/39a9b922d16293bcf7be79c5c7e98edbcf448964/compiler/cli/cli-base/src/org/jetbrains/kotlin/cli/jvm/compiler/compat.kt#L38-L53
+    if (System.getProperty(PathManager.PROPERTY_CONFIG_PATH) == null) {
+      System.setProperty(PathManager.PROPERTY_CONFIG_PATH, "some/non/existent/path")
+    }
+  }
 
   val coreApplicationEnvironment: CoreApplicationEnvironment =
     CoreApplicationEnvironment(disposable).apply {
@@ -57,16 +70,13 @@ private class ApplicationEnvironment {
         WorkspaceFileIndexImpl.EP_NAME,
         WorkspaceFileIndexContributor::class.java,
       )
-      CoreApplicationEnvironment.registerApplicationExtensionPoint(
-        CustomEntityProjectModelInfoProvider.EP,
-        CustomEntityProjectModelInfoProvider::class.java,
-      )
     }
 }
 
 open class SqlCoreEnvironment(sourceFolders: List<Path>, dependencies: List<Path>) : AutoCloseable {
   private val fileIndex: CoreFileIndex
 
+  private val coroutineScope = CoroutineScope(SupervisorJob())
   private val env = ApplicationEnvironment()
   protected val projectEnvironment =
     CoreProjectEnvironment(env.disposable, env.coreApplicationEnvironment)
@@ -77,7 +87,7 @@ open class SqlCoreEnvironment(sourceFolders: List<Path>, dependencies: List<Path
   init {
     projectEnvironment.registerProjectComponent(
       ProjectRootManager::class.java,
-      ProjectRootManagerImpl(projectEnvironment.project),
+      ProjectRootManagerImpl(projectEnvironment.project, coroutineScope),
     )
     projectEnvironment.project.registerService(
       WorkspaceFileIndex::class.java,
@@ -207,6 +217,7 @@ open class SqlCoreEnvironment(sourceFolders: List<Path>, dependencies: List<Path
   }
 
   override fun close() {
+    coroutineScope.cancel()
     Disposer.dispose(env.disposable)
   }
 }

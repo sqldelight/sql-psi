@@ -1,3 +1,5 @@
+import org.jetbrains.grammarkit.tasks.GenerateParserTask
+
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.grammarKitComposer)
@@ -8,6 +10,14 @@ plugins {
 
 grammarKit {
   intellijRelease.set(libs.versions.ideaVersion)
+}
+
+// Constructing CoreApplicationEnvironment on 233+ initializes DisabledPluginsState, which resolves
+// PathManager.getConfigPath() and throws when there is no IDE installation to derive it from.
+// Kotlin contains this same workaround:
+// https://github.com/JetBrains/kotlin/blob/39a9b922d16293bcf7be79c5c7e98edbcf448964/compiler/cli/cli-base/src/org/jetbrains/kotlin/cli/jvm/compiler/compat.kt#L38-L53
+tasks.withType(GenerateParserTask).configureEach {
+  systemProperty('idea.config.path', 'some/non/existent/path')
 }
 
 sourceSets {
