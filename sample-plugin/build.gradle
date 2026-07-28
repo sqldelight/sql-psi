@@ -17,8 +17,7 @@ dependencies {
   implementation projects.sampleCore
 
   intellijPlatform {
-    intellijIdeaCommunity('2023.1')
-    instrumentationTools()
+    intellijIdeaCommunity('2023.3')
   }
 }
 

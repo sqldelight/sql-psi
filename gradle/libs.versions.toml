@@ -3,7 +3,7 @@
 # IC sources: https://www.jetbrains.com/intellij-repository/releases
 # choose a matching/similar build
 
-ideaVersion = "231.9423.9" # AS Hedgehog | 2023.1.1
+ideaVersion = "233.14808.21" # AS Jellyfish | 2023.3.1
 kotlin = "2.4.10"
 
 [libraries]
@@ -13,6 +13,7 @@ intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
 intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
 coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
+serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
 
 junit = "junit:junit:4.13.2"
 assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
@@ -28,4 +29,4 @@ grammarKitComposer = { id = "app.cash.grammarkit-composer", version = "0.2.0" }
 spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.37.0" }
 dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
-intellij = { id = "org.jetbrains.intellij.platform", version = "2.10.4" }
+intellij = { id = "org.jetbrains.intellij.platform", version = "2.18.1" }
