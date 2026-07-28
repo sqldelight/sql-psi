@@ -18,3 +18,11 @@ WHERE (id, col_one) IN ?;
 SELECT *
 FROM foo
 WHERE (col_one, col_two) IN ( SELECT x, y FROM bar );
+
+SELECT *
+FROM foo
+WHERE (id, col_one) NOT IN ?;
+
+SELECT *
+FROM foo
+WHERE (col_one, col_two) NOT IN ( SELECT x, y FROM bar );
