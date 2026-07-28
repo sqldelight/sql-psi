@@ -5,7 +5,7 @@ on:
   workflow_dispatch: {}
   push:
     branches:
-      - 'master'
+      - 'main'
     tags-ignore:
       - '**'
 
@@ -24,15 +24,14 @@ jobs:
       - run: ./gradlew build dokkaGenerate
 
       - run: ./gradlew publish
-        if: ${{ github.ref == 'refs/heads/master' && github.repository == 'sqldelight/sql-psi' }}
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'sqldelight/sql-psi' }}
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SECRET_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SECRET_PASSPHRASE }}
 
       - name: Deploy docs to website
-        if: ${{ github.ref == 'refs/heads/master' && github.repository == 'sqldelight/sql-psi' }}
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'sqldelight/sql-psi' }}
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
