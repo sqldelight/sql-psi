@@ -3,7 +3,7 @@
 # IC sources: https://www.jetbrains.com/intellij-repository/releases
 # choose a matching/similar build
 
-ideaVersion = "233.14808.21" # AS Jellyfish | 2023.3.1
+ideaVersion = "233.15619.17" # AS Jellyfish | 2023.3.1
 kotlin = "2.4.10"
 
 [libraries]
