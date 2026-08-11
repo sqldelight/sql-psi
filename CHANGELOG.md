@@ -6,6 +6,8 @@
 - Fix insert statement exposes columns to a select statement when used as the row source (https://github.com/sqldelight/sql-psi/pull/750)
 - Add rules ANY and ALL for dialects to use as SqlTypes (https://github.com/sqldelight/sql-psi/pull/760)
 - Update IntelliJ target to 2023.3.1
+- New: Maven coordinates have changed to use `dev.lysine.sql-psi` group ID.
+
 
 ## [0.7.3] - 2026-03-13
 [0.7.3]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.3
