@@ -2,13 +2,20 @@
 
 ## Unreleased
 
-- Fix a compilation error with migration files when CREATE UNIQUE INDEX referenced by FOREIGN KEY (https://github.com/sqldelight/sql-psi/pull/732)
-- Fix insert statement exposes columns to a select statement when used as the row source (https://github.com/sqldelight/sql-psi/pull/750)
-- Add rules ANY and ALL for dialects to use as SqlTypes (https://github.com/sqldelight/sql-psi/pull/760)
-- Support `NOT IN` for multi-column expressions (https://github.com/sqldelight/sql-psi/pull/776)
-- Update IntelliJ target to 2023.3.1
+Nothing yet.
+
+
+## [0.8.0] - 2026-08-13
+[0.8.0]: https://github.com/sqldelight/sql-psi/releases/tag/0.8.0
+
 - New: Maven coordinates have changed to use `dev.lysine.sql-psi` group ID.
-- Support keyword-colliding function names REPLACE, LEFT, RIGHT, LIKE, GLOB, IF, MATCH, REGEXP (https://github.com/sqldelight/sql-psi/pull/773)
+- Update IntelliJ target to 2023.3.1
+- Fix a compilation error with migration files when `CREATE UNIQUE INDEX` referenced by `FOREIGN KEY` (https://github.com/sqldelight/sql-psi/pull/732)
+- Fix insert statement exposes columns to a select statement when used as the row source (https://github.com/sqldelight/sql-psi/pull/750)
+- Add rules `ANY` and `ALL` for dialects to use as SqlTypes (https://github.com/sqldelight/sql-psi/pull/760)
+- Support `NOT IN` for multi-column expressions (https://github.com/sqldelight/sql-psi/pull/776)
+- Support keyword-colliding function names `REPLACE`, `LEFT`, `RIGHT`, `LIKE`, `GLOB`, `IF`, `MATCH`, `REGEXP` (https://github.com/sqldelight/sql-psi/pull/773)
+
 
 ## [0.7.3] - 2026-03-13
 [0.7.3]: https://github.com/sqldelight/sql-psi/releases/tag/0.7.3
