@@ -464,7 +464,7 @@ foreign_table ::= id | string {
 }
 identifier ::= id
 pragma_name ::= id
-function_name ::= id
+function_name ::= id | REPLACE | LEFT | RIGHT | LIKE | GLOB | IF | MATCH | REGEXP
 string_literal ::= string
 table_or_index_name ::= id
 new_table_name ::= id | string {
