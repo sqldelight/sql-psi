@@ -4,7 +4,7 @@
 # choose a matching/similar build
 
 ideaVersion = "233.15619.17" # AS Jellyfish | 2023.3.1
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 
 [libraries]
 intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", version.ref = "ideaVersion" }
