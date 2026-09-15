@@ -7,6 +7,7 @@ import com.alecstrong.sql.psi.core.psi.SchemaContributorIndex
 import com.alecstrong.sql.psi.core.psi.SqlCreateTableStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateTriggerStmt
 import com.alecstrong.sql.psi.core.psi.SqlCreateViewStmt
+import com.alecstrong.sql.psi.core.psi.SqlExtensionStmt
 import com.alecstrong.sql.psi.core.psi.SqlStmtList
 import com.alecstrong.sql.psi.core.psi.TableElement
 import com.intellij.extapi.psi.PsiFileBase
@@ -133,8 +134,16 @@ abstract class SqlFileBase(viewProvider: FileViewProvider, language: Language) :
       ?.forEach { block(it) }
   }
 
-  private fun contributors() =
-    sqlStmtList?.stmtList?.mapNotNull { it.firstChild as? SchemaContributor }
+  private fun contributors(): List<SchemaContributor>? {
+    // Preserve schemaContributor statement ordering and add any schemaContributors that are first
+    // child of SqlExtensionStmt.
+    return sqlStmtList?.stmtList?.mapNotNull { stmt ->
+      stmt.firstChild as? SchemaContributor
+        ?: (stmt.firstChild as? SqlExtensionStmt)?.let { sqlExt ->
+          sqlExt.firstChild as? SchemaContributor
+        }
+    }
+  }
 
   /**
    * Optional files which can be used for extra Schema Contributors that are unindexed. The files

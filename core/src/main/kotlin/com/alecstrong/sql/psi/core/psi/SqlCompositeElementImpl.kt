@@ -39,7 +39,7 @@ open class SqlCompositeElementImpl(node: ASTNode) :
     }
 }
 
-internal abstract class SqlSchemaContributorImpl<
+abstract class SqlSchemaContributorImpl<
   SchemaType : SchemaContributor,
   ElementType : SqlSchemaContributorElementType<SchemaType>,
 >(stub: SchemaContributorStub?, nodeType: IElementType?, node: ASTNode?) :
