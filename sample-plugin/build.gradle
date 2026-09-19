@@ -17,7 +17,7 @@ dependencies {
   implementation projects.sampleCore
 
   intellijPlatform {
-    intellijIdeaCommunity('2023.3')
+    intellijIdea('2025.3.4')
   }
 }
 
