@@ -3,7 +3,7 @@
 # IC sources: https://www.jetbrains.com/intellij-repository/releases
 # choose a matching/similar build
 
-ideaVersion = "233.15619.17" # AS Jellyfish | 2023.3.1
+ideaVersion = "253.32098.37" # AS Panda 4 | 2025.3.4
 kotlin = "2.4.21"
 
 [libraries]
@@ -11,6 +11,13 @@ intellijCoreImpl = { module = "com.jetbrains.intellij.platform:core-impl", versi
 intellijProjectModelImpl = { module = "com.jetbrains.intellij.platform:project-model-impl", version.ref = "ideaVersion" }
 intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl", version.ref = "ideaVersion" }
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
+intellijCore = { module = "com.jetbrains.intellij.platform:core", version.ref = "ideaVersion" }
+intellijUtil = { module = "com.jetbrains.intellij.platform:util", version.ref = "ideaVersion" }
+intellijExtensions = { module = "com.jetbrains.intellij.platform:extensions", version.ref = "ideaVersion" }
+intellijAnalysis = { module = "com.jetbrains.intellij.platform:analysis", version.ref = "ideaVersion" }
+intellijProjectModel = { module = "com.jetbrains.intellij.platform:project-model", version.ref = "ideaVersion" }
+intellijLang = { module = "com.jetbrains.intellij.platform:lang", version.ref = "ideaVersion" }
+intellijIcons = { module = "com.jetbrains.intellij.platform:icons", version.ref = "ideaVersion" }
 intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
 coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
 serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.13.0"
@@ -21,7 +28,7 @@ assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
 ktfmt = "com.facebook:ktfmt:0.64"
 
 [bundles]
-intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi"]
+intelliJ = ["intellijCoreImpl", "intellijProjectModelImpl", "intellijAnalysisImpl", "intellijIndexing", "intellijUtilUi", "intellijCore", "intellijUtil", "intellijExtensions", "intellijAnalysis", "intellijProjectModel", "intellijLang", "intellijIcons"]
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
