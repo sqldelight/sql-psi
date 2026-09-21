@@ -103,7 +103,12 @@ internal abstract class SelectStmtMixin(node: ASTNode) :
   }
 
   private fun PsiElement.isInsertSelect(): Boolean {
-    return PsiTreeUtil.getParentOfType(this, SqlInsertStmt::class.java) != null
+    return PsiTreeUtil.getParentOfType(
+      this,
+      SqlInsertStmt::class.java,
+      true,
+      SqlSelectStmt::class.java,
+    ) != null
   }
 
   private fun keepSingleRowTables(queryResults: Collection<QueryResult>): Collection<QueryResult> {
