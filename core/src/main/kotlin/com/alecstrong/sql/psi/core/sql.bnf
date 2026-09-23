@@ -49,6 +49,7 @@
     space='regexp:\s+'
     comment='regexp:--.*'
     javadoc='regexp:/\*\*([^*]|\*+[^/*])*\*/'
+    block_comment='regexp:/\*([^*]|\*+[^/*])*\*+/'
     digit='regexp:\d+(\.\d*)?'
     id='regexp:([a-zA-Z_][a-zA-Z_0-9]*)|(`[a-zA-Z_0-9 ]+`)|(\[[a-zA-Z_0-9 ]+])'
     string="regexp:('([^']|'')*'|\"([^\"]|\"\")*\")"

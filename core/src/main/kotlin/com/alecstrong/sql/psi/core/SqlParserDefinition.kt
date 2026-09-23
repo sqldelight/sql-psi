@@ -14,7 +14,10 @@ import com.intellij.psi.tree.TokenSet
 
 abstract class SqlParserDefinition : ParserDefinition {
   private val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
-  private val COMMENTS = TokenSet.create(SqlTypes.COMMENT)
+  private val COMMENTS = TokenSet.create(
+    SqlTypes.COMMENT,
+    SqlTypes.BLOCK_COMMENT
+  )
 
   init {
     SqlElementType._language = getLanguage()

@@ -24,8 +24,9 @@ import static com.alecstrong.sql.psi.core.psi.SqlTypes.*;
 
 WHITE_SPACE=\s+
 
-COMMENT=--.*
 JAVADOC="/"\*\*([^*]|\*+[^/*])*\*"/"
+BLOCK_COMMENT="/"\*([^*]|\*+[^/*])*\*+"/"
+COMMENT=--.*
 DIGIT=[0-9]+(\.[0-9]*)?
 ID=([a-zA-Z_][a-zA-Z_0-9]*)|(`[a-zA-Z_0-9 ]+`)|(\[[a-zA-Z_0-9 ]+\])
 STRING=('([^']|'')*'|\"([^\"]|\"\")*\")
@@ -200,6 +201,7 @@ STRING=('([^']|'')*'|\"([^\"]|\"\")*\")
 
   {COMMENT}              { return COMMENT; }
   {JAVADOC}              { return JAVADOC; }
+  {BLOCK_COMMENT}        { return BLOCK_COMMENT; }
   {DIGIT}                { return DIGIT; }
   {ID}                   { return ID; }
   {STRING}               { return STRING; }
