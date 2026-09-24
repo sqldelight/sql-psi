@@ -242,7 +242,7 @@ multi_column_expr ::= multi_column_expression ( LT | LTE | GT | GTE ) multi_colu
 multi_column_in_expr ::= multi_column_expression [ NOT ] IN ( bind_expr | LP compound_select_stmt RP ) {
   pin = 3
 }
-multi_column_expression ::= LP expr ( COMMA expr ) + RP
+multi_column_expression ::= <<hasTopLevelComma>> LP expr ( COMMA expr ) + RP
 literal_expr ::= literal_value
 bind_expr ::= bind_parameter
 column_expr ::= [ database_name DOT table_name DOT | table_name DOT ] column_name

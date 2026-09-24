@@ -31,5 +31,25 @@ abstract class ModuleParserUtil : GeneratedParserUtilBase() {
       GeneratedParserUtilBase.exit_section_(builder, level, marker, result, false, null)
       return result
     }
+
+    /**
+     * A tuple needs a comma directly inside its parentheses. Checking for one before parsing stops
+     * every parenthesised expression from being parsed once per tuple rule and then again as a
+     * plain expression.
+     */
+    @JvmStatic
+    fun hasTopLevelComma(builder: PsiBuilder, level: Int): Boolean {
+      if (builder.tokenType != SqlTypes.LP) return false
+      var depth = 0
+      var i = 0
+      while (true) {
+        when (builder.rawLookup(i) ?: return false) {
+          SqlTypes.LP -> depth++
+          SqlTypes.RP -> if (--depth == 0) return false
+          SqlTypes.COMMA -> if (depth == 1) return true
+        }
+        i++
+      }
+    }
   }
 }
