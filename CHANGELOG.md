@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-- Fix INSERT … SELECT with subqueries inside that could not see the SELECT's own tables (https://github.com/sqldelight/sql-psi/pull/799)
+- Nothing yet!
+
+
+## [0.8.1] - 2026-09-29
+[0.8.1]: https://github.com/sqldelight/sql-psi/releases/tag/0.8.1
+
+- Fix: `INSERT … SELECT` with subqueries inside that could not see the `SELECT`'s own tables (https://github.com/sqldelight/sql-psi/pull/799)
 
 
 ## [0.8.0] - 2026-08-13
