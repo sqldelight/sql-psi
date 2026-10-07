@@ -24,7 +24,7 @@ import static com.alecstrong.sql.psi.core.psi.SqlTypes.*;
 
 WHITE_SPACE=\s+
 
-JAVADOC="/"\*\*([^*]|\*+[^/*])*\*"/"
+JAVADOC="/"\*\*([^*/]([^*]|\*+[^/*])*)?\*+"/"
 BLOCK_COMMENT="/"\*([^*]|\*+[^/*])*\*+"/"
 COMMENT=--.*
 DIGIT=[0-9]+(\.[0-9]*)?
