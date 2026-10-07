@@ -103,7 +103,7 @@ release_stmt ::= RELEASE [ SAVEPOINT ] savepoint_name {
 }
 create_index_stmt ::= CREATE [ UNIQUE ] INDEX [ IF NOT EXISTS ] [ database_name DOT ] index_name ON table_name LP indexed_column ( COMMA indexed_column ) * RP [ WHERE expr ] {
   mixin = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexMixin"
-  implements = "com.alecstrong.sql.psi.core.psi.SchemaContributor"
+  implements = "com.alecstrong.sql.psi.core.psi.IndexElement"
   elementTypeClass = "com.alecstrong.sql.psi.core.psi.mixins.CreateIndexElementType"
   stubClass = "com.alecstrong.sql.psi.core.psi.SchemaContributorStub"
   pin = 6
