@@ -13,7 +13,7 @@ intellijAnalysisImpl = { module = "com.jetbrains.intellij.platform:analysis-impl
 intellijIndexing = { module = "com.jetbrains.intellij.platform:indexing", version.ref = "ideaVersion" }
 intellijUtilUi = { module = "com.jetbrains.intellij.platform:util-ui", version.ref = "ideaVersion" }
 coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0"
+serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0"
 
 junit = "junit:junit:4.13.2"
 assertk = "com.willowtreeapps.assertk:assertk:0.28.1"
