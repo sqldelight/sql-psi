@@ -91,7 +91,7 @@ open class SqlCoreEnvironment(sourceFolders: List<Path>, dependencies: List<Path
     )
     projectEnvironment.project.registerService(
       WorkspaceFileIndex::class.java,
-      WorkspaceFileIndexImpl(projectEnvironment.project),
+      WorkspaceFileIndexImpl(projectEnvironment.project, coroutineScope),
     )
     projectEnvironment.project.registerService(
       DirectoryIndex::class.java,
