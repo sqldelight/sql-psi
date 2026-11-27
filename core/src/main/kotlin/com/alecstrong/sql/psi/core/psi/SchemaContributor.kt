@@ -47,4 +47,16 @@ class Schema {
   @Suppress("UNCHECKED_CAST")
   fun <Value : SchemaContributor> values(type: KClass<Value>) =
     map[type]?.values as Collection<Value>? ?: emptyList()
+
+  fun replace(
+    type: KClass<out SchemaContributor>,
+    name: String,
+    newName: String,
+    value: SchemaContributor,
+  ) {
+    @Suppress("UNCHECKED_CAST")
+    val typedMap = map.getOrPut(type) { linkedMapOf() } as MutableMap<String, SchemaContributor>
+    typedMap.remove(name)
+    typedMap[newName] = value
+  }
 }

@@ -2,6 +2,7 @@ package com.alecstrong.sql.psi.core.psi.mixins
 
 import com.alecstrong.sql.psi.core.SqlAnnotationHolder
 import com.alecstrong.sql.psi.core.SqlSchemaContributorElementType
+import com.alecstrong.sql.psi.core.psi.IndexElement
 import com.alecstrong.sql.psi.core.psi.LazyQuery
 import com.alecstrong.sql.psi.core.psi.QueryElement.QueryResult
 import com.alecstrong.sql.psi.core.psi.QueryElement.SynthesizedColumn
@@ -120,7 +121,8 @@ private constructor(stub: SchemaContributorStub?, nodeType: IElementType?, node:
 
     // Check in file for `CREATE UNIQUE INDEX` statement that matches the given columns.
     containingFile
-      .schema<SqlCreateIndexStmt>() // sqlStmtElement is null to include all statements
+      .schema<IndexElement>()
+      .filterIsInstance<SqlCreateIndexStmt>()
       .filter { it.isUnique() && it.indexedColumnList.all { it.collationName == null } }
       .forEach {
         val indexedColumns =
