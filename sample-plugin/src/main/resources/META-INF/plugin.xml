@@ -3,7 +3,7 @@
   <name>SQLite-PSI Sample</name>
   <category>Custom Languages</category>
   <idea-version
-      since-build="145"
+      since-build="253"
   />
   <depends>com.intellij.modules.lang</depends>
 

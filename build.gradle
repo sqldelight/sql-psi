@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -34,19 +35,18 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jetbrains.com/intellij-repository/releases' }
     maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
-    maven { url "https://cache-redirector.jetbrains.com/maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies" }
   }
 }
 
 subprojects {
   tasks.withType(JavaCompile).configureEach {
-    sourceCompatibility = '11'
-    targetCompatibility = '11'
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
   }
 
   tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions {
-      jvmTarget = '11'
+    compilerOptions {
+      jvmTarget = JvmTarget.JVM_21
     }
   }
 
